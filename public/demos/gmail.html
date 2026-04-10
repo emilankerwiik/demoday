@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gmail — Demoday clickable demo</title>
+    <style>
+      :root {
+        --bg: #f6f8fc;
+        --panel: #ffffff;
+        --text: #202124;
+        --muted: #5f6368;
+        --border: #e3e6eb;
+        --hover: #eef0f4;
+        --active: #fce8e6;
+        --active-text: #c5221f;
+        --brand: #c5221f;
+        --blue: #1a73e8;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Google Sans", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+      }
+      .app {
+        display: grid;
+        grid-template-rows: 56px 1fr;
+        height: 100vh;
+      }
+
+      /* Header */
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 16px;
+        background: var(--bg);
+        border-bottom: 1px solid transparent;
+      }
+      .menu-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--muted);
+      }
+      .menu-btn:hover { background: var(--hover); }
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 22px;
+        color: var(--muted);
+        letter-spacing: -0.5px;
+      }
+      .logo .m {
+        color: var(--brand);
+        font-weight: 600;
+      }
+      .search {
+        flex: 1;
+        max-width: 720px;
+        margin: 0 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #eaf1fb;
+        border-radius: 10px;
+        padding: 10px 14px;
+      }
+      .search input {
+        flex: 1;
+        border: 0;
+        background: transparent;
+        outline: none;
+        font-size: 14px;
+        color: var(--text);
+      }
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1a73e8, #34a853);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+      }
+
+      /* Body */
+      .body {
+        display: grid;
+        grid-template-columns: 256px 1fr;
+        min-height: 0;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        padding: 8px 8px 16px 8px;
+        overflow-y: auto;
+      }
+      .compose {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: #c2e7ff;
+        color: #001d35;
+        padding: 14px 22px 14px 16px;
+        border-radius: 16px;
+        font-weight: 600;
+        border: 0;
+        cursor: pointer;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin: 8px 8px 16px;
+      }
+      .compose:hover { filter: brightness(0.98); }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 0 12px 0 26px;
+        height: 32px;
+        border-radius: 0 16px 16px 0;
+        cursor: pointer;
+        color: var(--text);
+        user-select: none;
+      }
+      .nav-item .label { flex: 1; font-size: 14px; }
+      .nav-item .count { font-size: 12px; color: var(--muted); }
+      .nav-item:hover { background: var(--hover); }
+      .nav-item.active {
+        background: var(--active);
+        color: var(--active-text);
+        font-weight: 700;
+      }
+      .nav-item.active .count { color: var(--active-text); }
+
+      .section-label {
+        padding: 14px 26px 6px;
+        font-size: 11px;
+        text-transform: uppercase;
+        color: var(--muted);
+        letter-spacing: 0.08em;
+      }
+
+      /* Main */
+      .main {
+        background: var(--panel);
+        border-top-left-radius: 16px;
+        overflow-y: auto;
+        min-width: 0;
+      }
+      .toolbar {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--muted);
+        font-size: 13px;
+        position: sticky;
+        top: 0;
+        background: var(--panel);
+      }
+      .chip {
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: #f1f3f4;
+        font-size: 12px;
+      }
+      .mail-list { padding: 0; margin: 0; list-style: none; }
+      .mail {
+        display: grid;
+        grid-template-columns: 24px 180px 1fr 80px;
+        gap: 16px;
+        align-items: center;
+        padding: 10px 16px;
+        border-bottom: 1px solid #f1f3f4;
+        cursor: pointer;
+      }
+      .mail:hover {
+        box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0,
+          0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15);
+        z-index: 1;
+      }
+      .mail.unread { font-weight: 600; background: #fff; }
+      .mail .star { color: #d7d9db; }
+      .mail .sender { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .mail .subject { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+      .mail.unread .subject { color: var(--text); }
+      .mail .subject b { color: var(--text); }
+      .mail .time { text-align: right; color: var(--muted); font-size: 12px; }
+
+      .empty {
+        padding: 48px 16px;
+        text-align: center;
+        color: var(--muted);
+      }
+      .empty h2 {
+        margin: 0 0 8px;
+        color: var(--text);
+        font-weight: 500;
+        font-size: 18px;
+      }
+
+      .icon {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        flex-shrink: 0;
+      }
+
+      /* Badge callout to signal interactivity */
+      .hint {
+        position: fixed;
+        bottom: 16px;
+        right: 16px;
+        background: #202124;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+        animation: pulse 2.4s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: translateY(0); opacity: 0.95; }
+        50% { transform: translateY(-3px); opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="menu-btn" aria-label="Menu">
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z" />
+          </svg>
+        </div>
+        <div class="logo">
+          <svg width="36" height="28" viewBox="0 0 36 28" fill="none">
+            <path d="M2 6l16 11L34 6v18a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" fill="#e8eaed"/>
+            <path d="M2 6l16 11L34 6" stroke="#c5221f" stroke-width="2.5" fill="none"/>
+            <path d="M2 6v18a2 2 0 002 2h4V13L2 6z" fill="#c5221f"/>
+            <path d="M34 6v18a2 2 0 01-2 2h-4V13l6-7z" fill="#c5221f"/>
+          </svg>
+          <span>Gmail</span>
+        </div>
+        <div class="search">
+          <svg class="icon" viewBox="0 0 24 24" fill="#5f6368">
+            <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.5 4.5 0 019.5 14z"/>
+          </svg>
+          <input placeholder="Search mail" />
+        </div>
+        <div class="avatar">E</div>
+      </header>
+
+      <div class="body">
+        <aside class="sidebar">
+          <button class="compose">
+            <svg class="icon" viewBox="0 0 24 24" fill="#001d35">
+              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.42l-2.33-2.33a1 1 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+            Compose
+          </button>
+
+          <div class="nav-item active" data-folder="inbox">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 12h-4l-1.5 2h-3L9 15H5V5h14v10z"/></svg>
+            <span class="label">Inbox</span>
+            <span class="count">4</span>
+          </div>
+          <div class="nav-item" data-folder="starred">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <span class="label">Starred</span>
+            <span class="count">1</span>
+          </div>
+          <div class="nav-item" data-folder="snoozed">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10S22 17.52 22 12 17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <span class="label">Snoozed</span>
+          </div>
+          <div class="nav-item" data-folder="sent">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            <span class="label">Sent</span>
+          </div>
+          <div class="nav-item" data-folder="drafts">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+            <span class="label">Drafts</span>
+            <span class="count">2</span>
+          </div>
+          <div class="nav-item" data-folder="spam">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v5h2v-5z"/></svg>
+            <span class="label">Spam</span>
+          </div>
+          <div class="nav-item" data-folder="trash">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+            <span class="label">Trash</span>
+          </div>
+
+          <div class="section-label">Labels</div>
+          <div class="nav-item" data-folder="work">
+            <svg class="icon" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+            <span class="label">Work</span>
+          </div>
+          <div class="nav-item" data-folder="personal">
+            <svg class="icon" viewBox="0 0 24 24" fill="#34a853"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+            <span class="label">Personal</span>
+          </div>
+        </aside>
+
+        <main class="main">
+          <div class="toolbar" id="toolbar">
+            <span class="chip" id="chip">Inbox</span>
+            <span id="meta">1–4 of 4</span>
+          </div>
+          <ul class="mail-list" id="list"></ul>
+        </main>
+      </div>
+    </div>
+
+    <div class="hint">Try clicking sidebar items →</div>
+
+    <script>
+      const data = {
+        inbox: [
+          {
+            sender: "Linear",
+            subject: "New issue assigned",
+            snippet: "DEMO-142: Sidebar hover state flickers on touch devices",
+            time: "9:42 AM",
+            unread: true,
+          },
+          {
+            sender: "Stripe",
+            subject: "Your weekly summary",
+            snippet: "Volume up 12% WoW. 3 new subscribers this week.",
+            time: "8:15 AM",
+            unread: true,
+          },
+          {
+            sender: "GitHub",
+            subject: "[demoday/skill] PR #23 review requested",
+            snippet: "feat: support multi-step flows with keyboard nav",
+            time: "Yesterday",
+            unread: true,
+          },
+          {
+            sender: "Figma",
+            subject: "Sara commented on Landing v4",
+            snippet: "Love the gradient — can we try a warmer accent?",
+            time: "Yesterday",
+            unread: true,
+          },
+        ],
+        starred: [
+          {
+            sender: "Paul Graham",
+            subject: "Re: your essay draft",
+            snippet: "This is good. One thing to consider though —",
+            time: "Tue",
+            unread: false,
+          },
+        ],
+        snoozed: [],
+        sent: [
+          {
+            sender: "To: team@demoday.app",
+            subject: "Ship checklist for v0.1",
+            snippet: "Here's what we need to close before Friday.",
+            time: "Mon",
+            unread: false,
+          },
+          {
+            sender: "To: investors@",
+            subject: "Demo day invite",
+            snippet: "Would love for you to see where we've landed.",
+            time: "Mon",
+            unread: false,
+          },
+        ],
+        drafts: [
+          {
+            sender: "Draft",
+            subject: "(no subject)",
+            snippet: "Hey — wanted to follow up on",
+            time: "10:04 AM",
+            unread: true,
+          },
+          {
+            sender: "Draft",
+            subject: "Re: pricing question",
+            snippet: "Great question. Our pricing is designed to",
+            time: "Yesterday",
+            unread: true,
+          },
+        ],
+        spam: [],
+        trash: [],
+        work: [
+          {
+            sender: "Notion",
+            subject: "Q2 planning doc updated",
+            snippet: "3 new comments on the roadmap page",
+            time: "Wed",
+            unread: false,
+          },
+          {
+            sender: "Slack",
+            subject: "You have 12 unread mentions",
+            snippet: "#launch, #design, #general",
+            time: "Wed",
+            unread: false,
+          },
+        ],
+        personal: [
+          {
+            sender: "Airbnb",
+            subject: "Your trip to Lisbon is coming up",
+            snippet: "Check-in on Friday — here's what to know",
+            time: "Sun",
+            unread: false,
+          },
+        ],
+      };
+
+      const labels = {
+        inbox: "Inbox",
+        starred: "Starred",
+        snoozed: "Snoozed",
+        sent: "Sent",
+        drafts: "Drafts",
+        spam: "Spam",
+        trash: "Trash",
+        work: "Work",
+        personal: "Personal",
+      };
+
+      const list = document.getElementById("list");
+      const chip = document.getElementById("chip");
+      const meta = document.getElementById("meta");
+      const navItems = document.querySelectorAll(".nav-item");
+
+      function render(folder) {
+        const items = data[folder] || [];
+        chip.textContent = labels[folder];
+        meta.textContent = items.length
+          ? `1–${items.length} of ${items.length}`
+          : "";
+        if (items.length === 0) {
+          list.innerHTML = `
+            <li class="empty">
+              <h2>Nothing in ${labels[folder]}</h2>
+              <div>When there's something here, you'll see it.</div>
+            </li>`;
+          return;
+        }
+        list.innerHTML = items
+          .map(
+            (m) => `
+            <li class="mail ${m.unread ? "unread" : ""}">
+              <span class="star">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03z"/>
+                </svg>
+              </span>
+              <span class="sender">${m.sender}</span>
+              <span class="subject"><b>${m.subject}</b> — ${m.snippet}</span>
+              <span class="time">${m.time}</span>
+            </li>`
+          )
+          .join("");
+      }
+
+      navItems.forEach((el) => {
+        el.addEventListener("click", () => {
+          navItems.forEach((n) => n.classList.remove("active"));
+          el.classList.add("active");
+          render(el.dataset.folder);
+        });
+      });
+
+      render("inbox");
+    </script>
+  </body>
+</html>

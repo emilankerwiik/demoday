@@ -1,0 +1,19 @@
+{
+  "name": "@demoday/skill",
+  "version": "0.1.0",
+  "description": "Beautiful clickable product demos, installed as a Claude Code skill.",
+  "bin": {
+    "demoday": "./bin/init.js"
+  },
+  "files": [
+    "bin/",
+    "skill/"
+  ],
+  "keywords": [
+    "claude-code",
+    "skill",
+    "demo",
+    "iframe"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gmail — mini demo</title>
+    <style>
+      :root {
+        --text: #202124;
+        --muted: #5f6368;
+        --border: #e3e6eb;
+        --soft: #f6f8fc;
+        --hover: #eef0f4;
+        --active: #fce8e6;
+        --active-text: #c5221f;
+        --blue: #1a73e8;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: var(--soft);
+        color: var(--text);
+        font-family: "Google Sans", -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-size: 12px;
+        height: 100vh;
+        overflow: hidden;
+      }
+      .app {
+        display: grid;
+        grid-template-rows: 34px 1fr;
+        height: 100vh;
+      }
+      .top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 10px;
+        background: var(--soft);
+      }
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .logo svg { display: block; }
+      .spacer { flex: 1; }
+      .avatar {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1a73e8, #34a853);
+        color: #fff;
+        font-size: 9px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .body {
+        display: grid;
+        grid-template-columns: 88px 1fr;
+        min-height: 0;
+      }
+      .side {
+        padding: 6px 4px;
+      }
+      .compose {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #c2e7ff;
+        color: #001d35;
+        border: 0;
+        padding: 7px 10px 7px 8px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 11px;
+        cursor: pointer;
+        margin: 2px 4px 8px;
+      }
+      .compose:hover { filter: brightness(0.98); }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 0 6px 0 12px;
+        height: 22px;
+        border-radius: 0 11px 11px 0;
+        cursor: pointer;
+        color: var(--text);
+        font-size: 11px;
+        user-select: none;
+      }
+      .nav:hover { background: var(--hover); }
+      .nav.active {
+        background: var(--active);
+        color: var(--active-text);
+        font-weight: 700;
+      }
+      .nav svg { flex-shrink: 0; }
+      .main {
+        background: #fff;
+        border-top-left-radius: 12px;
+        overflow-y: auto;
+        min-height: 0;
+        border-left: 1px solid #f1f3f4;
+        position: relative;
+      }
+      .toolbar {
+        padding: 6px 10px;
+        border-bottom: 1px solid #f1f3f4;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 10px;
+        color: var(--muted);
+      }
+      .chip {
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: #f1f3f4;
+        font-size: 9px;
+      }
+      .list { list-style: none; margin: 0; padding: 0; }
+      .mail {
+        display: grid;
+        grid-template-columns: 14px 1fr 40px;
+        gap: 6px;
+        align-items: center;
+        padding: 6px 10px;
+        border-bottom: 1px solid #f1f3f4;
+        cursor: pointer;
+        font-size: 10.5px;
+        line-height: 1.4;
+      }
+      .mail.unread { font-weight: 600; }
+      .mail.starred .star { color: #f4b400; }
+      .mail .star {
+        color: #d7d9db;
+        display: inline-flex;
+        align-items: center;
+      }
+      .mail .text {
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mail .text b { color: var(--text); }
+      .mail .text .sub { color: var(--muted); font-weight: 400; }
+      .mail.unread .text .sub { color: var(--text); }
+      .mail .time {
+        text-align: right;
+        font-size: 9px;
+        color: var(--muted);
+      }
+
+      /* Compose modal */
+      .modal {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        top: 20px;
+        background: #fff;
+        border-radius: 8px 8px 0 0;
+        border: 1px solid #e3e6eb;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        font-size: 10.5px;
+      }
+      .modal .head {
+        background: #404040;
+        color: #fff;
+        padding: 5px 9px;
+        font-size: 10px;
+      }
+      .modal .field {
+        padding: 5px 9px;
+        border-bottom: 1px solid #f1f3f4;
+        color: var(--muted);
+      }
+      .modal .field input,
+      .modal .field textarea {
+        width: 100%;
+        border: 0;
+        outline: none;
+        font: inherit;
+        color: var(--text);
+        background: transparent;
+        resize: none;
+      }
+      .modal .field textarea { min-height: 30px; }
+      .modal .foot {
+        padding: 5px 9px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .modal .send {
+        background: var(--blue);
+        color: #fff;
+        border: 0;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 10px;
+        cursor: pointer;
+      }
+      .modal .send:hover { background: #1558b8; }
+
+      .sent-banner {
+        padding: 8px 10px;
+        background: #ecfdf5;
+        color: #065f46;
+        border-bottom: 1px solid #a7f3d0;
+        font-size: 10px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .sent-banner::before {
+        content: "✓";
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #059669;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 9px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <header class="top">
+        <div class="logo">
+          <svg width="22" height="18" viewBox="0 0 36 28" fill="none">
+            <path d="M2 6l16 11L34 6v18a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" fill="#e8eaed"/>
+            <path d="M2 6l16 11L34 6" stroke="#c5221f" stroke-width="2.5" fill="none"/>
+            <path d="M2 6v18a2 2 0 002 2h4V13L2 6z" fill="#c5221f"/>
+            <path d="M34 6v18a2 2 0 01-2 2h-4V13l6-7z" fill="#c5221f"/>
+          </svg>
+          <span>Gmail</span>
+        </div>
+        <div class="spacer"></div>
+        <div class="avatar">E</div>
+      </header>
+
+      <div class="body">
+        <aside class="side">
+          <button class="compose" id="composeBtn">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="#001d35"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.42l-2.33-2.33a1 1 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+            Compose
+          </button>
+          <div class="nav" data-folder="inbox">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 12h-4l-1.5 2h-3L9 15H5V5h14v10z"/></svg>
+            <span>Inbox</span>
+          </div>
+          <div class="nav" data-folder="starred">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            <span>Starred</span>
+          </div>
+          <div class="nav" data-folder="sent">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            <span>Sent</span>
+          </div>
+        </aside>
+
+        <main class="main" id="main">
+          <!-- injected -->
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const data = {
+        inbox: [
+          { s: "Linear", t: "New issue assigned", p: "DEMO-142: Sidebar flicker", time: "9:42", unread: true, starred: false },
+          { s: "Stripe", t: "Weekly summary", p: "Volume up 12% WoW", time: "8:15", unread: true, starred: false },
+          { s: "Figma", t: "Sara commented", p: "Love the gradient", time: "Yest", unread: false, starred: false },
+        ],
+        starred: [],
+        sent: [
+          { s: "To: team@", t: "Check out this demo", p: "Just shipped the clickable walkthrough", time: "now", unread: false, starred: false },
+        ],
+      };
+
+      const params = new URLSearchParams(location.search);
+      const step = parseInt(params.get("step") || "1", 10);
+
+      const mainEl = document.getElementById("main");
+      const navItems = document.querySelectorAll(".nav");
+      let current = "inbox";
+
+      function render() {
+        navItems.forEach((n) => {
+          n.classList.toggle("active", n.dataset.folder === current);
+        });
+
+        const items = data[current] || [];
+        let html = '<div class="toolbar"><span class="chip">' +
+          (current[0].toUpperCase() + current.slice(1)) +
+          '</span><span>' +
+          (items.length ? "1–" + items.length + " of " + items.length : "") +
+          "</span></div>";
+
+        if (current === "sent" && step === 3) {
+          html += '<div class="sent-banner">Message sent</div>';
+        }
+
+        html += '<ul class="list">';
+        if (items.length === 0) {
+          html += '<li style="padding:16px;text-align:center;color:#5f6368;font-size:10px;">Empty</li>';
+        } else {
+          html += items
+            .map(function (m, i) {
+              return (
+                '<li class="mail ' +
+                (m.unread ? "unread " : "") +
+                (m.starred ? "starred " : "") +
+                '" data-i="' +
+                i +
+                '">' +
+                '<span class="star" data-a="star"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03z"/></svg></span>' +
+                '<span class="text"><b>' +
+                m.s +
+                "</b> · <span class=\"sub\">" +
+                m.t +
+                " — " +
+                m.p +
+                "</span></span>" +
+                '<span class="time">' +
+                m.time +
+                "</span>" +
+                "</li>"
+              );
+            })
+            .join("");
+        }
+        html += "</ul>";
+        mainEl.innerHTML = html;
+      }
+
+      navItems.forEach((n) => {
+        n.addEventListener("click", () => {
+          current = n.dataset.folder;
+          render();
+        });
+      });
+
+      mainEl.addEventListener("click", (e) => {
+        const star = e.target.closest('[data-a="star"]');
+        const row = e.target.closest(".mail");
+        if (!row) return;
+        const idx = Number(row.dataset.i);
+        const item = data[current][idx];
+        if (star) {
+          e.stopPropagation();
+          item.starred = !item.starred;
+          if (item.starred && !data.starred.includes(item)) data.starred.push(item);
+          else data.starred = data.starred.filter((x) => x !== item);
+          render();
+          return;
+        }
+        item.unread = false;
+        render();
+      });
+
+      // Compose modal
+      function openCompose() {
+        mainEl.innerHTML =
+          '<div class="modal">' +
+          '<div class="head">New Message</div>' +
+          '<div class="field"><input value="team@yourproduct.com" /></div>' +
+          '<div class="field"><input value="Check out this clickable demo" /></div>' +
+          '<div class="field"><textarea>Just embedded a clickable walkthrough on the landing page. Try it!</textarea></div>' +
+          '<div class="foot"><button class="send" id="sendBtn">Send</button></div>' +
+          "</div>";
+        document.getElementById("sendBtn").addEventListener("click", () => {
+          data.sent.unshift({
+            s: "To: team@",
+            t: "Check out this demo",
+            p: "Just embedded a clickable walkthrough",
+            time: "now",
+            unread: false,
+            starred: false,
+          });
+          current = "sent";
+          render();
+        });
+      }
+
+      document.getElementById("composeBtn").addEventListener("click", openCompose);
+
+      // Initial state per step
+      if (step === 1) {
+        current = "inbox";
+        render();
+      } else if (step === 2) {
+        openCompose();
+      } else if (step === 3) {
+        current = "sent";
+        render();
+      } else {
+        render();
+      }
+    </script>
+  </body>
+</html>

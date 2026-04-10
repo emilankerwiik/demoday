@@ -1,0 +1,1193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Demoday — embedded demo</title>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --bg-soft: #f9fafb;
+        --text: #0a0a0a;
+        --muted: #6b7280;
+        --faint: #9ca3af;
+        --border: #e5e7eb;
+        --border-strong: #d1d5db;
+        --accent: #22c55e;
+        --term-bg: #0a0a0a;
+        --term-text: #f4f4f5;
+        --term-muted: #71717a;
+        --term-green: #a3e635;
+        --term-yellow: #fde68a;
+        --term-blue: #93c5fd;
+      }
+      * { box-sizing: border-box; }
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
+          Roboto, Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .shell {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        align-items: stretch;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-soft);
+        padding: 0 8px;
+      }
+      .tab {
+        appearance: none;
+        background: transparent;
+        border: 0;
+        padding: 14px 18px 12px;
+        font: inherit;
+        font-weight: 500;
+        color: var(--muted);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        margin-bottom: -1px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: color 0.15s ease, border-color 0.15s ease;
+      }
+      .tab:hover { color: var(--text); }
+      .tab.active {
+        color: var(--text);
+        border-bottom-color: var(--text);
+        font-weight: 600;
+      }
+
+      /* Panes */
+      .panes { flex: 1; min-height: 0; position: relative; }
+      .pane {
+        position: absolute;
+        inset: 0;
+        display: none;
+        overflow: hidden;
+      }
+      .pane.active { display: flex; }
+
+      /* =========================================================
+         TAB 1 — Get started (mock Claude Code terminal)
+         ========================================================= */
+      .term-wrap {
+        flex: 1;
+        background: var(--term-bg);
+        color: var(--term-text);
+        font-family: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, Consolas,
+          monospace;
+        font-size: 13px;
+        padding: 22px 26px;
+        overflow-y: auto;
+        line-height: 1.7;
+      }
+      .term-head {
+        color: var(--term-muted);
+        margin-bottom: 12px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .term-head .dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+      }
+      .term-line { white-space: pre-wrap; word-break: break-word; }
+      .term-line .prompt { color: var(--term-muted); margin-right: 8px; }
+      .term-line .cmd { color: var(--term-yellow); }
+      .term-line .ok { color: var(--term-green); }
+      .term-line .info { color: var(--term-blue); }
+      .term-line .dim { color: var(--term-muted); }
+      .cursor {
+        display: inline-block;
+        width: 7px;
+        height: 14px;
+        background: var(--term-green);
+        vertical-align: -2px;
+        margin-left: 2px;
+        animation: blink 1s steps(2, start) infinite;
+      }
+      @keyframes blink {
+        to { visibility: hidden; }
+      }
+
+      .run-row {
+        position: sticky;
+        bottom: 0;
+        background: var(--term-bg);
+        padding: 14px 0 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-top: 1px dashed #27272a;
+        margin-top: 14px;
+      }
+      .copy-cmd {
+        flex: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        background: #18181b;
+        border: 1px solid #27272a;
+        border-radius: 8px;
+        color: var(--term-text);
+      }
+      .copy-cmd .$ { color: var(--term-muted); }
+      .copy-cmd code {
+        font-family: inherit;
+        font-size: 13px;
+        color: var(--term-green);
+      }
+      .btn {
+        appearance: none;
+        border: 1px solid var(--term-text);
+        background: var(--term-text);
+        color: var(--term-bg);
+        padding: 10px 16px;
+        font: inherit;
+        font-weight: 600;
+        font-size: 12.5px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn:hover { background: #e5e7eb; }
+      .btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+      .btn.secondary {
+        background: transparent;
+        color: var(--term-text);
+      }
+      .btn.secondary:hover { background: #18181b; }
+
+      /* =========================================================
+         TAB 2 — Aha moment (mock editor)
+         ========================================================= */
+      .editor {
+        flex: 1;
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        min-height: 0;
+        background: #fafafa;
+      }
+      .file-tree {
+        border-right: 1px solid var(--border);
+        padding: 14px 10px;
+        font-size: 13px;
+        overflow-y: auto;
+      }
+      .file-tree .label {
+        padding: 4px 8px;
+        color: var(--faint);
+        text-transform: uppercase;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+      }
+      .file-tree .file,
+      .file-tree .folder {
+        padding: 5px 10px 5px 22px;
+        border-radius: 6px;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        position: relative;
+      }
+      .file-tree .folder::before {
+        content: "▸";
+        color: var(--faint);
+        position: absolute;
+        left: 8px;
+        font-size: 10px;
+      }
+      .file-tree .folder.open::before { content: "▾"; }
+      .file-tree .file {
+        padding-left: 32px;
+        color: var(--muted);
+      }
+      .file-tree .file.new {
+        color: var(--text);
+        background: #ecfdf5;
+        border: 1px dashed #86efac;
+      }
+      .file-tree .file.active {
+        background: #eff6ff;
+        color: #1d4ed8;
+      }
+      .file-tree .file.hidden { display: none; }
+
+      .editor-main {
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+      }
+      .editor-tabs {
+        display: flex;
+        background: var(--bg-soft);
+        border-bottom: 1px solid var(--border);
+        font-size: 12.5px;
+      }
+      .editor-tabs .etab {
+        padding: 10px 14px;
+        color: var(--muted);
+        border-right: 1px solid var(--border);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .editor-tabs .etab.active {
+        background: #fff;
+        color: var(--text);
+      }
+      .editor-tabs .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+      .code-area {
+        flex: 1;
+        overflow: auto;
+        background: #fff;
+        padding: 16px 18px 8px;
+        font-family: "JetBrains Mono", "SF Mono", ui-monospace, Menlo,
+          Consolas, monospace;
+        font-size: 12.5px;
+        line-height: 1.65;
+        color: #0f172a;
+      }
+      .code-line {
+        white-space: pre;
+        display: flex;
+        gap: 14px;
+      }
+      .code-line .ln {
+        color: var(--faint);
+        user-select: none;
+        width: 22px;
+        text-align: right;
+        flex-shrink: 0;
+      }
+      .code-line .tok { white-space: pre; }
+      .tok.tag { color: #7c3aed; }
+      .tok.attr { color: #0891b2; }
+      .tok.str { color: #16a34a; }
+      .tok.txt { color: #0f172a; }
+      .tok.cmt { color: #94a3b8; font-style: italic; }
+
+      .status {
+        border-top: 1px solid var(--border);
+        background: var(--bg-soft);
+        padding: 10px 16px;
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .status .ok-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--faint);
+      }
+      .status.done .ok-dot { background: var(--accent); }
+      .status.done { color: var(--text); }
+      .progress {
+        flex: 1;
+        height: 4px;
+        background: var(--border);
+        border-radius: 999px;
+        overflow: hidden;
+        margin: 0 12px;
+      }
+      .progress > div {
+        height: 100%;
+        background: var(--accent);
+        width: 0%;
+        transition: width 0.35s ease;
+      }
+      .editor .run-bar {
+        border-top: 1px solid var(--border);
+        padding: 10px 14px;
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        background: #fff;
+      }
+      .editor .run-bar .btn.primary {
+        background: #0a0a0a;
+        color: #fff;
+        border-color: #0a0a0a;
+      }
+      .editor .run-bar .btn.primary:hover { background: #1f2937; }
+
+      /* =========================================================
+         TAB 3 — What you get (mini Gmail-style demo)
+         ========================================================= */
+      .gm {
+        flex: 1;
+        display: grid;
+        grid-template-rows: 48px 1fr;
+        background: #f6f8fc;
+        min-height: 0;
+      }
+      .gm-top {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 16px;
+        background: #f6f8fc;
+        border-bottom: 1px solid #e3e6eb;
+      }
+      .gm-burger {
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #5f6368;
+        border-radius: 6px;
+      }
+      .gm-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #5f6368;
+        font-size: 17px;
+      }
+      .gm-logo .m {
+        color: #c5221f;
+        font-weight: 600;
+      }
+      .gm-search {
+        flex: 1;
+        max-width: 420px;
+        background: #eaf1fb;
+        border-radius: 8px;
+        padding: 7px 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12.5px;
+        color: #5f6368;
+      }
+      .gm-search input {
+        border: 0;
+        background: transparent;
+        outline: none;
+        flex: 1;
+        font-size: 12.5px;
+        color: #202124;
+      }
+      .gm-avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #1a73e8, #34a853);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .gm-body {
+        display: grid;
+        grid-template-columns: 190px 1fr;
+        min-height: 0;
+      }
+      .gm-side {
+        padding: 10px 8px;
+        overflow-y: auto;
+      }
+      .gm-compose {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: #c2e7ff;
+        color: #001d35;
+        border: 0;
+        padding: 11px 18px 11px 14px;
+        border-radius: 14px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        margin: 4px 8px 12px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      }
+      .gm-compose:hover { filter: brightness(0.98); }
+      .gm-nav {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 0 10px 0 22px;
+        height: 30px;
+        border-radius: 0 14px 14px 0;
+        cursor: pointer;
+        color: #202124;
+        font-size: 13px;
+        user-select: none;
+      }
+      .gm-nav:hover { background: #eef0f4; }
+      .gm-nav.active {
+        background: #fce8e6;
+        color: #c5221f;
+        font-weight: 700;
+      }
+      .gm-nav .count {
+        margin-left: auto;
+        font-size: 11px;
+        color: inherit;
+        opacity: 0.7;
+      }
+      .gm-main {
+        background: #fff;
+        border-top-left-radius: 14px;
+        overflow-y: auto;
+        min-height: 0;
+        border-left: 1px solid #f1f3f4;
+      }
+      .gm-toolbar {
+        padding: 10px 16px;
+        border-bottom: 1px solid #f1f3f4;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        font-size: 12px;
+        color: #5f6368;
+      }
+      .gm-chip {
+        padding: 3px 10px;
+        border-radius: 999px;
+        background: #f1f3f4;
+        font-size: 11px;
+      }
+      .gm-list { list-style: none; margin: 0; padding: 0; }
+      .gm-mail {
+        display: grid;
+        grid-template-columns: 22px 150px 1fr 70px;
+        gap: 12px;
+        align-items: center;
+        padding: 9px 16px;
+        border-bottom: 1px solid #f1f3f4;
+        cursor: pointer;
+        font-size: 12.5px;
+      }
+      .gm-mail:hover {
+        background: #fff;
+        box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0,
+          0 1px 2px 0 rgba(60, 64, 67, 0.18),
+          0 1px 3px 1px rgba(60, 64, 67, 0.1);
+        z-index: 1;
+      }
+      .gm-mail.unread { font-weight: 600; }
+      .gm-mail .star {
+        color: #d7d9db;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+      }
+      .gm-mail.starred .star { color: #f4b400; }
+      .gm-mail .sender {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .gm-mail .subj {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: #5f6368;
+      }
+      .gm-mail.unread .subj { color: #202124; }
+      .gm-mail .subj b { color: #202124; }
+      .gm-mail .time {
+        text-align: right;
+        color: #5f6368;
+        font-size: 11px;
+      }
+      .gm-empty {
+        padding: 48px 20px;
+        text-align: center;
+        color: #5f6368;
+        font-size: 13px;
+      }
+      .gm-empty b { display: block; color: #202124; font-size: 14px; margin-bottom: 6px; }
+
+      /* Compose modal */
+      .gm-compose-modal {
+        position: absolute;
+        right: 20px;
+        bottom: 20px;
+        width: 360px;
+        background: #fff;
+        border-radius: 10px 10px 0 0;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        border: 1px solid #e3e6eb;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 10;
+      }
+      .gm-compose-modal.open { display: flex; }
+      .gm-compose-modal .head {
+        background: #404040;
+        color: #fff;
+        padding: 9px 14px;
+        font-size: 12.5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .gm-compose-modal .head .close {
+        cursor: pointer;
+        opacity: 0.8;
+      }
+      .gm-compose-modal .field {
+        padding: 9px 14px;
+        border-bottom: 1px solid #f1f3f4;
+        font-size: 12.5px;
+        color: #5f6368;
+      }
+      .gm-compose-modal .field input,
+      .gm-compose-modal .field textarea {
+        width: 100%;
+        border: 0;
+        outline: none;
+        font: inherit;
+        color: #202124;
+        background: transparent;
+        resize: none;
+      }
+      .gm-compose-modal .field textarea { min-height: 70px; }
+      .gm-compose-modal .foot {
+        padding: 10px 14px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .gm-compose-modal .send {
+        background: #1a73e8;
+        color: #fff;
+        border: 0;
+        padding: 7px 18px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 12.5px;
+        cursor: pointer;
+      }
+      .gm-compose-modal .send:hover { background: #1558b8; }
+
+      /* Feature callouts at the bottom */
+      .gm-features {
+        display: flex;
+        gap: 10px;
+        padding: 10px 16px 14px;
+        background: var(--bg-soft);
+        border-top: 1px solid #e3e6eb;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .gm-features .f {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 10px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+      }
+      .gm-features .f .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+      }
+
+      /* Free-tier brand mark — minimal circle + wordmark, bottom-right */
+      .demoday-tag {
+        position: fixed;
+        right: 14px;
+        bottom: 14px;
+        z-index: 99;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 11px 6px 8px;
+        background: #ffffff;
+        color: #0a0a0a;
+        text-decoration: none;
+        line-height: 1;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        font-family: -apple-system, BlinkMacSystemFont, "Inter", Roboto, Arial,
+          sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .demoday-tag:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+      }
+      .demoday-tag .dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #0a0a0a;
+      }
+
+      @media (max-width: 720px) {
+        .editor { grid-template-columns: 1fr; }
+        .file-tree { display: none; }
+        .tab { padding: 12px 10px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-pane="p1" role="tab">Get started</button>
+        <button class="tab" data-pane="p2" role="tab">How it works</button>
+        <button class="tab" data-pane="p3" role="tab">What you get</button>
+      </div>
+
+      <div class="panes">
+        <!-- ============ PANE 1 ============ -->
+        <section id="p1" class="pane active">
+          <div class="term-wrap" id="term">
+            <div class="term-head">
+              <span class="dot"></span>
+              claude-code · demoday session
+            </div>
+            <div id="term-log">
+              <div class="term-line">
+                <span class="dim"># One line to get started. Paste it in Claude Code.</span>
+              </div>
+              <div class="term-line">&nbsp;</div>
+            </div>
+            <div class="run-row">
+              <div class="copy-cmd">
+                <span class="$">$</span>
+                <code id="cmd">npx @demoday/skill@latest init</code>
+              </div>
+              <button class="btn secondary" id="copy-btn">Copy</button>
+              <button class="btn" id="run-btn">Run ▶</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ PANE 2 ============ -->
+        <section id="p2" class="pane">
+          <div class="editor">
+            <aside class="file-tree" id="tree">
+              <div class="label">Project</div>
+              <div class="folder open">app</div>
+              <div class="file">layout.js</div>
+              <div class="file active">page.js</div>
+              <div class="folder open">public</div>
+              <div class="folder open" style="padding-left: 32px;">demos</div>
+              <div class="file new hidden" id="new-file" style="margin-left: 14px;">
+                demoday.html
+              </div>
+              <div class="file">package.json</div>
+            </aside>
+            <div class="editor-main">
+              <div class="editor-tabs">
+                <div class="etab active">
+                  <span class="dot"></span>
+                  demoday.html
+                </div>
+                <div class="etab">page.js</div>
+              </div>
+              <div class="code-area" id="code"></div>
+              <div class="status" id="status">
+                <span class="ok-dot"></span>
+                <span id="status-text">Ready to generate…</span>
+                <div class="progress"><div id="progress-bar"></div></div>
+                <span id="status-pct">0%</span>
+              </div>
+              <div class="run-bar">
+                <button class="btn primary" id="gen-btn">Generate demo</button>
+                <button class="btn secondary" id="gen-reset" style="border-color: var(--border); color: var(--muted);">Reset</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============ PANE 3 ============ -->
+        <section id="p3" class="pane">
+          <div class="gm" style="position: relative;">
+            <div class="gm-top">
+              <div class="gm-burger">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+              </div>
+              <div class="gm-logo">
+                <svg width="28" height="22" viewBox="0 0 36 28" fill="none">
+                  <path d="M2 6l16 11L34 6v18a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" fill="#e8eaed"/>
+                  <path d="M2 6l16 11L34 6" stroke="#c5221f" stroke-width="2.5" fill="none"/>
+                  <path d="M2 6v18a2 2 0 002 2h4V13L2 6z" fill="#c5221f"/>
+                  <path d="M34 6v18a2 2 0 01-2 2h-4V13l6-7z" fill="#c5221f"/>
+                </svg>
+                <span>Gmail</span>
+              </div>
+              <div class="gm-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#5f6368"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.5 4.5 0 019.5 14z"/></svg>
+                <input id="gm-search-input" placeholder="Search mail" />
+              </div>
+              <div class="gm-avatar">E</div>
+            </div>
+
+            <div class="gm-body">
+              <aside class="gm-side">
+                <button class="gm-compose" id="gm-compose-btn">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#001d35"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.42l-2.33-2.33a1 1 0 00-1.42 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                  Compose
+                </button>
+
+                <div class="gm-nav active" data-folder="inbox">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 12h-4l-1.5 2h-3L9 15H5V5h14v10z"/></svg>
+                  <span>Inbox</span>
+                  <span class="count" id="inbox-count">4</span>
+                </div>
+                <div class="gm-nav" data-folder="starred">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  <span>Starred</span>
+                  <span class="count" id="starred-count">0</span>
+                </div>
+                <div class="gm-nav" data-folder="sent">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                  <span>Sent</span>
+                  <span class="count" id="sent-count">0</span>
+                </div>
+              </aside>
+
+              <main class="gm-main">
+                <div class="gm-toolbar">
+                  <span class="gm-chip" id="gm-chip">Inbox</span>
+                  <span id="gm-meta">1–4 of 4</span>
+                </div>
+                <ul class="gm-list" id="gm-list"></ul>
+              </main>
+            </div>
+
+            <!-- Compose modal -->
+            <div class="gm-compose-modal" id="gm-compose-modal">
+              <div class="head">
+                <span>New Message</span>
+                <span class="close" id="gm-compose-close">✕</span>
+              </div>
+              <div class="field">
+                <input id="gm-compose-to" placeholder="To" value="team@yourproduct.com" />
+              </div>
+              <div class="field">
+                <input id="gm-compose-subject" placeholder="Subject" value="Check out this clickable demo" />
+              </div>
+              <div class="field">
+                <textarea id="gm-compose-body" placeholder="Write a message…">Hi team — just embedded a Demoday clickable walkthrough on the landing page. Try clicking it, it&apos;s live now.</textarea>
+              </div>
+              <div class="foot">
+                <button class="send" id="gm-compose-send">Send</button>
+              </div>
+            </div>
+
+            <div class="gm-features">
+              <span class="f"><span class="dot"></span>Switch folders</span>
+              <span class="f"><span class="dot"></span>Star emails</span>
+              <span class="f"><span class="dot"></span>Compose &amp; send</span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <a
+      class="demoday-tag"
+      href="https://demoday.work?ref=iframe"
+      target="_blank"
+      rel="noopener"
+      title="Made with Demoday — upgrade to remove"
+    >
+      <span class="dot"></span>
+      demoday
+    </a>
+
+    <script>
+      // ------------ Tab switcher ------------
+      const tabs = document.querySelectorAll(".tab");
+      const panes = document.querySelectorAll(".pane");
+      tabs.forEach((t) => {
+        t.addEventListener("click", () => {
+          tabs.forEach((x) => x.classList.remove("active"));
+          panes.forEach((p) => p.classList.remove("active"));
+          t.classList.add("active");
+          document.getElementById(t.dataset.pane).classList.add("active");
+        });
+      });
+
+      // ------------ Pane 1: fake terminal ------------
+      const termLog = document.getElementById("term-log");
+      const runBtn = document.getElementById("run-btn");
+      const copyBtn = document.getElementById("copy-btn");
+      const cmd = document.getElementById("cmd");
+
+      const runScript = [
+        { t: 120, html: '<span class="prompt">$</span><span class="cmd">npx @demoday/skill@latest init</span>' },
+        { t: 340, html: '<span class="dim">Resolving @demoday/skill@latest…</span>' },
+        { t: 620, html: '<span class="info">✓</span> fetched skill definition' },
+        { t: 760, html: '<span class="info">✓</span> registered .claude/skills/demoday' },
+        { t: 980, html: '<span class="info">✓</span> added @demoday/skill to devDependencies' },
+        { t: 1180, html: '<span class="dim">Scanning project for demo-worthy flows…</span>' },
+        { t: 1440, html: '<span class="ok">✓ Ready.</span> ask your agent: <span class="cmd">"use demoday to demo my onboarding"</span>' },
+        { t: 1560, html: '&nbsp;' },
+      ];
+
+      function appendLine(html) {
+        const el = document.createElement("div");
+        el.className = "term-line";
+        el.innerHTML = html;
+        termLog.appendChild(el);
+        const wrap = document.getElementById("term");
+        wrap.scrollTop = wrap.scrollHeight;
+      }
+
+      runBtn.addEventListener("click", () => {
+        runBtn.disabled = true;
+        runBtn.textContent = "Running…";
+        termLog.innerHTML = "";
+        let delay = 0;
+        runScript.forEach((step) => {
+          delay += step.t;
+          setTimeout(() => appendLine(step.html), delay);
+        });
+        setTimeout(() => {
+          const cur = document.createElement("div");
+          cur.className = "term-line";
+          cur.innerHTML = '<span class="prompt">$</span><span class="cursor"></span>';
+          termLog.appendChild(cur);
+          runBtn.disabled = false;
+          runBtn.textContent = "Run ▶";
+        }, delay + 260);
+      });
+
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(cmd.textContent);
+          const prev = copyBtn.textContent;
+          copyBtn.textContent = "Copied ✓";
+          setTimeout(() => (copyBtn.textContent = prev), 1200);
+        } catch (e) {
+          copyBtn.textContent = "Copy failed";
+        }
+      });
+
+      // ------------ Pane 2: fake editor + HTML generation ------------
+      const codeLines = [
+        ['cmt', '<!-- generated by @demoday/skill -->'],
+        ['mix', '<span class="tok tag">&lt;!doctype html&gt;</span>'],
+        ['mix', '<span class="tok tag">&lt;html&gt;</span>'],
+        ['mix', '  <span class="tok tag">&lt;head&gt;</span>'],
+        ['mix', '    <span class="tok tag">&lt;title&gt;</span><span class="tok txt">Your product — demo</span><span class="tok tag">&lt;/title&gt;</span>'],
+        ['mix', '    <span class="tok tag">&lt;style&gt;</span> <span class="tok cmt">/* inline styles… */</span> <span class="tok tag">&lt;/style&gt;</span>'],
+        ['mix', '  <span class="tok tag">&lt;/head&gt;</span>'],
+        ['mix', '  <span class="tok tag">&lt;body&gt;</span>'],
+        ['mix', '    <span class="tok tag">&lt;aside</span> <span class="tok attr">class</span>=<span class="tok str">"sidebar"</span><span class="tok tag">&gt;</span>'],
+        ['mix', '      <span class="tok tag">&lt;button</span> <span class="tok attr">data-view</span>=<span class="tok str">"dashboard"</span><span class="tok tag">&gt;</span><span class="tok txt">Dashboard</span><span class="tok tag">&lt;/button&gt;</span>'],
+        ['mix', '      <span class="tok tag">&lt;button</span> <span class="tok attr">data-view</span>=<span class="tok str">"projects"</span><span class="tok tag">&gt;</span><span class="tok txt">Projects</span><span class="tok tag">&lt;/button&gt;</span>'],
+        ['mix', '      <span class="tok tag">&lt;button</span> <span class="tok attr">data-view</span>=<span class="tok str">"team"</span><span class="tok tag">&gt;</span><span class="tok txt">Team</span><span class="tok tag">&lt;/button&gt;</span>'],
+        ['mix', '    <span class="tok tag">&lt;/aside&gt;</span>'],
+        ['mix', '    <span class="tok tag">&lt;main</span> <span class="tok attr">id</span>=<span class="tok str">"view"</span><span class="tok tag">&gt;&lt;/main&gt;</span>'],
+        ['mix', '    <span class="tok tag">&lt;script&gt;</span> <span class="tok cmt">/* click handlers… */</span> <span class="tok tag">&lt;/script&gt;</span>'],
+        ['mix', '  <span class="tok tag">&lt;/body&gt;</span>'],
+        ['mix', '<span class="tok tag">&lt;/html&gt;</span>'],
+      ];
+
+      const statusSteps = [
+        { pct: 8, text: "Reading app/page.js…" },
+        { pct: 20, text: "Detecting flows…" },
+        { pct: 34, text: "Found 3 flows: onboarding · core action · outcome" },
+        { pct: 48, text: "Sketching layout…" },
+        { pct: 62, text: "Writing public/demos/demoday.html…" },
+        { pct: 80, text: "Inlining styles & scripts…" },
+        { pct: 92, text: "Embedding iframe in app/page.js…" },
+        { pct: 100, text: "Done — demo ready." },
+      ];
+
+      const codeArea = document.getElementById("code");
+      const genBtn = document.getElementById("gen-btn");
+      const resetBtn = document.getElementById("gen-reset");
+      const statusEl = document.getElementById("status");
+      const statusText = document.getElementById("status-text");
+      const statusPct = document.getElementById("status-pct");
+      const bar = document.getElementById("progress-bar");
+      const newFile = document.getElementById("new-file");
+
+      function resetGen() {
+        codeArea.innerHTML = "";
+        bar.style.width = "0%";
+        statusPct.textContent = "0%";
+        statusText.textContent = "Ready to generate…";
+        statusEl.classList.remove("done");
+        newFile.classList.add("hidden");
+        genBtn.disabled = false;
+        genBtn.textContent = "Generate demo";
+      }
+
+      genBtn.addEventListener("click", () => {
+        resetGen();
+        genBtn.disabled = true;
+        genBtn.textContent = "Generating…";
+        newFile.classList.remove("hidden");
+
+        // animate code lines
+        codeLines.forEach((line, i) => {
+          setTimeout(() => {
+            const row = document.createElement("div");
+            row.className = "code-line";
+            row.innerHTML =
+              '<span class="ln">' + (i + 1) + '</span><span class="tok">' + line[1] + "</span>";
+            codeArea.appendChild(row);
+            codeArea.scrollTop = codeArea.scrollHeight;
+          }, 120 + i * 140);
+        });
+
+        // animate status
+        statusSteps.forEach((s, i) => {
+          setTimeout(() => {
+            bar.style.width = s.pct + "%";
+            statusPct.textContent = s.pct + "%";
+            statusText.textContent = s.text;
+            if (s.pct === 100) {
+              statusEl.classList.add("done");
+              genBtn.disabled = false;
+              genBtn.textContent = "Regenerate";
+            }
+          }, 350 + i * 320);
+        });
+      });
+
+      resetBtn.addEventListener("click", resetGen);
+
+      // ------------ Pane 3: mini Gmail with 3 features ------------
+      const gmMails = [
+        {
+          id: 1,
+          folder: "inbox",
+          sender: "Linear",
+          subject: "New issue assigned",
+          snippet: "DEMO-142: Sidebar hover state flickers on touch devices",
+          time: "9:42 AM",
+          unread: true,
+          starred: false,
+        },
+        {
+          id: 2,
+          folder: "inbox",
+          sender: "Stripe",
+          subject: "Your weekly summary",
+          snippet: "Volume up 12% WoW. 3 new subscribers this week.",
+          time: "8:15 AM",
+          unread: true,
+          starred: false,
+        },
+        {
+          id: 3,
+          folder: "inbox",
+          sender: "GitHub",
+          subject: "[demoday/skill] PR #23 review requested",
+          snippet: "feat: support multi-step flows with keyboard nav",
+          time: "Yesterday",
+          unread: true,
+          starred: false,
+        },
+        {
+          id: 4,
+          folder: "inbox",
+          sender: "Figma",
+          subject: "Sara commented on Landing v4",
+          snippet: "Love the gradient — can we try a warmer accent?",
+          time: "Yesterday",
+          unread: true,
+          starred: false,
+        },
+      ];
+
+      const gmFolders = { inbox: "Inbox", starred: "Starred", sent: "Sent" };
+      let gmCurrent = "inbox";
+
+      const gmList = document.getElementById("gm-list");
+      const gmChip = document.getElementById("gm-chip");
+      const gmMeta = document.getElementById("gm-meta");
+      const gmSearch = document.getElementById("gm-search-input");
+      const inboxCountEl = document.getElementById("inbox-count");
+      const starredCountEl = document.getElementById("starred-count");
+      const sentCountEl = document.getElementById("sent-count");
+
+      function gmFilter(folder) {
+        const q = (gmSearch.value || "").toLowerCase().trim();
+        let items = gmMails.filter((m) => {
+          if (folder === "starred") return m.starred;
+          return m.folder === folder;
+        });
+        if (q) {
+          items = items.filter(
+            (m) =>
+              m.sender.toLowerCase().includes(q) ||
+              m.subject.toLowerCase().includes(q) ||
+              m.snippet.toLowerCase().includes(q)
+          );
+        }
+        return items;
+      }
+
+      function gmRender() {
+        const items = gmFilter(gmCurrent);
+        gmChip.textContent = gmFolders[gmCurrent];
+        gmMeta.textContent = items.length
+          ? "1–" + items.length + " of " + items.length
+          : "";
+        if (items.length === 0) {
+          gmList.innerHTML =
+            '<li class="gm-empty"><b>Nothing here yet</b>' +
+            (gmCurrent === "starred"
+              ? "Click the ☆ on an email to star it."
+              : gmCurrent === "sent"
+              ? 'Hit "Compose" to send your first message.'
+              : "Try clearing the search.") +
+            "</li>";
+        } else {
+          gmList.innerHTML = items
+            .map(
+              (m) =>
+                '<li class="gm-mail ' +
+                (m.unread ? "unread " : "") +
+                (m.starred ? "starred " : "") +
+                '" data-id="' +
+                m.id +
+                '">' +
+                '<span class="star" data-action="star">' +
+                '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03z"/></svg>' +
+                "</span>" +
+                '<span class="sender">' +
+                m.sender +
+                "</span>" +
+                '<span class="subj"><b>' +
+                m.subject +
+                "</b> — " +
+                m.snippet +
+                "</span>" +
+                '<span class="time">' +
+                m.time +
+                "</span>" +
+                "</li>"
+            )
+            .join("");
+        }
+
+        inboxCountEl.textContent = gmMails.filter(
+          (m) => m.folder === "inbox"
+        ).length;
+        const starredN = gmMails.filter((m) => m.starred).length;
+        starredCountEl.textContent = starredN;
+        starredCountEl.style.display = starredN ? "" : "none";
+        const sentN = gmMails.filter((m) => m.folder === "sent").length;
+        sentCountEl.textContent = sentN;
+        sentCountEl.style.display = sentN ? "" : "none";
+      }
+
+      // Feature 1: sidebar folder switching
+      document.querySelectorAll(".gm-nav").forEach((el) => {
+        el.addEventListener("click", () => {
+          document
+            .querySelectorAll(".gm-nav")
+            .forEach((n) => n.classList.remove("active"));
+          el.classList.add("active");
+          gmCurrent = el.dataset.folder;
+          gmRender();
+        });
+      });
+
+      // Feature 2: star / unstar emails
+      gmList.addEventListener("click", (e) => {
+        const star = e.target.closest('[data-action="star"]');
+        const row = e.target.closest(".gm-mail");
+        if (!row) return;
+        if (star) {
+          e.stopPropagation();
+          const id = Number(row.dataset.id);
+          const mail = gmMails.find((m) => m.id === id);
+          if (mail) mail.starred = !mail.starred;
+          gmRender();
+          return;
+        }
+        // marking read on open
+        const id = Number(row.dataset.id);
+        const mail = gmMails.find((m) => m.id === id);
+        if (mail) mail.unread = false;
+        gmRender();
+      });
+
+      // Feature 3: compose & send
+      const composeModal = document.getElementById("gm-compose-modal");
+      document
+        .getElementById("gm-compose-btn")
+        .addEventListener("click", () => composeModal.classList.add("open"));
+      document
+        .getElementById("gm-compose-close")
+        .addEventListener("click", () => composeModal.classList.remove("open"));
+      document.getElementById("gm-compose-send").addEventListener("click", () => {
+        const to = document.getElementById("gm-compose-to").value || "team@yourproduct.com";
+        const subject =
+          document.getElementById("gm-compose-subject").value || "(no subject)";
+        const body = document.getElementById("gm-compose-body").value || "";
+        gmMails.push({
+          id: Date.now(),
+          folder: "sent",
+          sender: "To: " + to,
+          subject: subject,
+          snippet: body.slice(0, 80),
+          time: "Just now",
+          unread: false,
+          starred: false,
+        });
+        composeModal.classList.remove("open");
+        // Jump to sent folder to show success
+        document
+          .querySelectorAll(".gm-nav")
+          .forEach((n) => n.classList.remove("active"));
+        document
+          .querySelector('.gm-nav[data-folder="sent"]')
+          .classList.add("active");
+        gmCurrent = "sent";
+        gmRender();
+      });
+
+      // Search
+      gmSearch.addEventListener("input", gmRender);
+
+      gmRender();
+    </script>
+  </body>
+</html>
