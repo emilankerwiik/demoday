@@ -247,6 +247,8 @@ h1.display em {
   padding: 24px 0 96px;
 }
 .demo-frame {
+  max-width: 920px;
+  margin: 0 auto;
   border: 1px solid var(--border);
   border-radius: 16px;
   overflow: hidden;
