@@ -24,8 +24,8 @@ questions — **no second paste**, no shell prompts:
    your content.
 2. **Auto-update** the skill when new versions ship (default: yes).
 3. **Premium license key** — optional. Continue on the free tier or
-   paste a key to remove the "Made with Demoday" tag from generated
-   iframes.
+   paste a key to swap the "Made with Demoday" tag for your own brand
+   in the corner of generated iframes.
 
 Answers are saved to `~/.demoday/config.json` and never asked again.
 
@@ -33,8 +33,8 @@ Answers are saved to `~/.demoday/config.json` and never asked again.
 
 - **Free** — unlimited demos. Generated iframes include a small
   red clothing-tag style "DEMODAY" label in the bottom-left corner.
-- **Premium · $20 one-time** — no tag on any iframe. One key works
-  across all your projects.
+- **Premium · $20 one-time** — your brand in the corner instead of
+  ours. One key works across all your projects.
 
 ## Uninstall
 

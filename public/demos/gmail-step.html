@@ -401,18 +401,30 @@
 
       document.getElementById("composeBtn").addEventListener("click", openCompose);
 
-      // Initial state per step
-      if (step === 1) {
-        current = "inbox";
-        render();
-      } else if (step === 2) {
-        openCompose();
-      } else if (step === 3) {
-        current = "sent";
-        render();
-      } else {
-        render();
+      function applyStep(s) {
+        if (s === 1) {
+          current = "inbox";
+          render();
+        } else if (s === 2) {
+          openCompose();
+        } else if (s === 3) {
+          current = "sent";
+          render();
+        } else {
+          render();
+        }
       }
+
+      // Initial state per step
+      applyStep(step);
+
+      // Allow parent to switch steps without reloading
+      window.addEventListener("message", (e) => {
+        if (e && e.data && e.data.type === "setStep") {
+          const s = Number(e.data.step);
+          if (s >= 1 && s <= 3) applyStep(s);
+        }
+      });
     </script>
   </body>
 </html>

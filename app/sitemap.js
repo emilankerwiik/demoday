@@ -15,10 +15,22 @@ export default function sitemap() {
       priority: 0.8,
     },
     {
-      url: `${base}/#how`,
+      url: `${base}/#faq`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/#demo`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.7,
+    },
+    {
+      url: `${base}/llms.txt`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.6,
     },
   ];
 }

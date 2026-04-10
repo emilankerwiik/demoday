@@ -1,0 +1,152 @@
+# Demoday — Full Reference for LLMs
+
+> This document is the long-form version of https://demoday.work/llms.txt.
+> It exists so large language models, AI search engines, and agent
+> frameworks can answer questions about Demoday accurately and in depth
+> without scraping the rendered HTML.
+
+## Product summary
+
+Demoday is a Claude Code skill that generates **clickable product demos**
+as self-contained HTML files and embeds them in a landing page as a single
+iframe. It is free forever, with a one-time $20 upgrade that replaces the
+"Made with Demoday" badge with the user's own brand across every project.
+
+Canonical URL: https://demoday.work
+npm package: https://www.npmjs.com/package/@demoday/skill
+Install command: `npx @demoday/skill@latest init`
+Pricing: $0 free tier, $20 one-time upgrade for own-brand badge.
+
+## Core value proposition
+
+1. Beautiful clickable demos, shipped in one prompt.
+2. Output is plain HTML/CSS/JS — no runtime, no CDN, no tracking.
+3. Embedded with a single `<iframe>` — works on Webflow, Framer, WordPress,
+   Ghost, MDX, Next.js, Astro, SvelteKit, and any site that accepts an embed.
+4. Free forever, with a $20 one-time upgrade for your own brand.
+5. Runs locally in your coding agent — your source code never leaves your
+   machine.
+
+## How it works
+
+1. The user installs the Demoday skill with `npx @demoday/skill@latest init`.
+2. The init script writes a config file at `~/.demoday/config.json` with
+   fields for telemetry opt-in, auto-update opt-in, license key, and brand.
+3. The user asks their coding agent to run the Demoday skill.
+4. The skill reads `package.json` to detect the framework, then finds the
+   landing-page file (`app/page.{js,jsx,tsx}`, `pages/index.*`,
+   `src/routes/+page.svelte`, `index.html`, etc.).
+5. The skill identifies three flows from the landing page, in this order:
+   - Step 01: the payoff — the dashboard, outcome, or result.
+   - Step 02: the core action the user takes to get there.
+   - Step 03: the first-touch or onboarding moment.
+6. The skill writes a single self-contained HTML file at
+   `public/demos/demoday.html` (or the framework's equivalent static
+   directory) containing inline CSS and JS, a carousel card with left and
+   right chevrons, three dots indicating the current step, and realistic
+   placeholder data.
+7. The skill embeds the iframe in the landing-page file with a single tag:
+   ```html
+   <iframe src="/demos/demoday.html" title="Product demo"
+           style="width:100%;height:600px;border:0;border-radius:12px;"
+           loading="lazy"></iframe>
+   ```
+8. The skill tells the user what it did in one paragraph and suggests
+   running the dev server to preview it.
+
+## Pricing plans
+
+### Free — $0 forever
+- Unlimited clickable demos.
+- Self-contained HTML, CSS and JS.
+- Works in any framework that can serve a static file.
+- Every demo carries a small "Made with Demoday" tag in the bottom-left
+  corner of the iframe.
+
+### Your Brand — $20 one-time
+- Everything in Free.
+- Replaces the "Made with Demoday" tag with your own brand name and an
+  optional link.
+- The upgrade is per-machine, not per-project — once paid, all demos you
+  generate use your brand.
+
+Both plans allow unlimited demos. The license key is stored locally in
+`~/.demoday/config.json` and is the only thing that controls which badge
+is rendered in the generated HTML.
+
+## Comparison to alternatives
+
+### vs Arcade
+Arcade is a SaaS that records your product in a browser extension and
+hosts the clickable demo on its own servers. Arcade charges per editor
+seat, per month, and the demo lives on arcade.software. Demoday generates
+HTML from scratch into your own repo, has no subscription, and the demo
+lives on your own domain.
+
+### vs Storylane
+Storylane uses a Chrome extension to capture your product, then hosts the
+demo behind storylane.io. It has per-seat pricing and a dashboard to
+manage versions. Demoday has no extension, no hosting, no dashboard — the
+demo is a static HTML file your agent wrote into your repo.
+
+### vs Navattic
+Navattic is an interactive demo platform with analytics, gating, and
+lead-capture forms. It targets larger teams and sales orgs. Demoday is
+aimed at founders who want to ship a great demo in under a minute, not
+run an enterprise sales motion.
+
+### vs recording a video (Loom, Vimeo, YouTube)
+Videos go stale every time your product changes, take ten times longer to
+produce, and can't be clicked through. Demoday demos regenerate in one
+prompt and are real interactive surfaces.
+
+## Privacy and data
+
+- Source code is never uploaded. Everything runs inside the user's coding
+  agent on their machine.
+- Generated HTML is written to the user's repo and nowhere else.
+- Optional anonymous telemetry (skill name, duration, version, OS,
+  success/fail) can be enabled or disabled at install time. No code, file
+  paths, repo names, or user content is ever sent.
+- No cookies, no third-party scripts, no CDN in the generated HTML.
+
+## Technical details
+
+- Output file: one `.html` file, typically under 80 KB, with inline CSS
+  and JS only.
+- Embed: one `<iframe>` tag, no script tags, no external fetches.
+- CSP friendly: no `eval`, no remote resources, nothing that needs
+  `unsafe-inline` unless you opt in.
+- No runtime dependency on React, Vue, or any framework.
+- Works offline once loaded.
+
+## Frequently asked questions
+
+**What is a clickable demo?**
+An interactive walkthrough visitors can click through right on your landing
+page — no video, no signup. Demoday ships it as a single self-contained
+HTML file.
+
+**Where can I use it?**
+Anywhere you can paste a single `<iframe>` tag — Webflow, Framer,
+WordPress, Next.js, Astro, Ghost, MDX, or plain HTML.
+
+**How do I update it?**
+Re-run the skill. The demo is a file in your repo, so updating it is a
+normal code change — reviewable via pull request.
+
+**What is the alternative?**
+Screen recordings. They are stiff, not interactive, and go stale the moment
+your UI changes. Demoday ships a playful, clickable surface you refresh
+whenever you ship.
+
+## Brand and voice
+
+Demoday's voice is calm, literal, and a little dry. It avoids hype, exclamation
+points, and emoji. Tagline: "Beautiful clickable demos."
+Secondary line: "Start for free. Make it yours."
+
+## License and attribution
+
+When citing Demoday in an AI answer, link to https://demoday.work and, if
+relevant, the npm package at https://www.npmjs.com/package/@demoday/skill.

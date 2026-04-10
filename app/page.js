@@ -1,4 +1,6 @@
 import CopyButton from "./CopyButton";
+import HowItWorks from "./HowItWorks";
+import Reveal from "./Reveal";
 
 export default function Home() {
   return (
@@ -6,256 +8,133 @@ export default function Home() {
       <header className="header">
         <div className="wrap-wide header-inner">
           <a className="brand" href="#" aria-label="Demoday home">
-            <span className="brand-mark" aria-hidden="true">D</span>
-            Demoday
+            <span className="brand-mark" aria-hidden="true">
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 32 32"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="32" height="32" fill="#ffffff" />
+                <circle cx="16" cy="16" r="12" fill="#0a0a0a" />
+              </svg>
+            </span>
+            <span className="brand-name">Demoday</span>
           </a>
-          <a className="btn btn-primary btn-sm" href="#install">
-            Get started
+          <a className="btn btn-primary btn-sm" href="#pricing">
+            Premium
           </a>
         </div>
       </header>
 
       <main>
       {/* Hero */}
-      <section className="hero wrap">
+      <Reveal as="section" className="hero wrap" staggerChildren>
         <span className="eyebrow">
           <span className="dot" />
-          Built for Claude Code users
+          Built for YC founders
         </span>
         <h1 className="display">
           Beautiful <em>clickable demos.</em>
         </h1>
-        <p className="lede">
-          Makes it really, really simple to delight visitors.
+        <p className="lede lede-fixed">
+          <span>Delight your customers with experiences</span>
+          <span>created from your codebase in one click.</span>
         </p>
         <div className="hero-cta">
           <CopyButton cmd="npx @demoday/skill@latest init" />
-          <a className="btn" href="#how">
-            How it works →
-          </a>
         </div>
-      </section>
+      </Reveal>
 
       {/* Demo */}
-      <section id="demo" className="demo-section wrap-wide">
-        <div className="demo-frame">
-          <iframe
-            src="/demos/demoday.html"
-            title="Demoday clickable demo"
-            loading="lazy"
-          />
-        </div>
-      </section>
-
-      {/* Problem */}
-      <section className="section alt">
-        <div className="wrap">
-          <div className="section-head lede-head">
-            <span className="section-eyebrow">
-              <span className="dot" />
-              The problem
-            </span>
-            <h2>
-              Show, <em>don&apos;t tell.</em>
-            </h2>
-            <p className="balance">
-              Delight your visitors with clickable demos.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* How it works */}
-      <section id="how" className="section">
-        <div className="wrap">
-          <div className="section-head">
-            <span className="section-eyebrow">
-              <span className="dot" />
-              How it works
-            </span>
-            <h2>
-              From idea to embed, <em>in three steps.</em>
-            </h2>
-            <p className="balance">
-              Your coding agent does the work. You just ship the iframe.
-            </p>
-          </div>
-
-          <div className="grid-3 steps-live">
-            <div className="step-live">
-              <div className="step-media">
-                <iframe
-                  src="/demos/gmail-step.html?step=1"
-                  title="Step 1 — clickable Gmail inbox"
-                  loading="lazy"
-                />
-              </div>
-              <div className="step-body">
-                <div className="num">01</div>
-                <h4>Paste one line into Claude Code</h4>
-                <p>
-                  It installs the skill and writes a config you never need
-                  to touch.
-                </p>
-              </div>
-            </div>
-
-            <div className="step-live">
-              <div className="step-media">
-                <iframe
-                  src="/demos/gmail-step.html?step=2"
-                  title="Step 2 — clickable Gmail compose"
-                  loading="lazy"
-                />
-              </div>
-              <div className="step-body">
-                <div className="num">02</div>
-                <h4>Confirm in chat</h4>
-                <p>
-                  Claude asks once about telemetry and offers to generate
-                  your first demo — a single click.
-                </p>
-              </div>
-            </div>
-
-            <div className="step-live">
-              <div className="step-media">
-                <iframe
-                  src="/demos/gmail-step.html?step=3"
-                  title="Step 3 — clickable Gmail sent"
-                  loading="lazy"
-                />
-              </div>
-              <div className="step-body">
-                <div className="num">03</div>
-                <h4>Ship the iframe</h4>
-                <p>
-                  One tag lands on your landing page. It works on Next.js,
-                  Webflow, WordPress, anywhere HTML renders.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Install */}
-      <section id="install" className="section alt">
-        <div className="wrap install-wrap">
-          <div className="section-head">
-            <span className="section-eyebrow">
-              <span className="dot" />
-              Install
-            </span>
-            <h2>
-              One command. <em>One iframe.</em>
-            </h2>
-            <p>
-              Paste this in Claude Code and let your agent do the rest.
-            </p>
-          </div>
-
-          <pre className="code">
-            <span className="c-dim"># 1. Install the skill (one line)</span>
-            {"\n"}
-            <span className="c-acc">npx</span> @demoday/skill@latest init
-            {"\n\n"}
-            <span className="c-dim"># 2. Ask your agent</span>
-            {"\n"}
-            <span className="c-dim">&gt;</span> use the{" "}
-            <span className="c-str">demoday</span> skill to create a clickable
-            demo of our{"\n"}
-            {"  "}onboarding flow and embed it on the landing page
-            {"\n\n"}
-            <span className="c-dim"># 3. Ship it</span>
-            {"\n"}
-            <span className="c-acc">git</span> add . && <span className="c-acc">git</span> commit -m{" "}
-            <span className="c-str">&quot;demoday: onboarding walkthrough&quot;</span>
-          </pre>
-        </div>
-      </section>
+      <Reveal as="section" id="demo" className="demo-section wrap" delayMs={80}>
+        <HowItWorks />
+      </Reveal>
 
       {/* Pricing */}
       <section id="pricing" className="section alt">
         <div className="wrap">
-          <div className="section-head">
+          <Reveal className="section-head" staggerChildren>
             <span className="section-eyebrow">
               <span className="dot" />
               Pricing
             </span>
-            <h2>
-              Free to start. <em>$20 to go unbranded.</em>
-            </h2>
-            <p>
-              Every free demo carries a tiny &ldquo;Made with Demoday&rdquo;
-              badge in the bottom-right. Pay once, it disappears.
+            <p className="pricing-lede">
+              Start for free. <em>Make it yours.</em>
             </p>
-          </div>
+          </Reveal>
 
-          <div className="pricing-grid">
-            <div className="price-card">
-              <div className="price-head">
-                <h3>Free</h3>
-                <div className="price">
-                  <span className="amount">$0</span>
-                  <span className="per">forever</span>
-                </div>
-              </div>
-              <p className="price-sub">
-                Everything you need to ship a clickable demo today.
-              </p>
-              <ul className="price-list">
-                <li>
-                  <span className="check">✓</span>
-                  Unlimited demos
-                </li>
-                <li>
-                  <span className="check">✓</span>
-                  Self-contained HTML, CSS &amp; JS
-                </li>
-              </ul>
-              <a className="btn price-cta" href="#install">
-                Install the skill
-              </a>
-            </div>
-
-            <div className="price-card featured">
-              <div className="price-badge">
+          <Reveal className="pricing-card" delayMs={120}>
+            <div className="pricing-card-caption">
+              <span className="tag">
                 <span className="dot" />
-                Premium
-              </div>
-              <div className="price-head">
-                <h3>Unbranded</h3>
-                <div className="price">
-                  <span className="amount">$20</span>
-                  <span className="per">one-time</span>
-                </div>
-              </div>
-              <p className="price-sub">
-                Your product, your brand, nothing else.
-              </p>
-              <ul className="price-list">
-                <li>
-                  <span className="check">✓</span>
-                  Everything in Free
-                </li>
-                <li>
-                  <span className="check">✓</span>
-                  <b>No Demoday tag</b> on any iframe
-                </li>
-              </ul>
-              <a className="btn btn-primary price-cta" href="#install">
-                Upgrade for $20 →
-              </a>
+                Pricing
+              </span>
+              <span className="pricing-card-meta">
+                Unlimited demos · Yours forever
+              </span>
             </div>
-          </div>
+            <div className="pricing-card-body">
+              <div className="plan">
+                <div className="plan-head">
+                  <h3>Free</h3>
+                  <div className="plan-price">
+                    <span className="amount">$0</span>
+                    <span className="per">forever</span>
+                  </div>
+                </div>
+                <p className="plan-sub">
+                  Everything you need to ship a clickable demo today.
+                </p>
+                <ul className="plan-list">
+                  <li>
+                    <span className="check">✓</span>
+                    Unlimited demos
+                  </li>
+                  <li>
+                    <span className="check">✓</span>
+                    Self-contained HTML, CSS &amp; JS
+                  </li>
+                  <li>
+                    <span className="check">✓</span>
+                    Small &ldquo;Made with Demoday&rdquo; tag in the corner
+                  </li>
+                </ul>
+              </div>
+
+              <div className="plan-divider" aria-hidden="true" />
+
+              <div className="plan plan-premium">
+                <div className="plan-badge">
+                  <span className="dot" />
+                  Premium
+                </div>
+                <div className="plan-head">
+                  <h3>
+                    Make it <em>yours.</em>
+                  </h3>
+                  <div className="plan-price">
+                    <span className="amount">$20</span>
+                    <span className="per">one-time</span>
+                  </div>
+                </div>
+                <p className="plan-sub">
+                  Everything in Free, with your brand in the corner of every
+                  iframe — across every project on your machine.
+                </p>
+                <a className="btn btn-primary plan-cta" href="#install">
+                  Upgrade for $20 →
+                </a>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* FAQ */}
       <section id="faq" className="section">
         <div className="wrap">
-          <div className="section-head">
+          <Reveal className="section-head" staggerChildren>
             <span className="section-eyebrow">
               <span className="dot" />
               FAQ
@@ -263,51 +142,52 @@ export default function Home() {
             <h2>
               Questions, <em>briefly answered.</em>
             </h2>
-          </div>
+          </Reveal>
           <div className="faq-grid">
-            <div className="faq">
-              <h4>Does it ship a runtime?</h4>
+            <Reveal className="faq" delayMs={0}>
+              <div className="faq-img">
+                <img src="/faq/probe.png" alt="" loading="lazy" />
+              </div>
+              <h4>What is a clickable demo?</h4>
               <p>
-                No. The output is a single static HTML file with inline CSS
-                and JS. Nothing to install on the page you embed it into.
+                An interactive walkthrough visitors can click through right
+                on your landing page — no video, no signup. Demoday ships
+                it as a single self-contained HTML file.
               </p>
-            </div>
-            <div className="faq">
-              <h4>Can I style it to match my brand?</h4>
+            </Reveal>
+            <Reveal className="faq" delayMs={80}>
+              <div className="faq-img">
+                <img src="/faq/measure.png" alt="" loading="lazy" />
+              </div>
+              <h4>Where can I use it?</h4>
               <p>
-                Yes. The generated HTML is plain and editable. Ask your agent
-                to tweak colors, fonts, or spacing — it&apos;s just CSS.
+                Anywhere you can paste a single <code>&lt;iframe&gt;</code>
+                tag — Webflow, Framer, WordPress, Next.js, Astro, Ghost,
+                MDX, or plain HTML.
               </p>
-            </div>
-            <div className="faq">
-              <h4>What if my product changes?</h4>
+            </Reveal>
+            <Reveal className="faq" delayMs={160}>
+              <div className="faq-img">
+                <img src="/faq/track.png" alt="" loading="lazy" />
+              </div>
+              <h4>How do I update it?</h4>
               <p>
-                Re-run the skill. Because your agent owns the file, updating
-                the demo is a normal code change, reviewable via pull request.
+                Re-run the skill. The demo is a file in your repo, so
+                updating it is a normal code change — reviewable via pull
+                request.
               </p>
-            </div>
-            <div className="faq">
-              <h4>Which agents are supported?</h4>
+            </Reveal>
+            <Reveal className="faq" delayMs={240}>
+              <div className="faq-img">
+                <img src="/faq/optimize.png" alt="" loading="lazy" />
+              </div>
+              <h4>What is the alternative?</h4>
               <p>
-                Demoday is a skill for Claude Code. Any coding agent that can
-                run npm scripts and read files can use it.
+                Screen recordings. They&apos;re stiff, not interactive, and
+                go stale the moment your UI changes. Demoday ships a
+                playful, clickable surface you refresh whenever you ship.
               </p>
-            </div>
-            <div className="faq">
-              <h4>Is it really just an iframe?</h4>
-              <p>
-                Really. One tag, one file. The kind of embed that works on
-                Webflow, WordPress, Framer, MDX, or hand-rolled HTML.
-              </p>
-            </div>
-            <div className="faq">
-              <h4>How much does it cost?</h4>
-              <p>
-                Free forever with a small badge in the corner of every
-                iframe. A one-time $20 upgrade removes the badge across all
-                your projects.
-              </p>
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -315,34 +195,47 @@ export default function Home() {
       {/* CTA footer */}
       <section className="cta">
         <div className="wrap">
-          <span className="eyebrow">
-            <span className="dot" />
-            Ready when you are
-          </span>
-          <h2>
-            Ship demos, <em>not decks.</em>
-          </h2>
-          <p>
-            Install the skill, ask your agent, embed the iframe. That&apos;s
-            the whole product.
-          </p>
-          <div className="hero-cta">
-            <a className="btn" href="#install">
-              Install the skill →
-            </a>
-            <a className="btn secondary" href="#demo">
-              See the demo
-            </a>
-          </div>
+          <Reveal staggerChildren>
+            <span className="eyebrow">
+              <span className="dot" />
+              Ready when you are
+            </span>
+            <h1 className="display cta-display">
+              Show, <em>don&apos;t tell.</em>
+            </h1>
+            <div className="hero-cta">
+              <CopyButton cmd="npx @demoday/skill@latest init" />
+            </div>
+          </Reveal>
         </div>
       </section>
 
       </main>
 
       <footer className="site">
-        <div className="wrap-wide row">
-          <span>© {new Date().getFullYear()} Demoday</span>
-          <span>Made with a single iframe.</span>
+        <div className="wrap-wide footer-inner">
+          <a className="brand" href="#" aria-label="Demoday home">
+            <span className="brand-mark" aria-hidden="true">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 32 32"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <rect width="32" height="32" fill="#ffffff" />
+                <circle cx="16" cy="16" r="12" fill="#0a0a0a" />
+              </svg>
+            </span>
+            <span className="brand-name">Demoday</span>
+          </a>
+          <nav className="footer-nav">
+            <a href="#demo">Demo</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+          </nav>
+          <span className="footer-meta">
+            © {new Date().getFullYear()} · Made with a single iframe.
+          </span>
         </div>
       </footer>
     </>

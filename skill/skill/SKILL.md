@@ -18,6 +18,9 @@ fields:
 - `telemetry`: `true` / `false` / `null` (undecided)
 - `autoUpdate`: `true` / `false` / `null` (undecided)
 - `licenseKey`: string / `null` (free tier)
+- `brand`: `{ name: string, href?: string }` / `null` (only used on
+  Premium — the label and optional link rendered in place of the
+  Demoday tag)
 
 Any field set to `null` means the user has not decided yet and must be
 asked before Demoday generates anything.
@@ -42,12 +45,13 @@ doing anything else:
    Options: `Auto-update (recommended)`, `Manual updates only`. Save the
    answer to `config.json`.
 4. If `licenseKey` is `null`, use `AskUserQuestion` to ask:
-   > "Do you have a Demoday Premium key? Premium ($20 one-time) removes
-   > the small 'Made with Demoday' tag from your iframes."
+   > "Do you have a Demoday Premium key? Premium ($20 one-time) swaps
+   > the small 'Made with Demoday' tag for your own brand."
    Options: `Continue on the free tier` (default), `I have a key — paste
    it`. If the user says they have a key, follow up with a text prompt
-   and save it to `config.json`. Otherwise save `licenseKey: false` so
-   we don't ask again.
+   and save it to `config.json`. Then ask for their brand label (and
+   optional link) and save it to `brand` in the config. Otherwise save
+   `licenseKey: false` so we don't ask again.
 
 After all three are resolved, continue with generation. Never ask these
 questions a second time in the same project. Do **not** ask the user to
@@ -61,20 +65,32 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
      `src/routes/+page.svelte`, `index.html`, etc. — whichever exists).
    - Any auth or onboarding files if you can find them; otherwise infer
      three flows from the landing page itself.
-2. Identify the three flows to demo:
-   - **Get started** — the onboarding / install / first-touch moment.
-   - **How it works** — the core action the user takes.
-   - **What you get** — the outcome, dashboard, or result.
+2. Identify the three flows to demo. Lead with the payoff:
+   - **Step 01** — the outcome, dashboard, or result. Shown first so
+     the viewer sees the value before the setup.
+   - **Step 02** — the core action the user takes to get there.
+   - **Step 03** — the first-touch / onboarding / install moment.
 3. Write a single self-contained file at
    `public/demos/demoday.html` (or the framework's equivalent static
    directory) containing:
-   - Three clickable tabs named "Get started", "How it works", "What you
-     get".
+   - A **carousel card** showing one step at a time (not a tab bar):
+     - A product canvas on top rendering the current step's UI.
+     - A description card below with the step number (`01` / `02` /
+       `03`), a title, and a one-sentence description.
+     - A circular **left chevron** button vertically centered on the
+       left side of the description card, and a matching **right
+       chevron** on the right side. Clicking them advances or rewinds
+       the step, wrapping around at the ends.
+     - **Three dots** in the top-right of the description card
+       indicating the current step. The active dot is filled; the
+       others are muted.
+     - Step 01 is active on first load.
    - Inline CSS and JS. No external fonts or scripts.
    - Realistic placeholder data. Nothing calls a live API.
    - If `licenseKey` is `null` or `false`, include the red "DEMODAY /
      MADE WITH LOVE" tag in the bottom-left corner. If `licenseKey` is a
-     string, omit the tag entirely.
+     string, render the user's `brand.name` in the same corner spot
+     (linked to `brand.href` when present) instead of the Demoday tag.
 4. Embed the iframe in the landing-page file:
    ```html
    <iframe src="/demos/demoday.html" title="Product demo"
@@ -106,10 +122,11 @@ skip — never block generation on a telemetry error.
 
 ## Freemium enforcement
 
-The `licenseKey` field is the **only** thing that controls whether the
-"Made with Demoday" tag is rendered in generated HTML. A missing or
-`null`/`false` value means the tag is included. A string value (any
-non-empty string) means Premium and the tag is omitted.
+The `licenseKey` field is the **only** thing that controls which label
+is rendered in generated HTML. A missing or `null`/`false` value means
+the Demoday tag is included. A string value (any non-empty string)
+means Premium and the `brand` label is rendered in place of the
+Demoday tag.
 
 Do not validate the key against a server — validation happens out of
 band. This skill trusts the config file.
