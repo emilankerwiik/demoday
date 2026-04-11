@@ -1,5 +1,7 @@
 import CopyButton from "./CopyButton";
 import HowItWorks from "./HowItWorks";
+import Problem from "./Problem";
+import Process from "./Process";
 import Reveal from "./Reveal";
 
 export default function Home() {
@@ -51,6 +53,12 @@ export default function Home() {
         <HowItWorks />
       </Reveal>
 
+      {/* Problem — why it matters */}
+      <Problem />
+
+      {/* How it works — process */}
+      <Process />
+
       {/* FAQ */}
       <section id="faq" className="section">
         <div className="wrap">
@@ -101,11 +109,12 @@ export default function Home() {
               <div className="faq-img">
                 <img src="/faq/optimize.png" alt="" loading="lazy" />
               </div>
-              <h4>What is the alternative?</h4>
+              <h4>How do people solve this today?</h4>
               <p>
-                Screen recordings. They&apos;re stiff, not interactive, and
-                go stale the moment your UI changes. Demoday ships a
-                playful, clickable surface you refresh whenever you ship.
+                Poorly. Visitors churn at signup walls and paywalls before
+                they see the product. Screen recordings go stale the day the
+                UI changes. Animated walk-throughs look nice but aren&apos;t
+                interactive — you can&apos;t click around.
               </p>
             </Reveal>
           </div>
