@@ -78,6 +78,13 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
    - **Typography** — note the font stack from CSS or Tailwind config.
      Do not load external fonts (the demo must be self-contained), but
      use the same `font-family` declaration so system fonts match.
+   - **Dark mode by default** — always generate the demo dashboard
+     (the iframe content) with a dark color scheme, even if the user's
+     product has a light theme. Dark dashboards create strong visual
+     contrast against the light description card below and look better
+     in recordings and on social media. Use the template's dark defaults
+     (`--bg:#0f1117`, `--text:#e4e4e7`, etc.) and map only the brand
+     accent color from the user's product.
    - Map the extracted values to CSS custom properties in the demo's
      `:root` block (e.g. `--brand`, `--bg`, `--text`, `--border`,
      `--muted`). Every UI element in the demo must use these variables

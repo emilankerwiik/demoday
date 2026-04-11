@@ -72,7 +72,7 @@ const output = args.output
   : resolve("recordings", `${filename}${ext}`);
 
 const totalDuration = dwell * steps;
-const SIZE = 1080;
+const SIZE = 900;
 
 console.log(`Recording demo (${steps} steps, ${dwell}ms each, ~${totalDuration / 1000}s total)`);
 if (brand) console.log(`  Brand:  ${brand}`);
@@ -128,19 +128,29 @@ await page.evaluate(() => {
 
   const style = document.createElement("style");
   style.textContent = `
-    body { overflow: hidden !important; }
+    body {
+      overflow: hidden !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background: #fff !important;
+    }
     body * { visibility: hidden !important; }
-    .how-card,
-    .how-card *,
+
+    .how-card {
+      visibility: visible !important;
+      position: fixed !important;
+      top: 44% !important;
+      left: 50% !important;
+      transform: translate(-50%, -50%) !important;
+      z-index: 99999 !important;
+      max-width: 580px !important;
+      width: 76% !important;
+    }
+    .how-card * { visibility: visible !important; }
     .how-card iframe { visibility: visible !important; }
     .how-brands { display: none !important; }
   `;
   document.head.appendChild(style);
-
-  const rect = card.getBoundingClientRect();
-  const viewH = window.innerHeight;
-  const cardCenter = rect.top + rect.height / 2 + window.scrollY;
-  window.scrollTo({ top: cardCenter - viewH / 2, behavior: "instant" });
 });
 await sleep(600);
 
