@@ -59,12 +59,36 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
    - The demo must reproduce this navigation faithfully — it is the
      single most important quality signal.
 
-2. **Read the user's project:**
+2. **Extract brand identity.** Before generating any HTML, read the
+   user's brand colors, logo, and typography so the demo matches their
+   product:
+   - **Colors** — check, in order: Tailwind config
+     (`tailwind.config.{js,ts,mjs}` — look for `theme.extend.colors`),
+     CSS custom properties in global stylesheets
+     (`globals.css`, `global.css`, `app.css`, `index.css`,
+     `variables.css`, `:root` blocks), `theme.json` / `tokens.json`,
+     shadcn `components.json`, or any `DESIGN.md`. Extract the primary
+     brand color, secondary color, background, surface, border, text,
+     and muted text values.
+   - **Logo** — look for SVG logos in layout/header components, navbar
+     files, or `public/` (`logo.svg`, `favicon.svg`, brand marks). If
+     the logo is an SVG, inline it in the demo. If it is a raster image
+     (`png`, `ico`), reference the path but do not base64-encode large
+     files — use a simple text fallback with the product name instead.
+   - **Typography** — note the font stack from CSS or Tailwind config.
+     Do not load external fonts (the demo must be self-contained), but
+     use the same `font-family` declaration so system fonts match.
+   - Map the extracted values to CSS custom properties in the demo's
+     `:root` block (e.g. `--brand`, `--bg`, `--text`, `--border`,
+     `--muted`). Every UI element in the demo must use these variables
+     so the output feels like the user's actual product.
+
+3. **Read the user's project:**
    - `package.json` to detect the framework.
    - The main landing-page file (`app/page.{js,jsx,tsx}`, `pages/index.*`,
      `src/routes/+page.svelte`, `index.html`, etc. — whichever exists).
 
-3. **Identify the three steps to demo.** Lead with the payoff:
+4. **Identify the three steps to demo.** Lead with the payoff:
    - **Step 01** — the outcome, dashboard, or result. Shown first so
      the viewer sees the value before the setup.
    - **Step 02** — the core action the user takes to get there.
@@ -73,7 +97,7 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
      step 1 (e.g., step 1 = Dashboard, step 2 = Payments, step 3 =
      Customers for a payments product).
 
-4. **Write a single self-contained file** at `public/demos/demoday.html`
+5. **Write a single self-contained file** at `public/demos/demoday.html`
    (or the framework's equivalent static directory) containing:
 
    **Layout — carousel card showing one step at a time:**
@@ -118,7 +142,7 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
    - Always include the "DEMODAY / MADE WITH LOVE" tag in the
      bottom-left corner.
 
-5. **Preview the demo.** Before touching the landing page:
+6. **Preview the demo.** Before touching the landing page:
    - Start the dev server if it is not already running (e.g.
      `npm run dev`).
    - Open the generated file in the browser at
@@ -127,7 +151,7 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
      can see it.
    - Tell the user the demo is ready for preview.
 
-6. **Ask the user what to do next.** Use `AskUserQuestion`:
+7. **Ask the user what to do next.** Use `AskUserQuestion`:
    > "The demo is ready. What would you like to do?"
    Options:
    - `Ship to landing page` — embed the iframe in the landing-page

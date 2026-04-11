@@ -60,13 +60,14 @@ export default function Home() {
       {/* Demo */}
       <Reveal as="section" id="demo" className="demo-section wrap" delayMs={80}>
         <HowItWorks />
-        <div className="hero-cta" style={{ marginTop: 28 }}>
-          <CopyButton cmd="npx @demoday/skill@latest init" />
-        </div>
       </Reveal>
 
       {/* How it works — process */}
       <Process />
+
+      <Reveal as="div" className="wrap" style={{ textAlign: "center", padding: "0 24px 64px" }}>
+        <CopyButton cmd="npx @demoday/skill@latest init" />
+      </Reveal>
 
       {/* Problem — why it matters */}
       <Problem />
