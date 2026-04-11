@@ -4,6 +4,35 @@ import { useEffect, useRef, useState } from "react";
 
 const DEMOS = [
   {
+    id: "demoday",
+    name: "Demoday",
+    stepSrc: "/demos/demoday.html?step=1",
+    color: "#0a0a0a",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="32" height="32" rx="6" fill="#ffffff" stroke="#e5e7eb" strokeWidth="1"/>
+        <circle cx="16" cy="16" r="8" fill="#0a0a0a"/>
+      </svg>
+    ),
+    steps: [
+      {
+        n: "01",
+        title: "See your demos perform",
+        desc: "Track impressions, clicks, and engagement across every demo you ship.",
+      },
+      {
+        n: "02",
+        title: "Generate in one click",
+        desc: "Claude reads your codebase, builds a self-contained HTML file, and embeds the iframe.",
+      },
+      {
+        n: "03",
+        title: "Paste into Claude Code",
+        desc: "One command installs the skill. Your coding agent handles the rest.",
+      },
+    ],
+  },
+  {
     id: "mintlify",
     name: "Mintlify",
     stepSrc: "/demos/mintlify-step.html?step=1",

@@ -8,7 +8,9 @@
 - **Name**: `demoday`
 - **Package**: `@demoday/skill` on npm
 - **Homepage**: https://demoday.work
+- **GitHub**: https://github.com/emilankerwiik/demoday
 - **Install**: `npx @demoday/skill@latest init`
+- **License**: Open source
 - **Target agent**: Claude Code (other agents that can run npm scripts and
   edit files also work)
 
@@ -16,7 +18,7 @@
 
 Generate beautiful clickable product demos as self-contained HTML files
 and embed them as iframes in the user's landing page. Free forever; $20
-one-time upgrade for own-brand badging.
+one-time upgrade for own-brand badging. Open source on GitHub.
 
 ## Triggers
 
@@ -73,8 +75,8 @@ Any `null` field prompts the user via `AskUserQuestion` on first run.
 
 `licenseKey` is the single source of truth for the badge:
 
-- `null` or `false` → Demoday tag renders in bottom-left of the iframe.
-- Any non-empty string → `brand.name` (linked to `brand.href` when set)
+- `null` or `false` -> Demoday tag renders in bottom-left of the iframe.
+- Any non-empty string -> `brand.name` (linked to `brand.href` when set)
   renders in that slot instead.
 
 No server-side key validation. The skill trusts the config file.

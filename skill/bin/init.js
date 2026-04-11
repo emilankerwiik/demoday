@@ -116,11 +116,8 @@ function writeConfigIfMissing() {
   const config = {
     version: 1,
     createdAt: new Date().toISOString(),
-    // All three are `null` = undecided. SKILL.md instructs the agent to
-    // resolve these via AskUserQuestion on first invocation.
-    telemetry: null, // will default to true on first prompt (gstack-style)
-    autoUpdate: null, // opt-in at launch
-    licenseKey: null, // Premium key; null = free tier, badge remains
+    telemetry: null,
+    autoUpdate: null,
   };
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2) + "\n");
   return true;

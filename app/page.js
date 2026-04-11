@@ -1,4 +1,5 @@
 import CopyButton from "./CopyButton";
+import GitHubStars from "./GitHubStars";
 import HowItWorks from "./HowItWorks";
 import Problem from "./Problem";
 import Process from "./Process";
@@ -23,9 +24,12 @@ export default function Home() {
             </span>
             <span className="brand-name">Demoday</span>
           </a>
-          <a className="btn btn-primary btn-sm" href="#demo">
-            See demos
-          </a>
+          <div className="header-actions">
+            <GitHubStars />
+            <a className="btn btn-primary btn-sm" href="#demo">
+              See demos
+            </a>
+          </div>
         </div>
       </header>
 
@@ -160,6 +164,13 @@ export default function Home() {
           <nav className="footer-nav">
             <a href="#demo">Demo</a>
             <a href="#faq">FAQ</a>
+            <a
+              href="https://github.com/emilankerwiik/demoday"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              GitHub
+            </a>
           </nav>
           <span className="footer-meta">
             © {new Date().getFullYear()} · Made with a single iframe.

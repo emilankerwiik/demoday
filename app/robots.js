@@ -5,7 +5,6 @@ export default function robots() {
         userAgent: "*",
         allow: "/",
       },
-      // Allow AI crawlers explicitly (GEO / LLM discovery).
       { userAgent: "GPTBot", allow: "/" },
       { userAgent: "ChatGPT-User", allow: "/" },
       { userAgent: "OAI-SearchBot", allow: "/" },
@@ -22,6 +21,8 @@ export default function robots() {
       { userAgent: "Meta-ExternalAgent", allow: "/" },
       { userAgent: "Amazonbot", allow: "/" },
       { userAgent: "DuckDuckBot", allow: "/" },
+      { userAgent: "cohere-ai", allow: "/" },
+      { userAgent: "Bytespider", allow: "/" },
     ],
     sitemap: "https://demoday.work/sitemap.xml",
     host: "https://demoday.work",

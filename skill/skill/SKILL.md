@@ -17,10 +17,6 @@ fields:
 
 - `telemetry`: `true` / `false` / `null` (undecided)
 - `autoUpdate`: `true` / `false` / `null` (undecided)
-- `licenseKey`: string / `null` (free tier)
-- `brand`: `{ name: string, href?: string }` / `null` (only used on
-  Premium — the label and optional link rendered in place of the
-  Demoday tag)
 
 Any field set to `null` means the user has not decided yet and must be
 asked before Demoday generates anything.
@@ -44,16 +40,8 @@ doing anything else:
    > ship?"
    Options: `Auto-update (recommended)`, `Manual updates only`. Save the
    answer to `config.json`.
-4. If `licenseKey` is `null`, use `AskUserQuestion` to ask:
-   > "Do you have a Demoday Premium key? Premium ($20 one-time) swaps
-   > the small 'Made with Demoday' tag for your own brand."
-   Options: `Continue on the free tier` (default), `I have a key — paste
-   it`. If the user says they have a key, follow up with a text prompt
-   and save it to `config.json`. Then ask for their brand label (and
-   optional link) and save it to `brand` in the config. Otherwise save
-   `licenseKey: false` so we don't ask again.
 
-After all three are resolved, continue with generation. Never ask these
+After both are resolved, continue with generation. Never ask these
 questions a second time in the same project. Do **not** ask the user to
 paste a command — all confirmations happen inline via `AskUserQuestion`.
 
@@ -127,19 +115,36 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
    - Compact layout optimized for embedding at small sizes (10–12px
      base font, tight spacing). The demo will be rendered inside an
      iframe with a 4:3 aspect ratio.
-   - If `licenseKey` is `null` or `false`, include the red "DEMODAY /
-     MADE WITH LOVE" tag in the bottom-left corner. If `licenseKey` is
-     a string, render the user's `brand.name` in the same corner spot
-     (linked to `brand.href` when present) instead of the Demoday tag.
+   - Always include the "DEMODAY / MADE WITH LOVE" tag in the
+     bottom-left corner.
 
-5. **Embed the iframe** in the landing-page file:
+5. **Preview the demo.** Before touching the landing page:
+   - Start the dev server if it is not already running (e.g.
+     `npm run dev`).
+   - Open the generated file in the browser at
+     `http://localhost:3000/demos/<filename>.html` (or the correct port
+     for the framework) using the browse / browser tools so the user
+     can see it.
+   - Tell the user the demo is ready for preview.
+
+6. **Ask the user what to do next.** Use `AskUserQuestion`:
+   > "The demo is ready. What would you like to do?"
+   Options:
+   - `Ship to landing page` — embed the iframe in the landing-page
+     file identified in step 2.
+   - `Replace an existing demo` — list the HTML files already in
+     `public/demos/`, ask the user which one to replace, then swap
+     the iframe `src` on the landing page to point to the new file.
+   - `Make edits` — ask the user what they want changed, edit or
+     regenerate the HTML file, then loop back to step 5 (preview
+     again).
+
+   When embedding, use:
    ```html
-   <iframe src="/demos/demoday.html" title="Product demo"
+   <iframe src="/demos/<filename>.html" title="Product demo"
            style="width:100%;height:600px;border:0;border-radius:12px;"
            loading="lazy"></iframe>
    ```
-6. Tell the user what you did in one paragraph. Suggest running the dev
-   server to see it.
 
 ## Telemetry
 
@@ -160,17 +165,6 @@ If `telemetry` is `true`, after generation POST a small JSON object to
 Never send: source code, file paths, repo names, product names, the
 generated HTML, or anything typed by the user. If the POST fails, silently
 skip — never block generation on a telemetry error.
-
-## Freemium enforcement
-
-The `licenseKey` field is the **only** thing that controls which label
-is rendered in generated HTML. A missing or `null`/`false` value means
-the Demoday tag is included. A string value (any non-empty string)
-means Premium and the `brand` label is rendered in place of the
-Demoday tag.
-
-Do not validate the key against a server — validation happens out of
-band. This skill trusts the config file.
 
 ## What not to do
 
