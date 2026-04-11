@@ -55,13 +55,16 @@ export default function Home() {
       {/* Demo */}
       <Reveal as="section" id="demo" className="demo-section wrap" delayMs={80}>
         <HowItWorks />
+        <div className="hero-cta" style={{ marginTop: 28 }}>
+          <CopyButton cmd="npx @demoday/skill@latest init" />
+        </div>
       </Reveal>
-
-      {/* Problem — why it matters */}
-      <Problem />
 
       {/* How it works — process */}
       <Process />
+
+      {/* Problem — why it matters */}
+      <Problem />
 
       {/* FAQ */}
       <section id="faq" className="section">

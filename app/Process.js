@@ -105,7 +105,7 @@ export default function Process() {
             How it works
           </span>
           <h2>
-            Create your demo in <em>2 minutes.</em>
+            Create first demo in <em>2 minutes.</em>
           </h2>
         </Reveal>
         <div className="proc-grid">
