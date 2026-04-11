@@ -2,14 +2,14 @@
 /**
  * @demoday/skill init
  *
- * Non-interactive. Works with both Claude Code and Cursor:
+ * Non-interactive. Works with Claude Code, Cursor, and Codex:
  *   - Write the skill into ~/.claude/skills/demoday/ (Claude Code)
  *   - Write the skill into ~/.cursor/skills/demoday/ (Cursor)
+ *   - Append instructions to ~/.codex/AGENTS.md (Codex CLI)
  *   - Add the package as a dev dependency in the current project.
  *   - Write ~/.demoday/config.json with undecided (null) consent flags.
  *   - Print one next line. Do NOT prompt stdin — the agent asks the user
- *     about telemetry / auto-update / license key in the chat on first run,
- *     via AskUserQuestion, per SKILL.md.
+ *     about telemetry / auto-update / license key in the chat on first run.
  */
 
 const fs = require("fs");
@@ -29,6 +29,8 @@ const SKILL_TARGETS = [
   { dir: path.join(HOME, ".claude", "skills", "demoday"), label: "Claude Code" },
   { dir: path.join(HOME, ".cursor", "skills", "demoday"), label: "Cursor" },
 ];
+const CODEX_HOME = process.env.CODEX_HOME || path.join(HOME, ".codex");
+const CODEX_AGENTS_PATH = path.join(CODEX_HOME, "AGENTS.md");
 const DEMODAY_DIR = path.join(HOME, ".demoday");
 const CONFIG_PATH = path.join(DEMODAY_DIR, "config.json");
 const CWD = process.cwd();
@@ -76,6 +78,38 @@ function addDevDep(cwd) {
   return true;
 }
 
+const CODEX_MARKER = "<!-- demoday-skill-start -->";
+const CODEX_MARKER_END = "<!-- demoday-skill-end -->";
+
+function installCodexAgents() {
+  mkdirp(CODEX_HOME);
+  const skillMd = fs.readFileSync(path.join(SKILL_SRC, "SKILL.md"), "utf8");
+  const body = skillMd.replace(/^---[\s\S]*?---\n*/, "");
+  const block = [
+    "",
+    CODEX_MARKER,
+    body.trim(),
+    CODEX_MARKER_END,
+    "",
+  ].join("\n");
+
+  if (fs.existsSync(CODEX_AGENTS_PATH)) {
+    const existing = fs.readFileSync(CODEX_AGENTS_PATH, "utf8");
+    if (existing.includes(CODEX_MARKER)) {
+      const updated = existing.replace(
+        new RegExp(CODEX_MARKER + "[\\s\\S]*?" + CODEX_MARKER_END),
+        block.trim()
+      );
+      fs.writeFileSync(CODEX_AGENTS_PATH, updated);
+      return "updated";
+    }
+    fs.appendFileSync(CODEX_AGENTS_PATH, block);
+    return "appended";
+  }
+  fs.writeFileSync(CODEX_AGENTS_PATH, block.trim() + "\n");
+  return "created";
+}
+
 function writeConfigIfMissing() {
   mkdirp(DEMODAY_DIR);
   if (fs.existsSync(CONFIG_PATH)) return false;
@@ -101,6 +135,9 @@ for (const target of SKILL_TARGETS) {
   console.log("  ✓ " + target.label + " → " + target.dir.replace(HOME, "~"));
 }
 
+const codexResult = installCodexAgents();
+console.log("  ✓ Codex → " + CODEX_AGENTS_PATH.replace(HOME, "~") + " (" + codexResult + ")");
+
 const addedDep = addDevDep(CWD);
 if (addedDep) console.log("  ✓ added @demoday/skill to devDependencies");
 else console.log("  · devDependency already present (or no package.json)");
@@ -116,5 +153,5 @@ console.log(
 );
 
 console.log("");
-console.log("Skill installed for Claude Code and Cursor.");
+console.log("Skill installed for Claude Code, Cursor, and Codex.");
 console.log("Reload your editor, then ask the agent to generate a demo.");
