@@ -4,35 +4,6 @@ import { useEffect, useRef, useState } from "react";
 
 const DEMOS = [
   {
-    id: "demoday",
-    name: "Demoday",
-    stepSrc: "/demos/demoday.html?step=1",
-    color: "#0a0a0a",
-    icon: (
-      <svg width="18" height="18" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect width="32" height="32" rx="6" fill="#ffffff" stroke="#e5e7eb" strokeWidth="1"/>
-        <circle cx="16" cy="16" r="8" fill="#0a0a0a"/>
-      </svg>
-    ),
-    steps: [
-      {
-        n: "01",
-        title: "See your demos perform",
-        desc: "Track impressions, clicks, and engagement across every demo you ship.",
-      },
-      {
-        n: "02",
-        title: "Generate in one click",
-        desc: "Claude reads your codebase, builds a self-contained HTML file, and embeds the iframe.",
-      },
-      {
-        n: "03",
-        title: "Paste into Claude Code",
-        desc: "One command installs the skill. Your coding agent handles the rest.",
-      },
-    ],
-  },
-  {
     id: "mintlify",
     name: "Mintlify",
     stepSrc: "/demos/mintlify-step.html?step=1",
@@ -100,14 +71,7 @@ const DEMOS = [
     stepSrc: "/demos/stripe-step.html?step=1",
     color: "#635BFF",
     icon: (
-      <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect width="24" height="24" rx="5" fill="#635BFF" />
-        <path
-          transform="translate(1.5 1.5) scale(0.875)"
-          fill="#fff"
-          d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.594-7.305h.003z"
-        />
-      </svg>
+      <img src="/logos/stripe.png" width="18" height="18" alt="" aria-hidden="true" style={{ borderRadius: 4, objectFit: "contain" }} />
     ),
     steps: [
       {
@@ -133,12 +97,7 @@ const DEMOS = [
     stepSrc: "/demos/gmail-step.html?step=1",
     color: "#EA4335",
     icon: (
-      <svg width="18" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <path
-          fill="#EA4335"
-          d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"
-        />
-      </svg>
+      <img src="/logos/gmail.png" width="18" height="14" alt="" aria-hidden="true" style={{ objectFit: "contain" }} />
     ),
     steps: [
       {
