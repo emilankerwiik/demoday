@@ -100,22 +100,54 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
 5. **Write a single self-contained file** at `public/demos/demoday.html`
    (or the framework's equivalent static directory) containing:
 
-   **Layout — carousel card showing one step at a time:**
-   - A product canvas on top rendering the current step's UI.
-   - A description card below with the step number (`01` / `02` /
-     `03`), a title, and a one-sentence description.
-   - A circular **left chevron** button vertically centered on the
-     left side of the description card, and a matching **right
-     chevron** on the right side. Clicking them advances or rewinds
-     the step, wrapping around at the ends.
-   - **Three dots** in the top-right of the description card
-     indicating the current step. The active dot is filled; the
-     others are muted.
+   **Outer shell — boxed card with step descriptions:**
+
+   The entire demo must render as a floating card, not a full-bleed
+   viewport. This means the standalone preview at
+   `localhost:3000/demos/<file>.html` looks the same as the final
+   embedded version on the landing page. Structure:
+
+   ```
+   ┌─ .demo-shell (full viewport, neutral bg, centers the card) ──┐
+   │  ┌─ .demo-card (rounded corners, border, overflow:hidden) ──┐│
+   │  │  ┌─ .demo-canvas (product UI, 4:3 aspect ratio) ────────┐││
+   │  │  │  sidebar / nav + content area                         │││
+   │  │  └───────────────────────────────────────────────────────┘││
+   │  │  ┌─ .demo-steps (white bg, step descriptions) ──────────┐││
+   │  │  │  ‹  01 · Title · Description                    ● ○ ○│││
+   │  │  └───────────────────────────────────────────────────────┘││
+   │  └──────────────────────────────────────────────────────────┘│
+   └──────────────────────────────────────────────────────────────┘
+   ```
+
+   - `.demo-shell`: `width:100%; height:100vh; display:flex;
+     align-items:center; justify-content:center;
+     background:#f5f5f5; padding:20px;`. On embedded (iframe) usage,
+     the neutral bg and padding give the card visual breathing room.
+   - `.demo-card`: `max-width:640px; width:100%; border-radius:16px;
+     border:1px solid #e5e5e5; overflow:hidden; background:#fff;
+     box-shadow:0 1px 3px rgba(0,0,0,0.04);`. Contains both the
+     canvas and the step bar.
+   - `.demo-canvas`: `aspect-ratio:4/3; overflow:hidden; position:relative;`.
+     This is where the product UI lives (sidebar, nav, content). It
+     fills the full width of the card.
+   - `.demo-steps`: sits below the canvas inside the card. White
+     background, horizontal padding. Contains:
+     - A circular **left chevron** button vertically centered on the
+       left side, and a matching **right chevron** on the right side.
+       Clicking them advances or rewinds the step, wrapping at ends.
+     - The step **number** (`01` / `02` / `03`) in a large, light
+       serif or sans-serif font (24–30px, muted color).
+     - The step **title** in a bold 18–22px font.
+     - A one-sentence **description** in 12–13px muted text.
+     - **Three dots** in the top-right of the step area. The active
+       dot is filled dark; the others are light/muted.
    - Step 01 is active on first load.
 
-   **Interactive navigation — every nav item must be clickable:**
-   - The product canvas must include the real sidebar or nav bar from
-     the product (same labels, same icons, same order).
+   **Product canvas — interactive navigation:**
+   - The product canvas (`.demo-canvas`) must include the real
+     sidebar or nav bar from the product (same labels, same icons,
+     same order).
    - Clicking any nav item swaps the main content area to show that
      section's content. This works independently of the 3 steps.
    - Use a data-driven `render()` pattern: a JavaScript object maps
@@ -137,10 +169,9 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
    - Inline CSS and JS. No external fonts or scripts.
    - Realistic placeholder data. Nothing calls a live API.
    - Compact layout optimized for embedding at small sizes (10–12px
-     base font, tight spacing). The demo will be rendered inside an
-     iframe with a 4:3 aspect ratio.
+     base font inside the canvas, tight spacing).
    - Always include the "DEMODAY / MADE WITH LOVE" tag in the
-     bottom-left corner.
+     bottom-left corner of the shell.
 
 6. **Preview the demo.** Before touching the landing page:
    - Start the dev server if it is not already running (e.g.

@@ -69,8 +69,8 @@ export default function Home() {
         <CopyButton cmd="npx @demoday/skill@latest init" />
       </Reveal>
 
-      {/* Problem — why it matters */}
-      <Problem />
+      {/* Problem — why it matters (hidden for now) */}
+      {/* <Problem /> */}
 
       {/* FAQ */}
       <section id="faq" className="section">
