@@ -71,7 +71,10 @@ const DEMOS = [
     stepSrc: "/demos/stripe-step.html?step=1",
     color: "#635BFF",
     icon: (
-      <img src="/logos/stripe.png" width="18" height="18" alt="" aria-hidden="true" style={{ borderRadius: 4, objectFit: "contain" }} />
+      <svg width="18" height="18" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="40" height="40" rx="8" fill="#635BFF"/>
+        <path fill="#fff" d="M18.94 16.17c0-1.08.88-1.49 2.34-1.49 2.1 0 4.74.64 6.84 1.77V10.6c-2.29-.91-4.56-1.27-6.84-1.27-5.6 0-9.32 2.92-9.32 7.8 0 7.62 10.48 6.4 10.48 9.69 0 1.28-1.12 1.69-2.68 1.69-2.32 0-5.28-0.95-7.63-2.24v5.96c2.6 1.12 5.22 1.6 7.63 1.6 5.73 0 9.67-2.83 9.67-7.79-.01-8.22-10.49-6.76-10.49-9.87z"/>
+      </svg>
     ),
     steps: [
       {
@@ -97,7 +100,14 @@ const DEMOS = [
     stepSrc: "/demos/gmail-step.html?step=1",
     color: "#EA4335",
     icon: (
-      <img src="/logos/gmail.png" width="18" height="14" alt="" aria-hidden="true" style={{ objectFit: "contain" }} />
+      <svg width="18" height="14" viewBox="0 0 24 18" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path fill="#4285F4" d="M1 4v12.5A1.5 1.5 0 002.5 18H5V8l7 5.25L19 8v10h2.5a1.5 1.5 0 001.5-1.5V4"/>
+        <path fill="#34A853" d="M23 4v12.5a1.5 1.5 0 01-1.5 1.5H19V8l4-4z"/>
+        <path fill="#4285F4" d="M1 4v12.5A1.5 1.5 0 002.5 18H5V8L1 4z"/>
+        <path fill="#EA4335" d="M5 8V2.5L1 4l11 8.25L23 4l-4-1.5V8l-7 5.25L5 8z"/>
+        <path fill="#FBBC04" d="M23 4l-4-1.5V8"/>
+        <path fill="#C5221F" d="M5 2.5V8l7 5.25L19 8V2.5L12 8 5 2.5z"/>
+      </svg>
     ),
     steps: [
       {
