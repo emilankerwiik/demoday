@@ -1,7 +1,6 @@
 import CopyButton from "./CopyButton";
 import GitHubStars from "./GitHubStars";
 import HowItWorks from "./HowItWorks";
-import Problem from "./Problem";
 import Process from "./Process";
 import Reveal from "./Reveal";
 
@@ -69,9 +68,6 @@ export default function Home() {
         <CopyButton cmd="npx @demoday/skill@latest init" />
       </Reveal>
 
-      {/* Problem — why it matters (hidden for now) */}
-      {/* <Problem /> */}
-
       {/* FAQ */}
       <section id="faq" className="section">
         <div className="wrap">
@@ -124,10 +120,9 @@ export default function Home() {
               </div>
               <h4>How do people solve this today?</h4>
               <p>
-                Poorly. Visitors churn at signup walls and paywalls before
-                they see the product. Screen recordings go stale the day the
-                UI changes. Animated walk-throughs look nice but aren&apos;t
-                interactive — you can&apos;t click around.
+                Today, visitors churn before they see the product.
+                Authentication is friction, screen recordings go stale, and
+                animations are not clickable.
               </p>
             </Reveal>
           </div>

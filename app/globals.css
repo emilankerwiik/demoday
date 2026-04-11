@@ -1206,15 +1206,6 @@ footer.site .footer-meta {
   }
 }
 
-/* Problem / why it matters */
-.prob-section {
-  padding: 96px 0 24px;
-}
-@media (max-width: 860px) {
-  .prob-section { padding: 72px 0 16px; }
-  .prob-section .grid-3 { grid-template-columns: 1fr; }
-}
-
 /* Process (How it works) — three-frame explainer */
 .proc-section {
   padding: 72px 0 40px;
