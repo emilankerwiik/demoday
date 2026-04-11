@@ -191,147 +191,153 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
    }
    *{box-sizing:border-box;margin:0;padding:0}
    html,body{
-     height:100vh;overflow:hidden;font-family:var(--font);
-     font-size:10.5px;color:var(--text);background:var(--bg);
+     height:100%;overflow:hidden;font-family:var(--font);
+     font-size:14px;color:var(--text);background:var(--bg);
      -webkit-font-smoothing:antialiased
    }
 
    /* ---- layout ---- */
-   .app{display:flex;height:100vh}
-   .side{
-     width:100px;min-width:100px;flex-shrink:0;
+   .shell{display:flex;height:100vh}
+   .sidebar{
+     width:220px;min-width:220px;flex-shrink:0;
      background:var(--bg-sidebar);border-right:1px solid var(--border);
-     display:flex;flex-direction:column;overflow-y:auto;padding:8px 6px
+     display:flex;flex-direction:column;overflow-y:auto
    }
    .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
    /* ---- sidebar ---- */
-   .logo{
-     padding:8px 8px 10px;display:flex;align-items:center;
-     gap:6px;font-size:10px;font-weight:600
+   .sidebar-logo{
+     padding:20px 20px 16px;display:flex;align-items:center;
+     gap:10px;font-size:15px;font-weight:600;letter-spacing:-.01em
    }
    .logo-icon{
-     width:16px;height:16px;border-radius:3px;
+     width:22px;height:22px;border-radius:5px;
      display:flex;align-items:center;justify-content:center
    }
-   .sec-label{
-     font-size:8px;text-transform:uppercase;letter-spacing:.06em;
-     color:var(--faint);padding:8px 8px 4px;font-weight:500
+   .sidebar-section{padding:4px 12px;margin-bottom:4px}
+   .section-label{
+     font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+     color:var(--faint);padding:8px 8px 6px;font-weight:500
    }
-   .nav{
-     display:flex;align-items:center;gap:7px;padding:5px 8px;
-     border-radius:5px;color:var(--muted);font-size:9.5px;
-     cursor:pointer;transition:all .1s;user-select:none
+   .nav-item{
+     display:flex;align-items:center;gap:9px;padding:7px 10px;
+     border-radius:6px;color:var(--muted);font-size:13px;
+     cursor:pointer;transition:all .12s;user-select:none
    }
-   .nav:hover{background:var(--bg-card);color:var(--text)}
-   .nav.active{background:var(--brand-dim);color:var(--brand)}
-   .nav svg{width:14px;height:14px;flex-shrink:0}
-   .nav .dot{
-     width:3px;height:3px;border-radius:50%;
-     background:currentColor;opacity:.4;flex-shrink:0
+   .nav-item:hover{background:var(--bg-card);color:var(--text)}
+   .nav-item.active{background:var(--brand-dim);color:var(--brand)}
+   .nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.6}
+   .nav-item.active svg{opacity:1}
+   .nav-item .icon{
+     width:4px;height:4px;border-radius:50%;
+     background:currentColor;opacity:.5;flex-shrink:0
    }
-   .nav.active .dot{opacity:1;background:var(--brand)}
+   .nav-item.active .icon{opacity:1;background:var(--brand)}
+   .nav-divider{height:1px;background:var(--border);margin:8px 12px}
 
    /* ---- topbar ---- */
    .topbar{
-     height:26px;border-bottom:1px solid var(--border);
+     height:48px;border-bottom:1px solid var(--border);
      display:flex;align-items:center;justify-content:space-between;
-     padding:0 10px;background:var(--bg)
+     padding:0 24px;background:var(--bg)
    }
-   .search{
-     display:flex;align-items:center;gap:4px;
+   .topbar-search{
+     display:flex;align-items:center;gap:8px;
      background:var(--bg-card);border:1px solid var(--border);
-     border-radius:4px;padding:2px 8px;font-size:9px;
-     color:var(--muted);width:140px
+     border-radius:8px;padding:6px 12px;font-size:12px;
+     color:var(--muted);width:240px
    }
-   .search kbd{
-     font-family:var(--font);font-size:7px;background:var(--bg);
-     border:1px solid var(--border);border-radius:2px;
-     padding:0 3px;color:var(--faint);margin-left:auto
+   .topbar-search kbd{
+     font-family:var(--font);font-size:10px;background:var(--bg);
+     border:1px solid var(--border);border-radius:4px;
+     padding:1px 5px;color:var(--faint);margin-left:auto
    }
 
    /* ---- content ---- */
-   .content{flex:1;overflow-y:auto;padding:14px 16px}
-   .crumb{
-     font-size:9px;color:var(--faint);margin-bottom:12px;
-     display:flex;align-items:center;gap:4px
+   .content{flex:1;overflow-y:auto;padding:28px 32px}
+   .breadcrumb{
+     font-size:12px;color:var(--faint);margin-bottom:24px;
+     display:flex;align-items:center;gap:6px
    }
-   .crumb a{color:var(--muted);text-decoration:none}
-   h1{font-size:18px;font-weight:700;letter-spacing:-.02em;
-      margin-bottom:4px;line-height:1.2}
-   .desc{color:var(--muted);font-size:11px;line-height:1.5;
-         margin-bottom:14px}
-   h2{font-size:13px;font-weight:600;letter-spacing:-.01em;
-      margin:16px 0 6px;padding-top:10px;
+   .breadcrumb a{color:var(--muted);text-decoration:none}
+   h1{font-size:28px;font-weight:700;letter-spacing:-.03em;
+      margin-bottom:8px;line-height:1.2}
+   .desc{color:var(--muted);font-size:15px;line-height:1.6;
+         margin-bottom:28px}
+   h2{font-size:20px;font-weight:600;letter-spacing:-.02em;
+      margin:32px 0 12px;padding-top:20px;
       border-top:1px solid var(--border)}
-   p{color:var(--muted);font-size:10px;line-height:1.6;
-     margin-bottom:8px}
+   p{color:var(--muted);font-size:14px;line-height:1.7;
+     margin-bottom:16px}
 
    /* ---- code ---- */
-   .code{
+   .code-block{
      background:var(--bg-sidebar);border:1px solid var(--border);
-     border-radius:5px;padding:8px 10px;font-family:var(--mono);
-     font-size:9px;line-height:1.6;overflow-x:auto;
-     margin-bottom:10px;position:relative
+     border-radius:8px;padding:16px 18px;font-family:var(--mono);
+     font-size:12.5px;line-height:1.7;overflow-x:auto;
+     margin-bottom:20px;position:relative
    }
-   .code .copy{
-     position:absolute;top:5px;right:5px;background:var(--bg-card);
-     border:1px solid var(--border);border-radius:3px;
-     padding:2px 5px;font-size:7px;color:var(--muted);
+   .code-block .copy{
+     position:absolute;top:10px;right:10px;background:var(--bg-card);
+     border:1px solid var(--border);border-radius:5px;
+     padding:4px 8px;font-size:10px;color:var(--muted);
      cursor:pointer;font-family:var(--font)
    }
    code{
-     font-family:var(--mono);font-size:9px;background:var(--bg-card);
-     border:1px solid var(--border);border-radius:3px;
-     padding:1px 4px;color:var(--brand)
+     font-family:var(--mono);font-size:12px;background:var(--bg-card);
+     border:1px solid var(--border);border-radius:4px;
+     padding:2px 6px;color:var(--brand)
    }
 
    /* ---- callout ---- */
    .callout{
      background:var(--brand-dim);
-     border:1px solid color-mix(in srgb,var(--brand) 18%,transparent);
-     border-radius:5px;padding:7px 10px;margin-bottom:10px;
-     display:flex;gap:6px;font-size:9.5px;line-height:1.5;
-     color:var(--text)
+     border:1px solid color-mix(in srgb,var(--brand) 20%,transparent);
+     border-radius:8px;padding:14px 18px;margin-bottom:20px;
+     display:flex;gap:10px;align-items:flex-start;font-size:13px;
+     line-height:1.55;color:var(--text)
    }
-   .callout-icon{color:var(--brand);flex-shrink:0;font-size:12px}
+   .callout-icon{color:var(--brand);flex-shrink:0;font-size:16px;
+                 margin-top:1px}
 
    /* ---- tables ---- */
-   table{width:100%;border-collapse:collapse;font-size:9px}
-   th{text-align:left;padding:4px 8px;
+   table{width:100%;border-collapse:collapse;font-size:13px}
+   th{text-align:left;padding:10px 16px;
       background:rgba(255,255,255,.02);
       border-bottom:1px solid var(--border);
-      color:var(--muted);font-weight:500;font-size:8px}
-   td{padding:4px 8px;border-bottom:1px solid var(--border)}
-   table code{font-size:8px}
+      color:var(--muted);font-weight:500;font-size:11px;
+      text-transform:uppercase;letter-spacing:.06em}
+   td{padding:10px 16px;border-bottom:1px solid var(--border)}
+   tr:last-child td{border-bottom:0}
 
    /* ---- cards / badges ---- */
    .card{
      background:var(--bg-card);border:1px solid var(--border);
-     border-radius:5px;padding:8px 10px;margin-bottom:6px
+     border-radius:8px;padding:14px 18px;margin-bottom:8px
    }
-   .card-name{font-weight:600;font-size:10px;margin-bottom:3px}
-   .card-detail{font-size:9px;color:var(--muted);line-height:1.5}
+   .card-name{font-weight:600;font-size:14px;margin-bottom:4px}
+   .card-detail{font-size:13px;color:var(--muted);line-height:1.55}
    .badge{
-     display:inline-flex;padding:1px 5px;border-radius:3px;
-     font-size:8px;font-weight:600;font-family:var(--mono)
+     display:inline-flex;align-items:center;gap:4px;
+     padding:3px 8px;border-radius:999px;
+     font-size:11px;font-weight:500
    }
    .btn{
-     padding:4px 10px;border-radius:5px;font-size:9px;
-     font-weight:600;border:none;cursor:pointer;
+     padding:6px 14px;border-radius:6px;font-size:12px;
+     font-weight:500;border:none;cursor:pointer;
      font-family:var(--font)
    }
 
    /* ---- stat metrics ---- */
-   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
-          margin-bottom:12px}
+   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+          margin-bottom:24px}
    .stat{background:var(--bg-card);border:1px solid var(--border);
-         border-radius:5px;padding:8px 10px}
-   .stat-label{font-size:8px;color:var(--muted);
-               text-transform:uppercase;letter-spacing:.04em;
-               margin-bottom:2px}
-   .stat-value{font-size:16px;font-weight:600;
-               letter-spacing:-.01em}
+         border-radius:8px;padding:16px 18px}
+   .stat-label{font-size:11px;color:var(--muted);
+               text-transform:uppercase;letter-spacing:.05em;
+               margin-bottom:4px}
+   .stat-value{font-size:22px;font-weight:600;
+               letter-spacing:-.02em}
 
    /* ---- demoday tag ---- */
    .demoday-tag{
@@ -346,15 +352,22 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
    `rgba(0,0,0,0.18)`.
 
    **Sidebar rules — common mistakes to avoid:**
-   - NEVER set sidebar width below `100px`.
+   - The default sidebar width is `220px`. NEVER set it below `180px`.
+   - For products with longer nav labels (e.g. "Advanced Configuration",
+     "Edge Functions"), increase `.sidebar { width }` to `240px` or more
+     until all labels fit on one line without wrapping.
    - NEVER apply `overflow:hidden`, `text-overflow:ellipsis`, or
      `white-space:nowrap` to nav items. Labels must be fully visible.
-   - NEVER invent your own font sizes. Use the template values.
-   - If the product has long nav labels (e.g. "API References" is
-     fine at 100px, but "Advanced Configuration" needs ~110px),
-     increase `.side { width }` until all labels fit on one line.
+   - NEVER shrink font sizes below the template values. The `13px`
+     nav-item size and `14px` body size are calibrated to match
+     production apps rendered inside iframes.
    - The sidebar must use `flex-shrink:0` and `min-width` equal to
      its width so it never collapses when the card is narrow.
+   - Always wrap nav items inside `.sidebar-section` containers with
+     proper padding (`4px 12px`) to prevent items from touching the
+     sidebar edges.
+   - Use `.nav-divider` (not raw `<hr>` or margin hacks) to separate
+     nav groups.
 
    **Other requirements:**
    - Inline CSS and JS. No external fonts or scripts.
@@ -387,6 +400,24 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
            style="width:100%;height:600px;border:0;border-radius:12px;"
            loading="lazy"></iframe>
    ```
+
+8. **Record a video for X.** After the user chooses `Ship to landing
+   page` or `Replace an existing demo` (not during the edit loop),
+   automatically record a 6-second MP4 walkthrough by running:
+   ```
+   node scripts/record-demo.mjs
+   ```
+   The script captures a 720x720 square video (H.264) of the demo
+   card cycling through all three steps. The dev server must be
+   running. Requires `ffmpeg` on PATH. Output lands in `recordings/`.
+
+   Once the recording finishes, tell the user the video file path and
+   use `AskUserQuestion`:
+   > "A 6-second video of your demo is ready at `recordings/demo.mp4`.
+   > Want to download it for posting on X?"
+   Options: `Yes, open it` / `Skip`
+   If the user picks `Yes, open it`, open the file in the browser so
+   they can save it.
 
 ## Telemetry
 

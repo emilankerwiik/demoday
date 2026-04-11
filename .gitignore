@@ -12,3 +12,20 @@ yarn-error.log*
 .vercel
 .gstack/
 .env*.local
+recordings/*.mp4
+recordings/*.gif
+recordings/*.webm
+
+# Ignore new demos — only keep the five main ones + demoday
+public/demos/*
+!public/demos/demoday.html
+!public/demos/claude-code.html
+!public/demos/claude-code-step.html
+!public/demos/gmail.html
+!public/demos/gmail-step.html
+!public/demos/mintlify.html
+!public/demos/mintlify-step.html
+!public/demos/stripe.html
+!public/demos/stripe-step.html
+!public/demos/supabase.html
+!public/demos/supabase-step.html
