@@ -27,7 +27,7 @@ if (args.help) {
 
   Captures the demo card (iframe + step description) and clicks through
   all steps using the page navigation. Output is a 1:1 square video
-  optimized for posting on X (720x720, H.264).
+  optimized for posting on X (1080x1080, H.264).
 
   Usage:
     node scripts/record-demo.mjs [options]
@@ -72,7 +72,7 @@ const output = args.output
   : resolve("recordings", `${filename}${ext}`);
 
 const totalDuration = dwell * steps;
-const SIZE = 720;
+const SIZE = 1080;
 
 console.log(`Recording demo (${steps} steps, ${dwell}ms each, ~${totalDuration / 1000}s total)`);
 if (brand) console.log(`  Brand:  ${brand}`);
@@ -115,27 +115,33 @@ if (brand) {
   await sleep(500);
 }
 
-await page.evaluate(() => {
-  const brands = document.querySelector(".how-brands");
-  if (brands) brands.style.display = "none";
-});
-
 await page.waitForSelector(".how-dot", { timeout: 5000 });
 await page.evaluate(() => {
   const dot = document.querySelector(".how-dot");
   if (dot) dot.click();
 });
-await sleep(400);
+await sleep(300);
 
 await page.evaluate(() => {
   const card = document.querySelector(".how-card");
   if (!card) return;
+
+  const style = document.createElement("style");
+  style.textContent = `
+    body { overflow: hidden !important; }
+    body * { visibility: hidden !important; }
+    .how-card,
+    .how-card *,
+    .how-card iframe { visibility: visible !important; }
+    .how-brands { display: none !important; }
+  `;
+  document.head.appendChild(style);
+
   const rect = card.getBoundingClientRect();
   const viewH = window.innerHeight;
   const cardCenter = rect.top + rect.height / 2 + window.scrollY;
   window.scrollTo({ top: cardCenter - viewH / 2, behavior: "instant" });
 });
-
 await sleep(600);
 
 const needsReencode = format === "mp4";
