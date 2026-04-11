@@ -136,6 +136,17 @@ await page.evaluate(() => {
     }
     body * { visibility: hidden !important; }
 
+    /* Neutralize ancestor transforms / filters / will-change so that
+       position:fixed on the card resolves against the viewport, not the
+       nearest transformed ancestor. */
+    .reveal {
+      transform: none !important;
+      filter: none !important;
+      opacity: 1 !important;
+      will-change: auto !important;
+      transition: none !important;
+    }
+
     .how-card {
       visibility: visible !important;
       position: fixed !important;
@@ -145,6 +156,7 @@ await page.evaluate(() => {
       z-index: 99999 !important;
       max-width: 580px !important;
       width: 76% !important;
+      margin: 0 !important;
     }
     .how-card * { visibility: visible !important; }
     .how-card iframe { visibility: visible !important; }
