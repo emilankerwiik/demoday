@@ -2,11 +2,12 @@
 /**
  * @demoday/skill init
  *
- * Non-interactive. Modeled after gstack's setup shape:
- *   - Write the skill into ~/.claude/skills/demoday/ so Claude Code picks it up.
+ * Non-interactive. Works with both Claude Code and Cursor:
+ *   - Write the skill into ~/.claude/skills/demoday/ (Claude Code)
+ *   - Write the skill into ~/.cursor/skills/demoday/ (Cursor)
  *   - Add the package as a dev dependency in the current project.
  *   - Write ~/.demoday/config.json with undecided (null) consent flags.
- *   - Print one next line. Do NOT prompt stdin — Claude asks the user
+ *   - Print one next line. Do NOT prompt stdin — the agent asks the user
  *     about telemetry / auto-update / license key in the chat on first run,
  *     via AskUserQuestion, per SKILL.md.
  */
@@ -24,7 +25,10 @@ if (cmd !== "init") {
 
 const HOME = os.homedir();
 const SKILL_SRC = path.join(__dirname, "..", "skill");
-const SKILL_DEST = path.join(HOME, ".claude", "skills", "demoday");
+const SKILL_TARGETS = [
+  { dir: path.join(HOME, ".claude", "skills", "demoday"), label: "Claude Code" },
+  { dir: path.join(HOME, ".cursor", "skills", "demoday"), label: "Cursor" },
+];
 const DEMODAY_DIR = path.join(HOME, ".demoday");
 const CONFIG_PATH = path.join(DEMODAY_DIR, "config.json");
 const CWD = process.cwd();
@@ -91,9 +95,11 @@ function writeConfigIfMissing() {
 // ---- run ----
 console.log("demoday · installing skill");
 
-mkdirp(path.dirname(SKILL_DEST));
-copyDir(SKILL_SRC, SKILL_DEST);
-console.log("  ✓ skill → " + SKILL_DEST.replace(HOME, "~"));
+for (const target of SKILL_TARGETS) {
+  mkdirp(path.dirname(target.dir));
+  copyDir(SKILL_SRC, target.dir);
+  console.log("  ✓ " + target.label + " → " + target.dir.replace(HOME, "~"));
+}
 
 const addedDep = addDevDep(CWD);
 if (addedDep) console.log("  ✓ added @demoday/skill to devDependencies");
@@ -110,5 +116,5 @@ console.log(
 );
 
 console.log("");
-console.log("Skill installed. Reload Claude Code to activate.");
-console.log("Then Claude will offer to generate your first demo.");
+console.log("Skill installed for Claude Code and Cursor.");
+console.log("Reload your editor, then ask the agent to generate a demo.");
