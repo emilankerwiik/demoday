@@ -165,112 +165,200 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
      corresponds to that step and call `render()`.
    - Also read `?step=N` from the URL query string on initial load.
 
-   **Reference CSS specification — sidebar and canvas layout:**
+   **Canonical CSS template — copy verbatim, then change colors:**
 
-   The sidebar and content area inside `.demo-canvas` must follow these
-   exact sizing rules. These values are tested across dozens of demos
-   and are the canonical Demoday proportions.
-
-   *Sidebar:*
-   - Width: exactly `100px`. Never narrower. Use `flex-shrink:0`.
-   - Background: `var(--bg-sidebar)`. Border-right: `1px solid var(--border)`.
-   - Padding: `8px 6px` on the sidebar container.
-   - Logo row: `padding:8px 8px 10px`, `font-size:10px`, `font-weight:600`,
-     `display:flex`, `align-items:center`, `gap:6px`.
-   - Logo icon: `16px × 16px`, `border-radius:3px`.
-   - Section labels (if the product groups nav items): `font-size:8px`,
-     `text-transform:uppercase`, `letter-spacing:0.06em`,
-     `color:var(--faint)`, `padding:8px 8px 4px`, `font-weight:500`.
-   - Nav items: `font-size:9.5px`, `padding:5px 8px`, `border-radius:5px`,
-     `color:var(--muted)`, `gap:7px` (icon + label), `cursor:pointer`,
-     `transition:all 0.1s`, `user-select:none`.
-   - Nav item hover: `background:var(--bg-card)`, `color:var(--text)`.
-   - Nav item active: `background:var(--brand-dim)`, `color:var(--brand)`.
-   - Nav icons: `width:14px`, `height:14px` (SVG), `flex-shrink:0`.
-     If the product uses dot indicators instead, use `3px × 3px`
-     circles with `border-radius:50%`.
-   - **Critical: nav labels must never truncate.** No `overflow:hidden`,
-     no `text-overflow:ellipsis`, no `white-space:nowrap` on nav items.
-     If labels are too long for 100px, increase sidebar width to fit.
-
-   *Main area (right of sidebar):*
-   - `flex:1`, `display:flex`, `flex-direction:column`, `overflow:hidden`.
-   - Topbar: `height:26px`, `border-bottom:1px solid var(--border)`,
-     `padding:0 10px`, `display:flex`, `align-items:center`,
-     `background:var(--bg)`.
-   - Search input (if applicable): `font-size:9px`, `padding:2px 8px`,
-     `border-radius:4px`, `width:140px`.
-   - Content area: `flex:1`, `overflow-y:auto`, `padding:14px 16px`.
-
-   **Reference CSS specification — typography scale:**
-
-   All font sizes inside `.demo-canvas` must follow this scale.
-   Do not deviate — these sizes are calibrated for the 4:3 card at
-   `max-width:640px`.
-
-   | Element            | Size    | Weight | Extra                        |
-   |--------------------|---------|--------|------------------------------|
-   | Body / base        | 10.5px  | 400    | `line-height:1.5`            |
-   | h1 (page title)    | 18px    | 700    | `letter-spacing:-0.02em`     |
-   | h2 (section head)  | 13px    | 600    | `letter-spacing:-0.01em`, `border-top:1px solid var(--border)`, `padding-top:10px`, `margin:16px 0 6px` |
-   | Paragraph / body   | 10px    | 400    | `line-height:1.6`, `color:var(--muted)`, `margin-bottom:8px` |
-   | Description (below h1) | 11px | 400  | `line-height:1.5`, `color:var(--muted)`, `margin-bottom:14px` |
-   | Code blocks        | 9px     | 400    | `font-family:var(--mono)`, `line-height:1.6`, `padding:8px 10px`, `border-radius:5px` |
-   | Inline code        | 9px     | 400    | `padding:1px 4px`, `border-radius:3px`, `color:var(--brand)` |
-   | Callout text       | 9.5px   | 400    | `line-height:1.5`, `padding:7px 10px`, `border-radius:5px` |
-   | Table headers      | 8px     | 500    | `text-transform:uppercase`, `letter-spacing:0.04em` |
-   | Table cells        | 9px     | 400    |                              |
-   | Breadcrumb         | 9px     | 400    | `color:var(--faint)`         |
-   | Buttons            | 9px     | 600    | `padding:4px 10px`, `border-radius:5px` |
-   | Badges / tags      | 7–8px   | 500    | `padding:1px 5px`, `border-radius:3px` |
-
-   **Reference CSS specification — font stacks:**
+   The CSS below is the exact, tested Demoday stylesheet. Copy it
+   into every generated demo **as-is**. The only things you change
+   are the color values in `:root` (map them to the user's brand)
+   and you may add product-specific classes after the template.
+   **Do not change font sizes, paddings, widths, or border-radii.**
 
    ```css
-   --font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
-           Roboto, Helvetica, Arial, sans-serif;
-   --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo,
-           Consolas, monospace;
-   ```
+   :root{
+     --bg:#0f1117;            /* page background          — replace */
+     --bg-sidebar:#0a0c10;    /* sidebar background       — replace */
+     --bg-card:#181b22;       /* card / elevated surface  — replace */
+     --border:#1e2029;        /* borders, dividers        — replace */
+     --text:#e4e4e7;          /* primary text              — replace */
+     --muted:#71717a;         /* secondary text            — replace */
+     --faint:#52525b;         /* tertiary / placeholders   — replace */
+     --brand:#3dd68c;         /* primary brand color       — replace */
+     --brand-dim:rgba(61,214,140,.1); /* brand at ~10% — replace */
+     --font:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",
+            Roboto,Helvetica,Arial,sans-serif;
+     --mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,
+            Consolas,monospace
+   }
+   *{box-sizing:border-box;margin:0;padding:0}
+   html,body{
+     height:100vh;overflow:hidden;font-family:var(--font);
+     font-size:10.5px;color:var(--text);background:var(--bg);
+     -webkit-font-smoothing:antialiased
+   }
 
-   Always set `font-family:var(--font)` on `html,body` and
-   `-webkit-font-smoothing:antialiased`. Use `var(--mono)` for code
-   blocks, inline code, key prefixes, and monospaced data.
+   /* ---- layout ---- */
+   .app{display:flex;height:100vh}
+   .side{
+     width:100px;min-width:100px;flex-shrink:0;
+     background:var(--bg-sidebar);border-right:1px solid var(--border);
+     display:flex;flex-direction:column;overflow-y:auto;padding:8px 6px
+   }
+   .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
-   **Reference CSS specification — color variables:**
+   /* ---- sidebar ---- */
+   .logo{
+     padding:8px 8px 10px;display:flex;align-items:center;
+     gap:6px;font-size:10px;font-weight:600
+   }
+   .logo-icon{
+     width:16px;height:16px;border-radius:3px;
+     display:flex;align-items:center;justify-content:center
+   }
+   .sec-label{
+     font-size:8px;text-transform:uppercase;letter-spacing:.06em;
+     color:var(--faint);padding:8px 8px 4px;font-weight:500
+   }
+   .nav{
+     display:flex;align-items:center;gap:7px;padding:5px 8px;
+     border-radius:5px;color:var(--muted);font-size:9.5px;
+     cursor:pointer;transition:all .1s;user-select:none
+   }
+   .nav:hover{background:var(--bg-card);color:var(--text)}
+   .nav.active{background:var(--brand-dim);color:var(--brand)}
+   .nav svg{width:14px;height:14px;flex-shrink:0}
+   .nav .dot{
+     width:3px;height:3px;border-radius:50%;
+     background:currentColor;opacity:.4;flex-shrink:0
+   }
+   .nav.active .dot{opacity:1;background:var(--brand)}
 
-   Every demo must define these CSS custom properties in `:root`.
-   Map the user's brand palette to these names:
+   /* ---- topbar ---- */
+   .topbar{
+     height:26px;border-bottom:1px solid var(--border);
+     display:flex;align-items:center;justify-content:space-between;
+     padding:0 10px;background:var(--bg)
+   }
+   .search{
+     display:flex;align-items:center;gap:4px;
+     background:var(--bg-card);border:1px solid var(--border);
+     border-radius:4px;padding:2px 8px;font-size:9px;
+     color:var(--muted);width:140px
+   }
+   .search kbd{
+     font-family:var(--font);font-size:7px;background:var(--bg);
+     border:1px solid var(--border);border-radius:2px;
+     padding:0 3px;color:var(--faint);margin-left:auto
+   }
 
-   ```css
-   :root {
-     --bg:          /* page background */;
-     --bg-sidebar:  /* sidebar background (slightly different from --bg) */;
-     --bg-card:     /* card / elevated surface */;
-     --border:      /* borders, dividers */;
-     --text:        /* primary text */;
-     --muted:       /* secondary text */;
-     --faint:       /* tertiary text, labels, placeholders */;
-     --brand:       /* primary brand / accent color */;
-     --brand-dim:   /* brand at ~10-12% opacity, for active backgrounds */;
-     --font:        /* see font stack above */;
-     --mono:        /* see mono stack above */;
+   /* ---- content ---- */
+   .content{flex:1;overflow-y:auto;padding:14px 16px}
+   .crumb{
+     font-size:9px;color:var(--faint);margin-bottom:12px;
+     display:flex;align-items:center;gap:4px
+   }
+   .crumb a{color:var(--muted);text-decoration:none}
+   h1{font-size:18px;font-weight:700;letter-spacing:-.02em;
+      margin-bottom:4px;line-height:1.2}
+   .desc{color:var(--muted);font-size:11px;line-height:1.5;
+         margin-bottom:14px}
+   h2{font-size:13px;font-weight:600;letter-spacing:-.01em;
+      margin:16px 0 6px;padding-top:10px;
+      border-top:1px solid var(--border)}
+   p{color:var(--muted);font-size:10px;line-height:1.6;
+     margin-bottom:8px}
+
+   /* ---- code ---- */
+   .code{
+     background:var(--bg-sidebar);border:1px solid var(--border);
+     border-radius:5px;padding:8px 10px;font-family:var(--mono);
+     font-size:9px;line-height:1.6;overflow-x:auto;
+     margin-bottom:10px;position:relative
+   }
+   .code .copy{
+     position:absolute;top:5px;right:5px;background:var(--bg-card);
+     border:1px solid var(--border);border-radius:3px;
+     padding:2px 5px;font-size:7px;color:var(--muted);
+     cursor:pointer;font-family:var(--font)
+   }
+   code{
+     font-family:var(--mono);font-size:9px;background:var(--bg-card);
+     border:1px solid var(--border);border-radius:3px;
+     padding:1px 4px;color:var(--brand)
+   }
+
+   /* ---- callout ---- */
+   .callout{
+     background:var(--brand-dim);
+     border:1px solid color-mix(in srgb,var(--brand) 18%,transparent);
+     border-radius:5px;padding:7px 10px;margin-bottom:10px;
+     display:flex;gap:6px;font-size:9.5px;line-height:1.5;
+     color:var(--text)
+   }
+   .callout-icon{color:var(--brand);flex-shrink:0;font-size:12px}
+
+   /* ---- tables ---- */
+   table{width:100%;border-collapse:collapse;font-size:9px}
+   th{text-align:left;padding:4px 8px;
+      background:rgba(255,255,255,.02);
+      border-bottom:1px solid var(--border);
+      color:var(--muted);font-weight:500;font-size:8px}
+   td{padding:4px 8px;border-bottom:1px solid var(--border)}
+   table code{font-size:8px}
+
+   /* ---- cards / badges ---- */
+   .card{
+     background:var(--bg-card);border:1px solid var(--border);
+     border-radius:5px;padding:8px 10px;margin-bottom:6px
+   }
+   .card-name{font-weight:600;font-size:10px;margin-bottom:3px}
+   .card-detail{font-size:9px;color:var(--muted);line-height:1.5}
+   .badge{
+     display:inline-flex;padding:1px 5px;border-radius:3px;
+     font-size:8px;font-weight:600;font-family:var(--mono)
+   }
+   .btn{
+     padding:4px 10px;border-radius:5px;font-size:9px;
+     font-weight:600;border:none;cursor:pointer;
+     font-family:var(--font)
+   }
+
+   /* ---- stat metrics ---- */
+   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;
+          margin-bottom:12px}
+   .stat{background:var(--bg-card);border:1px solid var(--border);
+         border-radius:5px;padding:8px 10px}
+   .stat-label{font-size:8px;color:var(--muted);
+               text-transform:uppercase;letter-spacing:.04em;
+               margin-bottom:2px}
+   .stat-value{font-size:16px;font-weight:600;
+               letter-spacing:-.01em}
+
+   /* ---- demoday tag ---- */
+   .demoday-tag{
+     position:fixed;bottom:10px;left:12px;font-size:9px;
+     letter-spacing:.12em;text-transform:uppercase;
+     color:rgba(255,255,255,.22);font-family:var(--font);
+     pointer-events:none
    }
    ```
 
-   These names are mandatory. Additional product-specific colors
-   (e.g. `--green`, `--purple`, `--red`) may be added as needed.
+   For light-background demos, change `.demoday-tag` color to
+   `rgba(0,0,0,0.18)`.
+
+   **Sidebar rules — common mistakes to avoid:**
+   - NEVER set sidebar width below `100px`.
+   - NEVER apply `overflow:hidden`, `text-overflow:ellipsis`, or
+     `white-space:nowrap` to nav items. Labels must be fully visible.
+   - NEVER invent your own font sizes. Use the template values.
+   - If the product has long nav labels (e.g. "API References" is
+     fine at 100px, but "Advanced Configuration" needs ~110px),
+     increase `.side { width }` until all labels fit on one line.
+   - The sidebar must use `flex-shrink:0` and `min-width` equal to
+     its width so it never collapses when the card is narrow.
 
    **Other requirements:**
    - Inline CSS and JS. No external fonts or scripts.
    - Realistic placeholder data. Nothing calls a live API.
-   - Always include the "DEMODAY / MADE WITH LOVE" tag in the
-     bottom-left corner of the shell:
-     `position:fixed; bottom:10px; left:12px; font-size:9px;
-     letter-spacing:0.12em; text-transform:uppercase;
-     color:rgba(255,255,255,0.22); font-family:var(--font);
-     pointer-events:none`. For light-background demos, use
-     `color:rgba(0,0,0,0.18)` instead.
 
 6. **Preview the demo.** Before touching the landing page:
    - Start the dev server if it is not already running (e.g.
