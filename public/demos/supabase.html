@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Supabase — Demoday demo</title>
+<style>
+:root{--bg:#1c1c1c;--bg-sidebar:#171717;--bg-card:#232323;--border:#2e2e2e;--text:#ededed;--muted:#8c8c8c;--green:#3ecf8e;--green-dim:rgba(62,207,142,.12);--font:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;--mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:var(--font);font-size:13px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+.shell{display:flex;height:100vh}
+.sidebar{width:220px;background:var(--bg-sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-logo{padding:18px 18px 14px;display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;letter-spacing:-.01em}
+.sidebar-logo svg{flex-shrink:0}
+.sidebar-nav{flex:1;padding:4px 8px;display:flex;flex-direction:column;gap:1px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;color:var(--muted);font-size:13px;cursor:pointer;transition:background .12s,color .12s}
+.nav-item:hover{background:var(--bg-card);color:var(--text)}
+.nav-item.active{background:var(--bg-card);color:var(--text)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.nav-item.active svg{opacity:1}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:48px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:12px;background:var(--bg)}
+.topbar-title{font-size:14px;font-weight:500}
+.topbar-breadcrumb{color:var(--muted);font-size:12px}
+.content{flex:1;overflow-y:auto;padding:28px 32px}
+.content h2{font-size:20px;font-weight:600;margin-bottom:6px;letter-spacing:-.02em}
+.content .sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+.table-card{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.table-toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border)}
+.table-toolbar .search{background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px;width:200px;font-family:var(--font)}
+.btn-green{background:var(--green);color:#0a0a0a;border:0;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:10px 16px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);font-weight:500}
+td{padding:10px 16px;border-bottom:1px solid var(--border);font-size:13px}
+tr:last-child td{border-bottom:0}
+.type-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-family:var(--mono);background:rgba(62,207,142,.1);color:var(--green)}
+.uuid{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:500}
+.badge-active{background:var(--green-dim);color:var(--green)}
+.badge-inactive{background:rgba(140,140,140,.12);color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.stat{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:16px 18px}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:600;letter-spacing:-.02em}
+.stat-value .unit{font-size:13px;font-weight:400;color:var(--muted);margin-left:2px}
+.tag-label{font-size:11px;color:var(--muted);margin-right:6px;display:inline-block}
+.demoday-tag{position:fixed;bottom:10px;left:12px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22);font-family:var(--font);pointer-events:none}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <svg width="20" height="20" viewBox="0 0 109 113" fill="none"><path d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z" fill="url(#a)"/><path d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z" fill="url(#b)" fill-opacity=".2"/><path d="M45.317 2.07103C48.1765 -1.53037 53.9745 0.442937 54.0434 5.041L54.4849 72.2922H9.83113C1.64038 72.2922 -2.92775 62.8321 2.1655 56.4175L45.317 2.07103Z" fill="#3ECF8E"/><defs><linearGradient id="a" x1="53.9738" y1="54.974" x2="94.1635" y2="71.8295" gradientUnits="userSpaceOnUse"><stop stop-color="#249361"/><stop offset="1" stop-color="#3ECF8E"/></linearGradient><linearGradient id="b" x1="36.1558" y1="30.578" x2="54.4844" y2="65.0806" gradientUnits="userSpaceOnUse"><stop/><stop offset="1" stop-opacity="0"/></linearGradient></defs></svg>
+      Supabase
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Table Editor</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h16M4 12h16M4 17h10"/></svg>SQL Editor</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>Authentication</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>Storage</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>Edge Functions</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Realtime</div>
+    </nav>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <span class="topbar-title">acme-saas</span>
+      <span class="topbar-breadcrumb">/ Table Editor</span>
+    </div>
+    <div class="content">
+      <div class="stats">
+        <div class="stat"><div class="stat-label">Total rows</div><div class="stat-value">24,891</div></div>
+        <div class="stat"><div class="stat-label">Database size</div><div class="stat-value">1.2<span class="unit">GB</span></div></div>
+        <div class="stat"><div class="stat-label">Active connections</div><div class="stat-value">38</div></div>
+      </div>
+      <h2>users</h2>
+      <p class="sub">public schema &middot; 6 columns &middot; 2,412 rows</p>
+      <div class="table-card">
+        <div class="table-toolbar">
+          <input class="search" placeholder="Filter rows..." readonly/>
+          <button class="btn-green">+ Insert row</button>
+        </div>
+        <table>
+          <thead><tr><th>id</th><th>email</th><th>role</th><th>status</th><th>created_at</th></tr></thead>
+          <tbody>
+            <tr><td class="uuid">a1b2c3d4-...</td><td>sarah@linear.app</td><td><span class="type-tag">admin</span></td><td><span class="badge badge-active">active</span></td><td>2026-04-08</td></tr>
+            <tr><td class="uuid">e5f6a7b8-...</td><td>james@vercel.com</td><td><span class="type-tag">member</span></td><td><span class="badge badge-active">active</span></td><td>2026-04-07</td></tr>
+            <tr><td class="uuid">c9d0e1f2-...</td><td>ava@notion.so</td><td><span class="type-tag">member</span></td><td><span class="badge badge-active">active</span></td><td>2026-04-06</td></tr>
+            <tr><td class="uuid">g3h4i5j6-...</td><td>marcus@stripe.com</td><td><span class="type-tag">viewer</span></td><td><span class="badge badge-inactive">invited</span></td><td>2026-04-05</td></tr>
+            <tr><td class="uuid">k7l8m9n0-...</td><td>priya@shopify.com</td><td><span class="type-tag">member</span></td><td><span class="badge badge-active">active</span></td><td>2026-04-04</td></tr>
+            <tr><td class="uuid">o1p2q3r4-...</td><td>leo@figma.com</td><td><span class="type-tag">admin</span></td><td><span class="badge badge-active">active</span></td><td>2026-04-03</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="demoday-tag">DEMODAY / MADE WITH LOVE</div>
+</body>
+</html>

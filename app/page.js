@@ -21,8 +21,8 @@ export default function Home() {
             </span>
             <span className="brand-name">Demoday</span>
           </a>
-          <a className="btn btn-primary btn-sm" href="#pricing">
-            Premium
+          <a className="btn btn-primary btn-sm" href="#demo">
+            See demos
           </a>
         </div>
       </header>
@@ -50,86 +50,6 @@ export default function Home() {
       <Reveal as="section" id="demo" className="demo-section wrap" delayMs={80}>
         <HowItWorks />
       </Reveal>
-
-      {/* Pricing */}
-      <section id="pricing" className="section alt">
-        <div className="wrap">
-          <Reveal className="section-head" staggerChildren>
-            <span className="section-eyebrow">
-              <span className="dot" />
-              Pricing
-            </span>
-            <p className="pricing-lede">
-              Start for free. <em>Make it yours.</em>
-            </p>
-          </Reveal>
-
-          <Reveal className="pricing-card" delayMs={120}>
-            <div className="pricing-card-caption">
-              <span className="tag">
-                <span className="dot" />
-                Pricing
-              </span>
-              <span className="pricing-card-meta">
-                Unlimited demos · Yours forever
-              </span>
-            </div>
-            <div className="pricing-card-body">
-              <div className="plan">
-                <div className="plan-head">
-                  <h3>Free</h3>
-                  <div className="plan-price">
-                    <span className="amount">$0</span>
-                    <span className="per">forever</span>
-                  </div>
-                </div>
-                <p className="plan-sub">
-                  Everything you need to ship a clickable demo today.
-                </p>
-                <ul className="plan-list">
-                  <li>
-                    <span className="check">✓</span>
-                    Unlimited demos
-                  </li>
-                  <li>
-                    <span className="check">✓</span>
-                    Self-contained HTML, CSS &amp; JS
-                  </li>
-                  <li>
-                    <span className="check">✓</span>
-                    Small &ldquo;Made with Demoday&rdquo; tag in the corner
-                  </li>
-                </ul>
-              </div>
-
-              <div className="plan-divider" aria-hidden="true" />
-
-              <div className="plan plan-premium">
-                <div className="plan-badge">
-                  <span className="dot" />
-                  Premium
-                </div>
-                <div className="plan-head">
-                  <h3>
-                    Make it <em>yours.</em>
-                  </h3>
-                  <div className="plan-price">
-                    <span className="amount">$20</span>
-                    <span className="per">one-time</span>
-                  </div>
-                </div>
-                <p className="plan-sub">
-                  Everything in Free, with your brand in the corner of every
-                  iframe — across every project on your machine.
-                </p>
-                <a className="btn btn-primary plan-cta" href="#install">
-                  Upgrade for $20 →
-                </a>
-              </div>
-            </div>
-          </Reveal>
-        </div>
-      </section>
 
       {/* FAQ */}
       <section id="faq" className="section">
@@ -230,7 +150,6 @@ export default function Home() {
           </a>
           <nav className="footer-nav">
             <a href="#demo">Demo</a>
-            <a href="#pricing">Pricing</a>
             <a href="#faq">FAQ</a>
           </nav>
           <span className="footer-meta">

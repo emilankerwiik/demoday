@@ -464,6 +464,56 @@ h2 em {
   line-height: 1.55;
 }
 
+/* Brand tab bar above the demo card */
+.how-brands {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.how-brand {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.how-brand:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+  background: var(--bg-soft);
+}
+.how-brand-active {
+  color: var(--text);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--brand-color, var(--border)),
+    0 2px 8px -2px rgba(0, 0, 0, 0.08);
+  border-color: var(--brand-color, var(--border));
+}
+.how-brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.how-brand-icon svg {
+  display: block;
+}
+.how-brand-name {
+  line-height: 1;
+}
+
 /* How it works — single iframe + bottom explainer */
 .how-card {
   max-width: 560px;
@@ -639,6 +689,58 @@ h2 em {
   border-radius: 8px;
   color: var(--text);
   font-size: 16px;
+}
+
+/* Brand tabs above HowItWorks card */
+.how-brands {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.how-brand {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.how-brand:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+  background: var(--bg-soft);
+}
+.how-brand-active {
+  color: var(--text);
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--brand-color, var(--border)),
+    0 2px 8px -2px rgba(0, 0, 0, 0.08);
+  border-color: var(--brand-color, var(--border));
+}
+.how-brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.how-brand-icon svg {
+  display: block;
+}
+.how-brand-name {
+  line-height: 1;
 }
 
 /* Pricing */
@@ -962,9 +1064,12 @@ footer.site .footer-meta {
   .plan { padding: 32px 28px; }
   .nav { display: none; }
   .demo-frame iframe { height: 500px; }
+  .showcase-stack { height: 440px; }
+  .showcase-tab { padding: 7px 12px; font-size: 12px; }
   .hero { padding: 64px 0 48px; }
   .section { padding: 64px 0; }
   .how-card { max-width: 100%; margin-top: 40px; }
+  .how-brand { padding: 7px 12px; font-size: 12px; }
   .how-explain { padding: 20px 54px 24px 54px; }
   .how-nav-prev { left: 10px; }
   .how-nav-next { right: 10px; }
@@ -984,16 +1089,14 @@ footer.site .footer-meta {
   .hero-cta {
     gap: 10px;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
     width: 100%;
   }
   .hero-cta .btn { justify-content: center; }
   .cli-copy {
-    width: 100%;
     font-size: 13px;
     padding: 14px 16px;
     gap: 12px;
-    justify-content: flex-start;
   }
   .cli-copy code {
     font-size: 13px;
@@ -1002,8 +1105,17 @@ footer.site .footer-meta {
     text-align: left;
   }
   .demo-frame iframe { height: 440px; }
+  .showcase-stack { height: 380px; }
+  .showcase-tabs { gap: 4px; }
+  .showcase-tab { padding: 6px 10px; font-size: 11px; gap: 6px; }
+  .showcase-tab-icon { width: 16px; height: 16px; }
+  .showcase-tab-icon svg { width: 14px; height: 14px; }
+  .showcase-tab-name { display: none; }
   .how-media { aspect-ratio: 4 / 3; }
   .how-body h4 { font-size: 20px; }
+  .how-brands { gap: 4px; }
+  .how-brand { padding: 6px 10px; font-size: 11px; gap: 6px; }
+  .how-brand-name { display: none; }
   .faq p, .plan-sub, .section-head p { text-wrap: balance; }
   .cta .hero-cta { align-items: center; }
   .plan-head { flex-direction: column; align-items: flex-start; gap: 8px; }

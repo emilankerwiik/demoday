@@ -13,7 +13,19 @@
     "claude-code",
     "skill",
     "demo",
-    "iframe"
+    "iframe",
+    "landing-page",
+    "product-demo"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emilankerwiik/demoday.git",
+    "directory": "skill"
+  },
+  "homepage": "https://demoday.work",
+  "author": "Demoday",
+  "engines": {
+    "node": ">=16"
+  },
   "license": "MIT"
 }

@@ -59,45 +59,86 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
 
 ## Generation flow
 
-1. Read the user's project:
+1. **Study the product navigation.** Before writing any HTML, map the
+   user's top-level navigation structure:
+   - Read route files (`app/` directory, `pages/`, `src/routes/`, etc.)
+     to discover every major section the product has.
+   - Read layout files, sidebar components, and nav menus to understand
+     the real labels the product uses (e.g. "Table Editor", "SQL Editor",
+     "Authentication" for a database product).
+   - For each section, read its primary page to understand the kind of
+     content it shows (data tables, charts, forms, editors, etc.).
+   - The demo must reproduce this navigation faithfully — it is the
+     single most important quality signal.
+
+2. **Read the user's project:**
    - `package.json` to detect the framework.
    - The main landing-page file (`app/page.{js,jsx,tsx}`, `pages/index.*`,
      `src/routes/+page.svelte`, `index.html`, etc. — whichever exists).
-   - Any auth or onboarding files if you can find them; otherwise infer
-     three flows from the landing page itself.
-2. Identify the three flows to demo. Lead with the payoff:
+
+3. **Identify the three steps to demo.** Lead with the payoff:
    - **Step 01** — the outcome, dashboard, or result. Shown first so
      the viewer sees the value before the setup.
    - **Step 02** — the core action the user takes to get there.
    - **Step 03** — the first-touch / onboarding / install moment.
-3. Write a single self-contained file at
-   `public/demos/demoday.html` (or the framework's equivalent static
-   directory) containing:
-   - A **carousel card** showing one step at a time (not a tab bar):
-     - A product canvas on top rendering the current step's UI.
-     - A description card below with the step number (`01` / `02` /
-       `03`), a title, and a one-sentence description.
-     - A circular **left chevron** button vertically centered on the
-       left side of the description card, and a matching **right
-       chevron** on the right side. Clicking them advances or rewinds
-       the step, wrapping around at the ends.
-     - **Three dots** in the top-right of the description card
-       indicating the current step. The active dot is filled; the
-       others are muted.
-     - Step 01 is active on first load.
+   - Each step maps to one of the navigation sections discovered in
+     step 1 (e.g., step 1 = Dashboard, step 2 = Payments, step 3 =
+     Customers for a payments product).
+
+4. **Write a single self-contained file** at `public/demos/demoday.html`
+   (or the framework's equivalent static directory) containing:
+
+   **Layout — carousel card showing one step at a time:**
+   - A product canvas on top rendering the current step's UI.
+   - A description card below with the step number (`01` / `02` /
+     `03`), a title, and a one-sentence description.
+   - A circular **left chevron** button vertically centered on the
+     left side of the description card, and a matching **right
+     chevron** on the right side. Clicking them advances or rewinds
+     the step, wrapping around at the ends.
+   - **Three dots** in the top-right of the description card
+     indicating the current step. The active dot is filled; the
+     others are muted.
+   - Step 01 is active on first load.
+
+   **Interactive navigation — every nav item must be clickable:**
+   - The product canvas must include the real sidebar or nav bar from
+     the product (same labels, same icons, same order).
+   - Clicking any nav item swaps the main content area to show that
+     section's content. This works independently of the 3 steps.
+   - Use a data-driven `render()` pattern: a JavaScript object maps
+     each nav ID to a function returning that section's HTML. A single
+     `render()` function rebuilds the content area. Click handlers on
+     nav items update the active state and call `render()`.
+   - Each section must show realistic, representative content — data
+     tables, code editors, metric cards, form layouts, etc. — not
+     placeholder "Coming soon" screens.
+
+   **Step messaging — support parent-driven step switching:**
+   - Listen for `window.addEventListener("message", ...)` with
+     `{ type: "setStep", step: N }` where N is 1, 2, or 3.
+   - When a step message arrives, switch to the nav section that
+     corresponds to that step and call `render()`.
+   - Also read `?step=N` from the URL query string on initial load.
+
+   **Other requirements:**
    - Inline CSS and JS. No external fonts or scripts.
    - Realistic placeholder data. Nothing calls a live API.
+   - Compact layout optimized for embedding at small sizes (10–12px
+     base font, tight spacing). The demo will be rendered inside an
+     iframe with a 4:3 aspect ratio.
    - If `licenseKey` is `null` or `false`, include the red "DEMODAY /
-     MADE WITH LOVE" tag in the bottom-left corner. If `licenseKey` is a
-     string, render the user's `brand.name` in the same corner spot
+     MADE WITH LOVE" tag in the bottom-left corner. If `licenseKey` is
+     a string, render the user's `brand.name` in the same corner spot
      (linked to `brand.href` when present) instead of the Demoday tag.
-4. Embed the iframe in the landing-page file:
+
+5. **Embed the iframe** in the landing-page file:
    ```html
    <iframe src="/demos/demoday.html" title="Product demo"
            style="width:100%;height:600px;border:0;border-radius:12px;"
            loading="lazy"></iframe>
    ```
-5. Tell the user what you did in one paragraph. Suggest running the dev
+6. Tell the user what you did in one paragraph. Suggest running the dev
    server to see it.
 
 ## Telemetry

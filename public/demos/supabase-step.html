@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Supabase — mini demo</title>
+<style>
+:root{--bg:#1c1c1c;--sidebar:#171717;--card:#232323;--border:#2e2e2e;--text:#ededed;--muted:#8c8c8c;--faint:#666;--green:#3ecf8e;--green-dim:rgba(62,207,142,.12);--mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace;--font:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100vh;overflow:hidden;font-family:var(--font);font-size:10.5px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+.app{display:flex;height:100vh}
+.side{width:96px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;padding:8px 6px}
+.logo{padding:8px 6px 10px;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600}
+.logo svg{flex-shrink:0}
+.nav{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:5px;color:var(--muted);font-size:10px;cursor:pointer;transition:all .1s;user-select:none}
+.nav:hover{background:var(--card);color:var(--text)}
+.nav.active{background:var(--card);color:var(--text)}
+.nav svg{width:12px;height:12px;flex-shrink:0;opacity:.6}
+.nav.active svg{opacity:1}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:28px;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:6px;font-size:10px;color:var(--muted);background:var(--bg)}
+.topbar b{color:var(--text);font-weight:600}
+.content{flex:1;overflow-y:auto;padding:12px 14px}
+.content h2{font-size:13px;font-weight:600;margin-bottom:3px;letter-spacing:-.01em}
+.content .sub{color:var(--muted);font-size:9.5px;margin-bottom:12px}
+.stats{display:flex;gap:6px;margin-bottom:12px}
+.stat{flex:1;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.stat-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.stat-value{font-size:15px;font-weight:600;letter-spacing:-.02em}
+.stat-value .unit{font-size:10px;font-weight:400;color:var(--muted)}
+.tbl{background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.tbl-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-bottom:1px solid var(--border)}
+.tbl-bar input{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:3px 7px;color:var(--text);font-size:9px;width:120px;font-family:var(--font)}
+.btn-g{background:var(--green);color:#0a0a0a;border:0;padding:3px 8px;border-radius:4px;font-size:9px;font-weight:600;cursor:pointer;font-family:var(--font)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:5px 10px;font-size:8px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--border);font-weight:500}
+td{padding:5px 10px;border-bottom:1px solid var(--border);font-size:10px}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block;padding:1px 5px;border-radius:3px;font-size:8px;font-family:var(--mono);background:var(--green-dim);color:var(--green)}
+.uuid{font-family:var(--mono);font-size:9px;color:var(--muted)}
+.badge{padding:1px 6px;border-radius:999px;font-size:8px;font-weight:500}
+.badge-ok{background:var(--green-dim);color:var(--green)}
+.badge-off{background:rgba(140,140,140,.12);color:var(--muted)}
+.sql-editor{background:#0f0f0f;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.sql-bar{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;border-bottom:1px solid var(--border);background:var(--card)}
+.sql-area{padding:10px 12px;font-family:var(--mono);font-size:10px;line-height:1.6;color:var(--text);min-height:60px;white-space:pre}
+.sql-area .kw{color:#c084fc}
+.sql-area .str{color:#fbbf24}
+.sql-area .fn{color:#60a5fa}
+.sql-area .cmt{color:var(--faint)}
+.sql-results{border-top:1px solid var(--border);padding:8px 10px;font-size:9px;color:var(--green)}
+.auth-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border);font-size:10px}
+.auth-row:last-child{border-bottom:0}
+.auth-provider{width:16px;height:16px;border-radius:50%;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:7px;color:var(--muted)}
+.bucket{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px}
+.bucket:last-child{border-bottom:0}
+.bucket-icon{font-size:14px}
+.bucket-info{flex:1}
+.bucket-name{font-weight:500}
+.bucket-meta{font-size:8px;color:var(--muted)}
+.fn-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px}
+.fn-row:last-child{border-bottom:0}
+.fn-name{font-family:var(--mono);font-size:9px;font-weight:500}
+.fn-status{margin-left:auto}
+.rt-stat{font-size:24px;font-weight:700;margin-bottom:4px}
+.rt-label{font-size:9px;color:var(--muted);margin-bottom:12px}
+.ch-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border);font-size:10px}
+.ch-row:last-child{border-bottom:0}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo">
+      <svg width="14" height="14" viewBox="0 0 109 113" fill="none"><path d="M63.7 110.3C60.8 113.9 55 111.9 55 107.3L54 40h45.2c8.2 0 12.8 9.5 7.7 15.9L63.7 110.3Z" fill="#3ECF8E"/><path d="M45.3 2.1C48.2-1.5 54 .4 54 5l.5 67.3H9.8c-8.2 0-12.8-9.5-7.6-15.9L45.3 2.1Z" fill="#3ECF8E"/></svg>
+    </div>
+    <div class="nav active" data-v="table">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Table Editor
+    </div>
+    <div class="nav" data-v="sql">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+      SQL Editor
+    </div>
+    <div class="nav" data-v="auth">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+      Auth
+    </div>
+    <div class="nav" data-v="storage">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+      Storage
+    </div>
+    <div class="nav" data-v="edge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      Edge Fn
+    </div>
+    <div class="nav" data-v="realtime">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Realtime
+    </div>
+  </aside>
+  <div class="main">
+    <div class="topbar"><b>acme-saas</b> <span id="crumb">/ Table Editor</span></div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<script>
+var views={
+table:function(){return '<div class="stats"><div class="stat"><div class="stat-label">Total rows</div><div class="stat-value">24,891</div></div><div class="stat"><div class="stat-label">DB size</div><div class="stat-value">1.2<span class="unit">GB</span></div></div><div class="stat"><div class="stat-label">Connections</div><div class="stat-value">38</div></div></div><h2>users</h2><p class="sub">public &middot; 6 columns &middot; 2,412 rows</p><div class="tbl"><div class="tbl-bar"><input placeholder="Filter rows..." readonly/><button class="btn-g">+ Insert row</button></div><table><thead><tr><th>id</th><th>email</th><th>role</th><th>status</th><th>created_at</th></tr></thead><tbody><tr><td class="uuid">a1b2c3d4</td><td>sarah@linear.app</td><td><span class="tag">admin</span></td><td><span class="badge badge-ok">active</span></td><td>Apr 8</td></tr><tr><td class="uuid">e5f6a7b8</td><td>james@vercel.com</td><td><span class="tag">member</span></td><td><span class="badge badge-ok">active</span></td><td>Apr 7</td></tr><tr><td class="uuid">c9d0e1f2</td><td>ava@notion.so</td><td><span class="tag">member</span></td><td><span class="badge badge-ok">active</span></td><td>Apr 6</td></tr><tr><td class="uuid">g3h4i5j6</td><td>marcus@stripe.com</td><td><span class="tag">viewer</span></td><td><span class="badge badge-off">invited</span></td><td>Apr 5</td></tr><tr><td class="uuid">k7l8m9n0</td><td>priya@shopify.com</td><td><span class="tag">member</span></td><td><span class="badge badge-ok">active</span></td><td>Apr 4</td></tr></tbody></table></div>'},
+sql:function(){return '<div class="sql-editor"><div class="sql-bar"><span style="color:var(--muted);font-size:9px">Query 1</span><button class="btn-g">Run</button></div><div class="sql-area"><span class="kw">SELECT</span> email, role, created_at\n<span class="kw">FROM</span> users\n<span class="kw">WHERE</span> status = <span class="str">\'active\'</span>\n<span class="kw">ORDER BY</span> created_at <span class="kw">DESC</span>\n<span class="kw">LIMIT</span> <span class="fn">10</span>;</div><div class="sql-results">5 rows returned in 12ms</div></div><div class="tbl" style="margin-top:8px"><table><thead><tr><th>email</th><th>role</th><th>created_at</th></tr></thead><tbody><tr><td>sarah@linear.app</td><td><span class="tag">admin</span></td><td>Apr 8</td></tr><tr><td>james@vercel.com</td><td><span class="tag">member</span></td><td>Apr 7</td></tr><tr><td>ava@notion.so</td><td><span class="tag">member</span></td><td>Apr 6</td></tr><tr><td>priya@shopify.com</td><td><span class="tag">member</span></td><td>Apr 4</td></tr><tr><td>leo@figma.com</td><td><span class="tag">admin</span></td><td>Apr 3</td></tr></tbody></table></div>'},
+auth:function(){return '<h2>Users</h2><p class="sub">12 users &middot; 3 providers</p><div class="tbl"><table><thead><tr><th>Email</th><th>Provider</th><th>Status</th><th>Last sign in</th></tr></thead><tbody><tr><td>sarah@linear.app</td><td><span class="auth-provider">G</span></td><td><span class="badge badge-ok">active</span></td><td>2 min ago</td></tr><tr><td>james@vercel.com</td><td><span class="auth-provider">G</span></td><td><span class="badge badge-ok">active</span></td><td>1 hr ago</td></tr><tr><td>ava@notion.so</td><td><span class="auth-provider">@</span></td><td><span class="badge badge-ok">active</span></td><td>3 hr ago</td></tr><tr><td>marcus@stripe.com</td><td><span class="auth-provider">G</span></td><td><span class="badge badge-off">invited</span></td><td>Never</td></tr><tr><td>priya@shopify.com</td><td><span class="auth-provider">@</span></td><td><span class="badge badge-ok">active</span></td><td>Yesterday</td></tr></tbody></table></div>'},
+storage:function(){return '<h2>Buckets</h2><p class="sub">3 buckets &middot; 847 MB total</p><div class="tbl"><div class="bucket"><span class="bucket-icon">&#128444;</span><div class="bucket-info"><div class="bucket-name">avatars</div><div class="bucket-meta">Public &middot; 342 files &middot; 128 MB</div></div></div><div class="bucket"><span class="bucket-icon">&#128196;</span><div class="bucket-info"><div class="bucket-name">documents</div><div class="bucket-meta">Private &middot; 89 files &middot; 512 MB</div></div></div><div class="bucket"><span class="bucket-icon">&#127912;</span><div class="bucket-info"><div class="bucket-name">images</div><div class="bucket-meta">Public &middot; 1,204 files &middot; 207 MB</div></div></div></div>'},
+edge:function(){return '<h2>Edge Functions</h2><p class="sub">3 functions deployed</p><div class="tbl"><div class="fn-row"><div class="fn-name">hello-world</div><div class="fn-status"><span class="badge badge-ok">deployed</span></div></div><div class="fn-row"><div class="fn-name">stripe-webhook</div><div class="fn-status"><span class="badge badge-ok">deployed</span></div></div><div class="fn-row"><div class="fn-name">send-email</div><div class="fn-status"><span class="badge badge-off">draft</span></div></div></div>'},
+realtime:function(){return '<div class="rt-stat" style="color:var(--green)">38</div><div class="rt-label">Active connections</div><h2>Channels</h2><p class="sub">4 active channels</p><div class="tbl"><div class="ch-row"><span style="color:var(--green)">&#9679;</span> <b>room:lobby</b> <span style="margin-left:auto;color:var(--muted)">24 clients</span></div><div class="ch-row"><span style="color:var(--green)">&#9679;</span> <b>user:notifications</b> <span style="margin-left:auto;color:var(--muted)">12 clients</span></div><div class="ch-row"><span style="color:var(--green)">&#9679;</span> <b>db:users</b> <span style="margin-left:auto;color:var(--muted)">2 clients</span></div><div class="ch-row"><span style="color:var(--muted)">&#9679;</span> <b style="color:var(--muted)">room:archive</b> <span style="margin-left:auto;color:var(--muted)">0</span></div></div>'}
+};
+var crumbMap={table:"/ Table Editor",sql:"/ SQL Editor",auth:"/ Authentication",storage:"/ Storage",edge:"/ Edge Functions",realtime:"/ Realtime"};
+var current="table";
+var contentEl=document.getElementById("content");
+var crumbEl=document.getElementById("crumb");
+var navItems=document.querySelectorAll(".nav");
+function render(){
+  contentEl.innerHTML=views[current]();
+  crumbEl.textContent=crumbMap[current];
+  navItems.forEach(function(n){n.classList.toggle("active",n.dataset.v===current)});
+}
+navItems.forEach(function(n){
+  n.addEventListener("click",function(){current=n.dataset.v;render()});
+});
+var stepMap={1:"table",2:"sql",3:"auth"};
+function applyStep(s){current=stepMap[s]||"table";render()}
+applyStep(parseInt(new URLSearchParams(location.search).get("step")||"1",10));
+window.addEventListener("message",function(e){
+  if(e&&e.data&&e.data.type==="setStep"){var s=Number(e.data.step);if(s>=1&&s<=3)applyStep(s)}
+});
+</script>
+</body>
+</html>

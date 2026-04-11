@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Mintlify — mini demo</title>
+<style>
+:root{--bg:#0f1117;--sidebar:#0a0c10;--card:#181b22;--border:#1e2029;--text:#e4e4e7;--muted:#71717a;--faint:#52525b;--mint:#3dd68c;--mint-dim:rgba(61,214,140,.1);--purple:#a78bfa;--blue:#60a5fa;--font:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;--mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100vh;overflow:hidden;font-family:var(--font);font-size:10.5px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+.app{display:flex;height:100vh}
+.side{width:100px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;padding:8px 6px}
+.logo{padding:8px 8px 10px;display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600}
+.logo-icon{width:16px;height:16px;border-radius:3px;background:linear-gradient(135deg,#3dd68c,#0d9373);display:flex;align-items:center;justify-content:center}
+.sec-label{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:8px 8px 4px;font-weight:500}
+.nav{display:flex;align-items:center;gap:7px;padding:5px 8px;border-radius:5px;color:var(--muted);font-size:9.5px;cursor:pointer;transition:all .1s;user-select:none}
+.nav:hover{background:var(--card);color:var(--text)}
+.nav.active{background:var(--mint-dim);color:var(--mint)}
+.nav .dot{width:3px;height:3px;border-radius:50%;background:currentColor;opacity:.4;flex-shrink:0}
+.nav.active .dot{opacity:1;background:var(--mint)}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:26px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 10px;background:var(--bg)}
+.search{display:flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--border);border-radius:4px;padding:2px 8px;font-size:9px;color:var(--muted);width:140px}
+.search kbd{font-family:var(--font);font-size:7px;background:var(--bg);border:1px solid var(--border);border-radius:2px;padding:0 3px;color:var(--faint);margin-left:auto}
+.content{flex:1;overflow-y:auto;padding:14px 16px}
+.crumb{font-size:9px;color:var(--faint);margin-bottom:12px;display:flex;align-items:center;gap:4px}
+.crumb a{color:var(--muted);text-decoration:none}
+h1{font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px;line-height:1.2}
+.desc{color:var(--muted);font-size:11px;line-height:1.5;margin-bottom:14px}
+.code{background:#0a0c10;border:1px solid var(--border);border-radius:5px;padding:8px 10px;font-family:var(--mono);font-size:9px;line-height:1.6;overflow-x:auto;margin-bottom:10px;position:relative}
+.code .copy{position:absolute;top:5px;right:5px;background:var(--card);border:1px solid var(--border);border-radius:3px;padding:2px 5px;font-size:7px;color:var(--muted);cursor:pointer;font-family:var(--font)}
+.kw{color:var(--purple)}
+.str{color:#fbbf24}
+.fn{color:var(--blue)}
+.cmt{color:var(--faint)}
+.num{color:var(--mint)}
+.callout{background:var(--mint-dim);border:1px solid rgba(61,214,140,.18);border-radius:5px;padding:7px 10px;margin-bottom:10px;display:flex;gap:6px;font-size:9.5px;line-height:1.5;color:var(--text)}
+.callout-icon{color:var(--mint);flex-shrink:0;font-size:12px}
+h2{font-size:13px;font-weight:600;letter-spacing:-.01em;margin:16px 0 6px;padding-top:10px;border-top:1px solid var(--border)}
+p{color:var(--muted);font-size:10px;line-height:1.6;margin-bottom:8px}
+code{font-family:var(--mono);font-size:9px;background:var(--card);border:1px solid var(--border);border-radius:3px;padding:1px 4px;color:var(--mint)}
+.component-card{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:8px 10px;margin-bottom:6px}
+.component-name{font-weight:600;font-size:10px;margin-bottom:3px}
+.component-preview{font-size:9px;color:var(--muted);line-height:1.5}
+.config-table{width:100%;border-collapse:collapse;font-size:9px}
+.config-table th{text-align:left;padding:4px 8px;background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);color:var(--muted);font-weight:500;font-size:8px}
+.config-table td{padding:4px 8px;border-bottom:1px solid var(--border)}
+.config-table code{font-size:8px}
+.api-method{display:inline-flex;padding:1px 5px;border-radius:3px;font-size:8px;font-weight:600;font-family:var(--mono);margin-right:4px}
+.api-get{background:rgba(96,165,250,.12);color:var(--blue)}
+.api-post{background:rgba(61,214,140,.12);color:var(--mint)}
+.api-del{background:rgba(239,68,68,.12);color:#ef4444}
+.api-row{display:flex;align-items:center;gap:4px;padding:6px 8px;border-bottom:1px solid var(--border);font-size:9px;font-family:var(--mono)}
+.api-row:last-child{border-bottom:0}
+.api-path{color:var(--text)}
+.api-desc{color:var(--muted);font-family:var(--font);margin-left:auto;font-size:8px}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo">
+      <div class="logo-icon"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 3L4 9v12h16V9l-8-6z"/></svg></div>
+      mintlify
+    </div>
+    <div class="sec-label">Get started</div>
+    <div class="nav active" data-v="quickstart"><span class="dot"></span>Quickstart</div>
+    <div class="nav" data-v="development"><span class="dot"></span>Development</div>
+    <div class="nav" data-v="configuration"><span class="dot"></span>Configuration</div>
+    <div class="sec-label">Content</div>
+    <div class="nav" data-v="components"><span class="dot"></span>Components</div>
+    <div class="nav" data-v="mdx"><span class="dot"></span>MDX syntax</div>
+    <div class="nav" data-v="api"><span class="dot"></span>API references</div>
+    <div class="sec-label">Deploy</div>
+    <div class="nav" data-v="git"><span class="dot"></span>Git integration</div>
+    <div class="nav" data-v="previews"><span class="dot"></span>Preview deploys</div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="search">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search...
+        <kbd>/</kbd>
+      </div>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<script>
+var views={
+quickstart:function(){return '<div class="crumb"><a>Docs</a> / <a>Get started</a> / Quickstart</div><h1>Quickstart</h1><p class="desc">Get your docs up and running in under five minutes.</p><div class="callout"><span class="callout-icon">&#9432;</span><span>Mintlify deploys from GitHub. Push changes and your docs update in seconds.</span></div><h2>Install the CLI</h2><p>Preview changes locally before pushing.</p><div class="code"><span class="copy">Copy</span><span class="fn">npm</span> i -g mintlify</div><h2>Project structure</h2><p>Your <code>mint.json</code> configures navigation, branding, and integrations.</p><div class="code"><span class="copy">Copy</span><span class="cmt"># mint.json</span>\n{\n  <span class="kw">"name"</span>: <span class="str">"Acme Docs"</span>,\n  <span class="kw">"navigation"</span>: [\n    { <span class="kw">"group"</span>: <span class="str">"Get Started"</span>,\n      <span class="kw">"pages"</span>: [<span class="str">"quickstart"</span>] }\n  ]\n}</div><h2>Run locally</h2><div class="code"><span class="copy">Copy</span><span class="fn">mintlify</span> dev\n<span class="cmt"># Running on http://localhost:3000</span></div>'},
+development:function(){return '<div class="crumb"><a>Docs</a> / <a>Get started</a> / Development</div><h1>Development</h1><p class="desc">Set up your local development environment.</p><h2>Hot reload</h2><p>The dev server watches for file changes and reloads instantly. Edit any <code>.mdx</code> file and see changes in real time.</p><div class="code"><span class="copy">Copy</span><span class="fn">mintlify</span> dev --port 3001</div><h2>File structure</h2><p>Pages map to files. A file at <code>guides/quickstart.mdx</code> becomes <code>/guides/quickstart</code>.</p><div class="code"><span class="copy">Copy</span>docs/\n  mint.json\n  introduction.mdx\n  guides/\n    quickstart.mdx\n    advanced.mdx\n  api-reference/\n    overview.mdx</div>'},
+configuration:function(){return '<div class="crumb"><a>Docs</a> / <a>Get started</a> / Configuration</div><h1>Configuration</h1><p class="desc">Full reference for mint.json settings.</p><table class="config-table"><thead><tr><th>Property</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>name</code></td><td>string</td><td>Your docs site name</td></tr><tr><td><code>navigation</code></td><td>array</td><td>Sidebar structure</td></tr><tr><td><code>colors.primary</code></td><td>string</td><td>Brand color hex</td></tr><tr><td><code>topbarLinks</code></td><td>array</td><td>Header navigation links</td></tr><tr><td><code>anchors</code></td><td>array</td><td>Icon cards below nav</td></tr><tr><td><code>tabs</code></td><td>array</td><td>Top-level content tabs</td></tr><tr><td><code>api.baseUrl</code></td><td>string</td><td>Base URL for API playground</td></tr><tr><td><code>favicon</code></td><td>string</td><td>Path to favicon file</td></tr></tbody></table>'},
+components:function(){return '<div class="crumb"><a>Docs</a> / <a>Content</a> / Components</div><h1>Components</h1><p class="desc">Interactive building blocks for your documentation.</p><div class="component-card"><div class="component-name">Callout</div><div class="component-preview"><div class="callout" style="margin:4px 0"><span class="callout-icon">&#9432;</span><span>Use callouts to highlight important information.</span></div></div></div><div class="component-card"><div class="component-name">Code Group</div><div class="component-preview">Multiple code blocks in tabs. Readers pick their language.</div></div><div class="component-card"><div class="component-name">Steps</div><div class="component-preview">Numbered walkthrough for multi-step processes.</div></div><div class="component-card"><div class="component-name">Tabs</div><div class="component-preview">Organize related content with switchable panes.</div></div><div class="component-card"><div class="component-name">Accordion</div><div class="component-preview">Collapsible sections for FAQs and optional details.</div></div>'},
+mdx:function(){return '<div class="crumb"><a>Docs</a> / <a>Content</a> / MDX syntax</div><h1>MDX Syntax</h1><p class="desc">Write content with Markdown and React components.</p><h2>Frontmatter</h2><div class="code"><span class="copy">Copy</span>---\ntitle: <span class="str">"Page Title"</span>\ndescription: <span class="str">"Brief description"</span>\nicon: <span class="str">"book"</span>\n---</div><h2>Inline components</h2><p>Use JSX syntax to embed interactive elements.</p><div class="code"><span class="copy">Copy</span>&lt;<span class="fn">Tip</span>&gt;\n  This renders as a styled tip callout.\n&lt;/<span class="fn">Tip</span>&gt;\n\n&lt;<span class="fn">CodeGroup</span>&gt;\n  ```js title.js\n  console.log(<span class="str">"hello"</span>)\n  ```\n&lt;/<span class="fn">CodeGroup</span>&gt;</div>'},
+api:function(){return '<div class="crumb"><a>Docs</a> / <a>Content</a> / API references</div><h1>API References</h1><p class="desc">Auto-generate endpoint docs from your OpenAPI spec.</p><h2>Endpoints</h2><div style="background:var(--card);border:1px solid var(--border);border-radius:5px;overflow:hidden"><div class="api-row"><span class="api-method api-get">GET</span><span class="api-path">/users</span><span class="api-desc">List all users</span></div><div class="api-row"><span class="api-method api-post">POST</span><span class="api-path">/users</span><span class="api-desc">Create a user</span></div><div class="api-row"><span class="api-method api-get">GET</span><span class="api-path">/users/:id</span><span class="api-desc">Get user by ID</span></div><div class="api-row"><span class="api-method api-post">POST</span><span class="api-path">/payments</span><span class="api-desc">Create payment</span></div><div class="api-row"><span class="api-method api-del">DEL</span><span class="api-path">/users/:id</span><span class="api-desc">Delete a user</span></div></div><h2>Try it</h2><div class="code"><span class="copy">Copy</span><span class="fn">curl</span> -X GET https://api.acme.com/users \\\n  -H <span class="str">"Authorization: Bearer sk_..."</span></div>'},
+git:function(){return '<div class="crumb"><a>Docs</a> / <a>Deploy</a> / Git integration</div><h1>Git Integration</h1><p class="desc">Deploy docs directly from your GitHub repo.</p><h2>Setup</h2><p>Connect your repo in the Mintlify dashboard. Every push to your default branch triggers a deploy.</p><div class="callout"><span class="callout-icon">&#9432;</span><span>Deploys take ~30 seconds. No build step required on your end.</span></div><h2>Branch deploys</h2><p>PRs automatically get preview URLs so you can review changes before merging.</p>'},
+previews:function(){return '<div class="crumb"><a>Docs</a> / <a>Deploy</a> / Preview deploys</div><h1>Preview Deploys</h1><p class="desc">Every pull request gets its own preview URL.</p><h2>How it works</h2><p>When you open a PR against your docs repo, Mintlify posts a comment with a live preview link. Team members can review the docs changes before merging.</p><div class="callout"><span class="callout-icon">&#9432;</span><span>Preview URLs expire 7 days after the PR is closed.</span></div>'}
+};
+var current="quickstart";
+var contentEl=document.getElementById("content");
+var navItems=document.querySelectorAll(".nav");
+function render(){
+  contentEl.innerHTML=views[current]();
+  navItems.forEach(function(n){n.classList.toggle("active",n.dataset.v===current)});
+}
+navItems.forEach(function(n){
+  n.addEventListener("click",function(){current=n.dataset.v;render()});
+});
+var stepMap={1:"quickstart",2:"components",3:"api"};
+function applyStep(s){current=stepMap[s]||"quickstart";render()}
+applyStep(parseInt(new URLSearchParams(location.search).get("step")||"1",10));
+window.addEventListener("message",function(e){
+  if(e&&e.data&&e.data.type==="setStep"){var s=Number(e.data.step);if(s>=1&&s<=3)applyStep(s)}
+});
+</script>
+</body>
+</html>

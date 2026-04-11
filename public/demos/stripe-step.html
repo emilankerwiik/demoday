@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Stripe — mini demo</title>
+<style>
+:root{--bg:#f6f8fa;--white:#fff;--sidebar:#0a2540;--border:#e3e8ee;--text:#0a2540;--muted:#697386;--faint:#a3acb9;--purple:#635bff;--purple-bg:#ece8ff;--green:#0cbc8b;--green-bg:#e6f9f1;--red:#df1b41;--red-bg:#fce8ec;--font:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;--mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100vh;overflow:hidden;font-family:var(--font);font-size:10.5px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+.app{display:flex;height:100vh}
+.side{width:92px;background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0;padding:8px 6px}
+.logo{padding:4px 6px 10px}
+.logo svg{display:block}
+.nav{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:5px;color:rgba(255,255,255,.55);font-size:9.5px;cursor:pointer;transition:all .1s;user-select:none}
+.nav:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.8)}
+.nav.active{background:rgba(255,255,255,.12);color:#fff}
+.nav svg{width:12px;height:12px;flex-shrink:0;opacity:.55}
+.nav.active svg{opacity:1}
+.divider{height:1px;background:rgba(255,255,255,.08);margin:6px 8px}
+.nav-label{font-size:8px;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.25);padding:8px 8px 4px;font-weight:500}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:30px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:var(--white);font-size:11px;font-weight:600}
+.mode{display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);font-weight:400}
+.mode-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.content{flex:1;overflow-y:auto;padding:12px 14px}
+.metrics{display:flex;gap:6px;margin-bottom:12px}
+.metric{flex:1;background:var(--white);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.metric-label{font-size:8px;color:var(--muted);margin-bottom:2px;display:flex;justify-content:space-between}
+.metric-value{font-size:16px;font-weight:600;letter-spacing:-.02em}
+.metric-change{font-size:8px;font-weight:500}
+.up{color:var(--green)}
+.down{color:var(--red)}
+.chart{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:10px}
+.chart-head{display:flex;justify-content:space-between;margin-bottom:8px;font-size:10px;font-weight:600}
+.chart-tabs{display:flex;gap:2px;background:var(--bg);border-radius:4px;padding:1px}
+.chart-tab{padding:2px 8px;border-radius:3px;font-size:8px;color:var(--muted);font-weight:500}
+.chart-tab.active{background:var(--white);color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.bars{height:60px;display:flex;align-items:flex-end;gap:3px}
+.bar{flex:1;border-radius:2px 2px 0 0;background:var(--purple);opacity:.65;min-width:0}
+.tbl{background:var(--white);border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.tbl-head{padding:8px 10px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.tbl-title{font-size:10px;font-weight:600}
+.btn-p{background:var(--purple);color:#fff;border:0;padding:3px 8px;border-radius:4px;font-size:8px;font-weight:500;cursor:pointer;font-family:var(--font)}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;padding:5px 10px;font-size:8px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);font-weight:500}
+td{padding:5px 10px;border-bottom:1px solid #f0f0f0;font-size:9.5px}
+tr:last-child td{border-bottom:0}
+.badge{display:inline-flex;align-items:center;gap:2px;padding:1px 6px;border-radius:999px;font-size:8px;font-weight:500}
+.badge-ok{background:var(--green-bg);color:#087443}
+.badge-pending{background:#fef3cd;color:#856404}
+.badge-fail{background:var(--red-bg);color:var(--red)}
+.cust-email{font-size:8px;color:var(--muted)}
+.bal-card{background:var(--white);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:8px}
+.bal-label{font-size:8px;color:var(--muted);margin-bottom:2px}
+.bal-value{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.mrr{font-size:24px;font-weight:700;margin-bottom:2px}
+.mrr-label{font-size:9px;color:var(--muted);margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div class="logo"><svg width="36" height="14" viewBox="0 0 60 25" fill="none"><rect width="60" height="25" rx="5" fill="#635BFF"/><text x="8" y="17" fill="#fff" font-family="sans-serif" font-size="13" font-weight="700">stripe</text></svg></div>
+    <div class="nav active" data-v="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home</div>
+    <div class="nav" data-v="payments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Payments</div>
+    <div class="nav" data-v="balances"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Balances</div>
+    <div class="nav" data-v="customers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Customers</div>
+    <div class="divider"></div>
+    <div class="nav-label">Products</div>
+    <div class="nav" data-v="billing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>Billing</div>
+    <div class="nav" data-v="invoices"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Invoices</div>
+    <div class="nav" data-v="radar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Radar</div>
+  </aside>
+  <div class="main">
+    <div class="topbar"><span id="title">Dashboard</span><div class="mode"><span class="mode-dot"></span>Live</div></div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+<script>
+var views={
+home:function(){return '<div class="metrics"><div class="metric"><div class="metric-label">Gross volume <span class="metric-change up">+12%</span></div><div class="metric-value">$48,290</div></div><div class="metric"><div class="metric-label">Payments <span class="metric-change up">+8%</span></div><div class="metric-value">312</div></div><div class="metric"><div class="metric-label">Customers <span class="metric-change up">+23%</span></div><div class="metric-value">89</div></div></div><div class="chart"><div class="chart-head"><span>Gross volume</span><div class="chart-tabs"><span class="chart-tab">1W</span><span class="chart-tab active">1M</span><span class="chart-tab">3M</span></div></div><div class="bars"><div class="bar" style="height:35%"></div><div class="bar" style="height:42%"></div><div class="bar" style="height:55%"></div><div class="bar" style="height:48%"></div><div class="bar" style="height:62%"></div><div class="bar" style="height:70%"></div><div class="bar" style="height:65%"></div><div class="bar" style="height:80%"></div><div class="bar" style="height:75%"></div><div class="bar" style="height:88%"></div><div class="bar" style="height:92%"></div><div class="bar" style="height:100%"></div></div></div>'},
+payments:function(){return '<div class="tbl"><div class="tbl-head"><span class="tbl-title">Recent payments</span><button class="btn-p">+ Create</button></div><table><thead><tr><th>Customer</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead><tbody><tr><td>Sarah Chen<br/><span class="cust-email">sarah@linear.app</span></td><td>$299.00</td><td><span class="badge badge-ok">Succeeded</span></td><td>Apr 10</td></tr><tr><td>James Park<br/><span class="cust-email">james@vercel.com</span></td><td>$149.00</td><td><span class="badge badge-ok">Succeeded</span></td><td>Apr 10</td></tr><tr><td>Ava Martinez<br/><span class="cust-email">ava@notion.so</span></td><td>$599.00</td><td><span class="badge badge-pending">Pending</span></td><td>Apr 9</td></tr><tr><td>Marcus Wong<br/><span class="cust-email">marcus@figma.com</span></td><td>$149.00</td><td><span class="badge badge-ok">Succeeded</span></td><td>Apr 9</td></tr><tr><td>Priya Sharma<br/><span class="cust-email">priya@shopify.com</span></td><td>$49.00</td><td><span class="badge badge-fail">Failed</span></td><td>Apr 8</td></tr></tbody></table></div>'},
+balances:function(){return '<div style="display:flex;gap:6px;margin-bottom:10px"><div class="bal-card" style="flex:1"><div class="bal-label">Available</div><div class="bal-value">$12,450</div></div><div class="bal-card" style="flex:1"><div class="bal-label">Pending</div><div class="bal-value">$3,200</div></div></div><div class="tbl"><div class="tbl-head"><span class="tbl-title">Recent payouts</span></div><table><thead><tr><th>Amount</th><th>Status</th><th>Arrival</th></tr></thead><tbody><tr><td>$8,420.00</td><td><span class="badge badge-ok">Paid</span></td><td>Apr 8</td></tr><tr><td>$6,180.00</td><td><span class="badge badge-ok">Paid</span></td><td>Apr 1</td></tr><tr><td>$5,900.00</td><td><span class="badge badge-ok">Paid</span></td><td>Mar 25</td></tr></tbody></table></div>'},
+customers:function(){return '<div class="tbl"><div class="tbl-head"><span class="tbl-title">Customers</span><button class="btn-p">+ Add</button></div><table><thead><tr><th>Name</th><th>Email</th><th>Spent</th><th>Created</th></tr></thead><tbody><tr><td>Sarah Chen</td><td>sarah@linear.app</td><td>$2,394</td><td>Jan 2026</td></tr><tr><td>James Park</td><td>james@vercel.com</td><td>$1,788</td><td>Feb 2026</td></tr><tr><td>Ava Martinez</td><td>ava@notion.so</td><td>$1,198</td><td>Feb 2026</td></tr><tr><td>Marcus Wong</td><td>marcus@figma.com</td><td>$894</td><td>Mar 2026</td></tr><tr><td>Priya Sharma</td><td>priya@shopify.com</td><td>$447</td><td>Mar 2026</td></tr></tbody></table></div>'},
+billing:function(){return '<div class="mrr" style="color:var(--purple)">$14,280</div><div class="mrr-label">Monthly recurring revenue</div><div class="metrics"><div class="metric"><div class="metric-label">Active subs</div><div class="metric-value">89</div></div><div class="metric"><div class="metric-label">Churn rate</div><div class="metric-value">2.1%</div></div></div><div class="tbl" style="margin-top:8px"><div class="tbl-head"><span class="tbl-title">Subscriptions</span></div><table><thead><tr><th>Customer</th><th>Plan</th><th>MRR</th><th>Status</th></tr></thead><tbody><tr><td>Sarah Chen</td><td>Pro</td><td>$299</td><td><span class="badge badge-ok">Active</span></td></tr><tr><td>James Park</td><td>Starter</td><td>$49</td><td><span class="badge badge-ok">Active</span></td></tr><tr><td>Ava Martinez</td><td>Pro</td><td>$299</td><td><span class="badge badge-ok">Active</span></td></tr></tbody></table></div>'},
+invoices:function(){return '<div class="tbl"><div class="tbl-head"><span class="tbl-title">Invoices</span><button class="btn-p">+ Create</button></div><table><thead><tr><th>Number</th><th>Customer</th><th>Amount</th><th>Status</th><th>Due</th></tr></thead><tbody><tr><td>#INV-0042</td><td>Sarah Chen</td><td>$299.00</td><td><span class="badge badge-ok">Paid</span></td><td>Apr 1</td></tr><tr><td>#INV-0041</td><td>James Park</td><td>$149.00</td><td><span class="badge badge-ok">Paid</span></td><td>Apr 1</td></tr><tr><td>#INV-0040</td><td>Ava Martinez</td><td>$599.00</td><td><span class="badge badge-pending">Open</span></td><td>Apr 15</td></tr><tr><td>#INV-0039</td><td>Marcus Wong</td><td>$149.00</td><td><span class="badge badge-fail">Overdue</span></td><td>Mar 15</td></tr></tbody></table></div>'},
+radar:function(){return '<div class="metrics"><div class="metric"><div class="metric-label">Blocked</div><div class="metric-value">24</div></div><div class="metric"><div class="metric-label">Fraud rate</div><div class="metric-value">0.3%</div></div><div class="metric"><div class="metric-label">Reviews</div><div class="metric-value">7</div></div></div><div class="tbl" style="margin-top:8px"><div class="tbl-head"><span class="tbl-title">Recent blocks</span></div><table><thead><tr><th>Amount</th><th>Risk</th><th>Rule</th><th>Date</th></tr></thead><tbody><tr><td>$1,299</td><td><span class="badge badge-fail">High</span></td><td>Card country mismatch</td><td>Apr 10</td></tr><tr><td>$499</td><td><span class="badge badge-fail">High</span></td><td>Velocity check</td><td>Apr 9</td></tr><tr><td>$89</td><td><span class="badge badge-pending">Medium</span></td><td>CVC check failed</td><td>Apr 8</td></tr></tbody></table></div>'}
+};
+var titleMap={home:"Dashboard",payments:"Payments",balances:"Balances",customers:"Customers",billing:"Billing",invoices:"Invoices",radar:"Radar"};
+var current="home";
+var contentEl=document.getElementById("content");
+var titleEl=document.getElementById("title");
+var navItems=document.querySelectorAll(".nav");
+function render(){
+  contentEl.innerHTML=views[current]();
+  titleEl.textContent=titleMap[current];
+  navItems.forEach(function(n){n.classList.toggle("active",n.dataset.v===current)});
+}
+navItems.forEach(function(n){
+  n.addEventListener("click",function(){current=n.dataset.v;render()});
+});
+var stepMap={1:"home",2:"payments",3:"customers"};
+function applyStep(s){current=stepMap[s]||"home";render()}
+applyStep(parseInt(new URLSearchParams(location.search).get("step")||"1",10));
+window.addEventListener("message",function(e){
+  if(e&&e.data&&e.data.type==="setStep"){var s=Number(e.data.step);if(s>=1&&s<=3)applyStep(s)}
+});
+</script>
+</body>
+</html>
