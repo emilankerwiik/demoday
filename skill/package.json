@@ -1,6 +1,6 @@
 {
   "name": "@demoday/skill",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Beautiful clickable product demos, installed as a Claude Code skill.",
   "bin": {
     "demoday": "./bin/init.js"

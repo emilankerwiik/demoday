@@ -165,13 +165,112 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
      corresponds to that step and call `render()`.
    - Also read `?step=N` from the URL query string on initial load.
 
+   **Reference CSS specification — sidebar and canvas layout:**
+
+   The sidebar and content area inside `.demo-canvas` must follow these
+   exact sizing rules. These values are tested across dozens of demos
+   and are the canonical Demoday proportions.
+
+   *Sidebar:*
+   - Width: exactly `100px`. Never narrower. Use `flex-shrink:0`.
+   - Background: `var(--bg-sidebar)`. Border-right: `1px solid var(--border)`.
+   - Padding: `8px 6px` on the sidebar container.
+   - Logo row: `padding:8px 8px 10px`, `font-size:10px`, `font-weight:600`,
+     `display:flex`, `align-items:center`, `gap:6px`.
+   - Logo icon: `16px × 16px`, `border-radius:3px`.
+   - Section labels (if the product groups nav items): `font-size:8px`,
+     `text-transform:uppercase`, `letter-spacing:0.06em`,
+     `color:var(--faint)`, `padding:8px 8px 4px`, `font-weight:500`.
+   - Nav items: `font-size:9.5px`, `padding:5px 8px`, `border-radius:5px`,
+     `color:var(--muted)`, `gap:7px` (icon + label), `cursor:pointer`,
+     `transition:all 0.1s`, `user-select:none`.
+   - Nav item hover: `background:var(--bg-card)`, `color:var(--text)`.
+   - Nav item active: `background:var(--brand-dim)`, `color:var(--brand)`.
+   - Nav icons: `width:14px`, `height:14px` (SVG), `flex-shrink:0`.
+     If the product uses dot indicators instead, use `3px × 3px`
+     circles with `border-radius:50%`.
+   - **Critical: nav labels must never truncate.** No `overflow:hidden`,
+     no `text-overflow:ellipsis`, no `white-space:nowrap` on nav items.
+     If labels are too long for 100px, increase sidebar width to fit.
+
+   *Main area (right of sidebar):*
+   - `flex:1`, `display:flex`, `flex-direction:column`, `overflow:hidden`.
+   - Topbar: `height:26px`, `border-bottom:1px solid var(--border)`,
+     `padding:0 10px`, `display:flex`, `align-items:center`,
+     `background:var(--bg)`.
+   - Search input (if applicable): `font-size:9px`, `padding:2px 8px`,
+     `border-radius:4px`, `width:140px`.
+   - Content area: `flex:1`, `overflow-y:auto`, `padding:14px 16px`.
+
+   **Reference CSS specification — typography scale:**
+
+   All font sizes inside `.demo-canvas` must follow this scale.
+   Do not deviate — these sizes are calibrated for the 4:3 card at
+   `max-width:640px`.
+
+   | Element            | Size    | Weight | Extra                        |
+   |--------------------|---------|--------|------------------------------|
+   | Body / base        | 10.5px  | 400    | `line-height:1.5`            |
+   | h1 (page title)    | 18px    | 700    | `letter-spacing:-0.02em`     |
+   | h2 (section head)  | 13px    | 600    | `letter-spacing:-0.01em`, `border-top:1px solid var(--border)`, `padding-top:10px`, `margin:16px 0 6px` |
+   | Paragraph / body   | 10px    | 400    | `line-height:1.6`, `color:var(--muted)`, `margin-bottom:8px` |
+   | Description (below h1) | 11px | 400  | `line-height:1.5`, `color:var(--muted)`, `margin-bottom:14px` |
+   | Code blocks        | 9px     | 400    | `font-family:var(--mono)`, `line-height:1.6`, `padding:8px 10px`, `border-radius:5px` |
+   | Inline code        | 9px     | 400    | `padding:1px 4px`, `border-radius:3px`, `color:var(--brand)` |
+   | Callout text       | 9.5px   | 400    | `line-height:1.5`, `padding:7px 10px`, `border-radius:5px` |
+   | Table headers      | 8px     | 500    | `text-transform:uppercase`, `letter-spacing:0.04em` |
+   | Table cells        | 9px     | 400    |                              |
+   | Breadcrumb         | 9px     | 400    | `color:var(--faint)`         |
+   | Buttons            | 9px     | 600    | `padding:4px 10px`, `border-radius:5px` |
+   | Badges / tags      | 7–8px   | 500    | `padding:1px 5px`, `border-radius:3px` |
+
+   **Reference CSS specification — font stacks:**
+
+   ```css
+   --font: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI",
+           Roboto, Helvetica, Arial, sans-serif;
+   --mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo,
+           Consolas, monospace;
+   ```
+
+   Always set `font-family:var(--font)` on `html,body` and
+   `-webkit-font-smoothing:antialiased`. Use `var(--mono)` for code
+   blocks, inline code, key prefixes, and monospaced data.
+
+   **Reference CSS specification — color variables:**
+
+   Every demo must define these CSS custom properties in `:root`.
+   Map the user's brand palette to these names:
+
+   ```css
+   :root {
+     --bg:          /* page background */;
+     --bg-sidebar:  /* sidebar background (slightly different from --bg) */;
+     --bg-card:     /* card / elevated surface */;
+     --border:      /* borders, dividers */;
+     --text:        /* primary text */;
+     --muted:       /* secondary text */;
+     --faint:       /* tertiary text, labels, placeholders */;
+     --brand:       /* primary brand / accent color */;
+     --brand-dim:   /* brand at ~10-12% opacity, for active backgrounds */;
+     --font:        /* see font stack above */;
+     --mono:        /* see mono stack above */;
+   }
+   ```
+
+   These names are mandatory. Additional product-specific colors
+   (e.g. `--green`, `--purple`, `--red`) may be added as needed.
+
    **Other requirements:**
    - Inline CSS and JS. No external fonts or scripts.
    - Realistic placeholder data. Nothing calls a live API.
-   - Compact layout optimized for embedding at small sizes (10–12px
-     base font inside the canvas, tight spacing).
    - Always include the "DEMODAY / MADE WITH LOVE" tag in the
-     bottom-left corner of the shell.
+     bottom-left corner of the shell:
+     `position:fixed; bottom:10px; left:12px; font-size:9px;
+     letter-spacing:0.12em; text-transform:uppercase;
+     color:rgba(255,255,255,0.22); font-family:var(--font);
+     pointer-events:none`. For light-background demos, use
+     `color:rgba(0,0,0,0.18)` instead.
 
 6. **Preview the demo.** Before touching the landing page:
    - Start the dev server if it is not already running (e.g.
