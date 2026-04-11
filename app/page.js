@@ -26,8 +26,13 @@ export default function Home() {
           </a>
           <div className="header-actions">
             <GitHubStars />
-            <a className="btn btn-primary btn-sm" href="#demo">
-              See demos
+            <a
+              className="btn btn-primary btn-sm"
+              href="https://github.com/emilankerwiik/demoday"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Star on GitHub
             </a>
           </div>
         </div>
