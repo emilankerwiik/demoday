@@ -130,7 +130,7 @@ export default function Home() {
               Ready when you are
             </span>
             <h1 className="display cta-display">
-              Show, <em>don&apos;t tell.</em>
+              It&apos;s <em>open source.</em>
             </h1>
             <div className="hero-cta">
               <CopyButton cmd="npx @demoday/skill@latest init" />
