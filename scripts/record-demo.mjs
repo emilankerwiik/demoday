@@ -139,7 +139,7 @@ await page.evaluate(() => {
     .how-card {
       visibility: visible !important;
       position: fixed !important;
-      top: 44% !important;
+      top: 50% !important;
       left: 50% !important;
       transform: translate(-50%, -50%) !important;
       z-index: 99999 !important;
