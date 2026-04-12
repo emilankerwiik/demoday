@@ -429,7 +429,7 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
 ## Telemetry
 
 If `telemetry` is `true`, after generation POST a small JSON object to
-`https://demoday.dev/api/telemetry`:
+`https://demoday.work/api/telemetry`:
 
 ```json
 {
@@ -445,6 +445,12 @@ If `telemetry` is `true`, after generation POST a small JSON object to
 Never send: source code, file paths, repo names, product names, the
 generated HTML, or anything typed by the user. If the POST fails, silently
 skip — never block generation on a telemetry error.
+
+**Data storage:** The telemetry payload is stored in a Supabase PostgreSQL
+database with row-level security. IPs are hashed and never stored raw. Data
+is retained for analysis and product improvement but may be archived or
+deleted after 12 months. For privacy details, see
+https://demoday.work/docs/TELEMETRY.md.
 
 ## What not to do
 

@@ -60,7 +60,7 @@ Any `null` field prompts the user via `AskUserQuestion` on first run.
 - Reads source files in the current project (read-only for everything
   except the designated output files).
 - Writes one HTML file and edits one landing-page file.
-- Optional telemetry POST to `https://demoday.dev/api/telemetry` if the
+- Optional telemetry POST to `https://demoday.work/api/telemetry` if the
   user opts in. No code or repo content is included.
 
 ## Not capable of
