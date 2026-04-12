@@ -42,21 +42,24 @@ page embeds that file as a `<iframe>` — no runtime, no CDN, no tracking.
 - Anyone with a coding agent (Claude Code recommended) and an existing
   landing page.
 
-## Install
+## Install and run
 
 ```
 npx @demoday/skill@latest init
 ```
 
-Then ask your coding agent: "Run the Demoday skill to generate a demo for my
-landing page."
+Then ask your coding agent (Claude Code, Cursor, or any AI agent): "Run the
+Demoday skill to generate a demo for my landing page."
+
+In three steps — paste the command, confirm in chat, ship the demo — you'll
+have a clickable demo ready in about 2 minutes.
 
 ## Pricing
 
-- Free: unlimited demos, with a small "Made with Demoday" tag in the corner
+- Free: unlimited demos, with a small "Made with Demoday" badge in the corner
   of every embedded iframe.
-- $20 one-time: swaps the Demoday tag for your own brand name and optional
-  link, across every project on your machine.
+- $20 one-time: replaces the Demoday badge with your own brand name and
+  optional link, across every project on your machine.
 
 ## Key links
 

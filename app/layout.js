@@ -106,7 +106,7 @@ const softwareLd = {
       name: "Free",
       price: "0",
       priceCurrency: "USD",
-      description: "Unlimited demos with a Demoday badge.",
+      description: "Unlimited demos with a Demoday logo badge in the corner of every iframe.",
     },
     {
       "@type": "Offer",
@@ -114,7 +114,7 @@ const softwareLd = {
       price: "20",
       priceCurrency: "USD",
       description:
-        "One-time upgrade that replaces the Demoday badge with your own brand across every demo.",
+        "One-time $20 upgrade that replaces the Demoday logo badge with your own brand and optional link across all your demos.",
     },
   ],
   aggregateRating: undefined,

@@ -32,30 +32,26 @@ License: Open source.
 
 ## How it works
 
-1. The user installs the Demoday skill with `npx @demoday/skill@latest init`.
-2. The init script writes a config file at `~/.demoday/config.json` with
-   fields for telemetry opt-in, auto-update opt-in, license key, and brand.
-3. The user asks their coding agent to run the Demoday skill.
-4. The skill reads `package.json` to detect the framework, then finds the
-   landing-page file (`app/page.{js,jsx,tsx}`, `pages/index.*`,
-   `src/routes/+page.svelte`, `index.html`, etc.).
-5. The skill identifies three flows from the landing page, in this order:
-   - Step 01: the payoff — the dashboard, outcome, or result.
-   - Step 02: the core action the user takes to get there.
-   - Step 03: the first-touch or onboarding moment.
-6. The skill writes a single self-contained HTML file at
-   `public/demos/demoday.html` (or the framework's equivalent static
-   directory) containing inline CSS and JS, a carousel card with left and
-   right chevrons, three dots indicating the current step, and realistic
-   placeholder data.
-7. The skill embeds the iframe in the landing-page file with a single tag:
-   ```html
-   <iframe src="/demos/demoday.html" title="Product demo"
-           style="width:100%;height:600px;border:0;border-radius:12px;"
-           loading="lazy"></iframe>
-   ```
-8. The skill tells the user what it did in one paragraph and suggests
-   running the dev server to preview it.
+The process takes about 2 minutes:
+
+1. **Paste**: Install with `npx @demoday/skill@latest init` and run the skill
+   in Claude Code, Cursor, or any AI agent.
+2. **Confirm**: Your agent reads your codebase and proposes a demo. You click
+   "Yes" and it builds.
+3. **Ship**: You get one self-contained HTML file and a single `<iframe>` tag
+   to drop on any landing page.
+
+Behind the scenes:
+- The skill reads `package.json` to detect your framework.
+- It finds your landing-page file (`app/page.{js,jsx,tsx}`, `pages/index.*`,
+  `src/routes/+page.svelte`, `index.html`, etc.).
+- It identifies three flows: payoff (step 1), core action (step 2), and
+  onboarding (step 3).
+- It generates one self-contained HTML file with inline CSS/JS, a carousel
+  with navigation, and realistic placeholder data.
+- The demo includes a black circle logo badge in the bottom-right corner
+  (free tier) or your own brand (paid).
+- Embedded as a single iframe: `<iframe src="/demos/demoday.html" ...></iframe>`
 
 ## Pricing plans
 
@@ -63,13 +59,12 @@ License: Open source.
 - Unlimited clickable demos.
 - Self-contained HTML, CSS and JS.
 - Works in any framework that can serve a static file.
-- Every demo carries a small "Made with Demoday" tag in the bottom-left
+- Every demo carries a small black circle logo badge in the bottom-right
   corner of the iframe.
 
 ### Your Brand — $20 one-time
 - Everything in Free.
-- Replaces the "Made with Demoday" tag with your own brand name and an
-  optional link.
+- Replaces the Demoday badge with your own brand name and an optional link.
 - The upgrade is per-machine, not per-project — once paid, all demos you
   generate use your brand.
 
