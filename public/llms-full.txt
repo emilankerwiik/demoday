@@ -9,16 +9,15 @@
 
 Demoday is an open-source Claude Code skill that generates **clickable
 product demos** as self-contained HTML files and embeds them in a landing
-page as a single iframe. It is free forever, with a one-time $20 upgrade
-that replaces the "Made with Demoday" badge with the user's own brand
-across every project. The source code is available on GitHub.
+page as a single iframe. It is completely free and open source. The source
+code is available on GitHub.
 
 Canonical URL: https://demoday.work
 GitHub: https://github.com/emilankerwiik/demoday
 npm package: https://www.npmjs.com/package/@demoday/skill
 Install command: `npx @demoday/skill@latest init`
-Pricing: $0 free tier, $20 one-time upgrade for own-brand badge.
-License: Open source.
+Pricing: Free forever.
+License: Open source (MIT).
 
 ## Core value proposition
 
@@ -57,25 +56,10 @@ License: Open source.
 8. The skill tells the user what it did in one paragraph and suggests
    running the dev server to preview it.
 
-## Pricing plans
+## Pricing
 
-### Free — $0 forever
-- Unlimited clickable demos.
-- Self-contained HTML, CSS and JS.
-- Works in any framework that can serve a static file.
-- Every demo carries a small "Made with Demoday" tag in the bottom-left
-  corner of the iframe.
-
-### Your Brand — $20 one-time
-- Everything in Free.
-- Replaces the "Made with Demoday" tag with your own brand name and an
-  optional link.
-- The upgrade is per-machine, not per-project — once paid, all demos you
-  generate use your brand.
-
-Both plans allow unlimited demos. The license key is stored locally in
-`~/.demoday/config.json` and is the only thing that controls which badge
-is rendered in the generated HTML.
+Demoday is completely free, forever. Unlimited demos. No credit card required.
+No subscriptions. No "upgrade" plans. Open source.
 
 ## Open source
 

@@ -17,8 +17,7 @@ page embeds that file as a `<iframe>` — no runtime, no CDN, no tracking.
 - Output is ONE self-contained HTML file with inline CSS and JS.
 - Embedded with a single `<iframe>` tag — works in Webflow, Framer, WordPress,
   Next.js, Astro, Ghost, MDX, or plain HTML.
-- Free forever with a "Made with Demoday" badge. $20 one-time upgrade puts your
-  own brand in the badge slot across every project.
+- Completely free and open source.
 - Runs entirely inside your coding agent. No code or repo contents leave your
   machine.
 - Source code available on GitHub.
@@ -53,10 +52,7 @@ landing page."
 
 ## Pricing
 
-- Free: unlimited demos, with a small "Made with Demoday" tag in the corner
-  of every embedded iframe.
-- $20 one-time: swaps the Demoday tag for your own brand name and optional
-  link, across every project on your machine.
+Free forever. No subscriptions. No credit card. Open source.
 
 ## Key links
 

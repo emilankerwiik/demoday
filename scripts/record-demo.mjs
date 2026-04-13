@@ -2,9 +2,9 @@
 
 import puppeteer from "puppeteer";
 import { parseArgs } from "node:util";
-import { resolve } from "node:path";
-import { stat, unlink } from "node:fs/promises";
-import { execFileSync } from "node:child_process";
+import { resolve, dirname } from "node:path";
+import { stat, unlink, mkdir } from "node:fs/promises";
+import { execFileSync, execSync } from "node:child_process";
 
 const { values: args } = parseArgs({
   options: {
@@ -74,21 +74,71 @@ const output = args.output
 const totalDuration = dwell * steps;
 const SIZE = 900;
 
+// Pre-flight checks
+if (format === "mp4") {
+  try {
+    execSync("ffmpeg -version", { stdio: "pipe" });
+  } catch {
+    console.error("Error: ffmpeg is not installed or not on PATH.");
+    console.error("Install it with: brew install ffmpeg (macOS) or apt install ffmpeg (Linux)");
+    console.error("ffmpeg is required to produce H.264 MP4 files for X.");
+    process.exit(1);
+  }
+}
+
+// Ensure output directory exists
+await mkdir(dirname(output), { recursive: true });
+
+// Check dev server is reachable
+try {
+  const res = await fetch(baseUrl, { signal: AbortSignal.timeout(5000) });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+} catch (err) {
+  console.error(`Error: Dev server not reachable at ${baseUrl}`);
+  console.error("Start it first with: npm run dev");
+  console.error(`(${err.message})`);
+  process.exit(1);
+}
+
 console.log(`Recording demo (${steps} steps, ${dwell}ms each, ~${totalDuration / 1000}s total)`);
 if (brand) console.log(`  Brand:  ${brand}`);
 console.log(`  Output: ${output}`);
 console.log(`  Format: ${format} @ ${SIZE}x${SIZE} (1:1), ${fps}fps`);
 console.log();
 
-const browser = await puppeteer.launch({
-  headless: true,
-  args: [`--window-size=${SIZE},${SIZE}`],
-});
+let browser;
+try {
+  browser = await puppeteer.launch({
+    headless: true,
+    args: [`--window-size=${SIZE},${SIZE}`],
+  });
+} catch (err) {
+  console.error("Error: Could not launch browser.");
+  console.error("Make sure puppeteer is installed: npm i -D puppeteer");
+  console.error(`(${err.message})`);
+  process.exit(1);
+}
 
 const page = await browser.newPage();
 await page.setViewport({ width: SIZE, height: SIZE });
-await page.goto(baseUrl, { waitUntil: "networkidle0" });
-await page.waitForSelector(".how-card", { timeout: 10000 });
+
+try {
+  await page.goto(baseUrl, { waitUntil: "networkidle0" });
+} catch (err) {
+  console.error(`Error: Could not load ${baseUrl}`);
+  console.error(`(${err.message})`);
+  await browser.close();
+  process.exit(1);
+}
+
+try {
+  await page.waitForSelector(".how-card", { timeout: 10000 });
+} catch {
+  console.error("Error: Could not find .how-card element on the page.");
+  console.error("Make sure the demo carousel is visible at the base URL.");
+  await browser.close();
+  process.exit(1);
+}
 await sleep(500);
 
 console.log("Page loaded.");
@@ -190,21 +240,35 @@ await browser.close();
 
 if (needsReencode) {
   console.log("Re-encoding to H.264 for X...");
-  execFileSync("ffmpeg", [
-    "-y",
-    "-i", rawPath,
-    "-c:v", "libx264",
-    "-preset", "medium",
-    "-crf", String(quality),
-    "-pix_fmt", "yuv420p",
-    "-movflags", "+faststart",
-    "-an",
-    output,
-  ], { stdio: "pipe" });
-  await unlink(rawPath);
+  try {
+    execFileSync("ffmpeg", [
+      "-y",
+      "-i", rawPath,
+      "-c:v", "libx264",
+      "-preset", "medium",
+      "-crf", String(quality),
+      "-pix_fmt", "yuv420p",
+      "-movflags", "+faststart",
+      "-an",
+      output,
+    ], { stdio: "pipe" });
+    await unlink(rawPath);
+  } catch (err) {
+    console.error("Error: ffmpeg re-encoding failed.");
+    console.error(err.stderr?.toString() || err.message);
+    console.error(`Raw WebM kept at: ${rawPath}`);
+    process.exit(1);
+  }
 }
 
-const info = await stat(output);
+let info;
+try {
+  info = await stat(output);
+} catch {
+  console.error(`Error: Output file not found at ${output}`);
+  console.error("Recording may have failed silently. Check the steps above for warnings.");
+  process.exit(1);
+}
 const sizeMB = (info.size / (1024 * 1024)).toFixed(2);
 console.log();
 console.log(`Done. ${output} (${sizeMB} MB)`);

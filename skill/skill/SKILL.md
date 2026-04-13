@@ -1,7 +1,7 @@
 ---
 name: demoday
 description: Generate beautiful clickable product demos as self-contained HTML files and embed them as iframes in the user's landing page.
-trigger: When the user asks to create a clickable demo, embed a product walkthrough, generate a demoday demo, or says "use demoday".
+trigger: When the user asks to create a clickable demo, embed a product walkthrough, generate a demoday demo, update an existing demo, or says "use demoday" or "demoday update".
 ---
 
 # Demoday — Claude Code Skill
@@ -44,6 +44,31 @@ doing anything else:
 After both are resolved, continue with generation. Never ask these
 questions a second time in the same project. Do **not** ask the user to
 paste a command — all confirmations happen inline via `AskUserQuestion`.
+
+## Repo validation
+
+Before generating, verify this is the right repository. Check:
+
+1. Read `package.json` — look at `name`, `description`, and `keywords`.
+2. Scan for landing-page signals: marketing copy (`hero`, `pricing`,
+   `testimonial`), static-site generators (Gatsby blog templates, Hugo
+   themes), or documentation-only repos (Docusaurus, VitePress).
+3. Scan for application signals: route files with authenticated views,
+   database models or ORM config, API route handlers, middleware, or a
+   `src/` directory with component/service structure.
+
+If the repo looks like a **marketing site, docs site, or blog** rather
+than the main product application, use `AskUserQuestion`:
+
+> "This repo looks like a marketing/docs site rather than your main
+> product. Demoday works best when it can read your application code to
+> build an accurate demo. Is this the right repo, or should you run
+> this from your main application repository instead?"
+
+Options: `This is correct — continue`, `Wrong repo — I'll switch`.
+
+If the user says wrong repo, stop and tell them to `cd` into their
+product repo and re-run. If they confirm, proceed normally.
 
 ## Generation flow
 
@@ -90,6 +115,21 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
      `--muted`). Every UI element in the demo must use these variables
      so the output feels like the user's actual product.
 
+   **Verification — never guess brand data:**
+   - If you cannot find a brand color in the codebase, ask the user:
+     "I couldn't find your brand color. What's your primary brand
+     color (hex)?"
+   - If you cannot find a logo SVG, use a simple styled text fallback
+     with the product name — never fabricate an icon.
+   - **Pricing and numeric data** — if the demo includes pricing,
+     usage limits, or other specific numbers, you MUST source them
+     from the codebase (constants files, pricing components, config).
+     If pricing is fetched from an API at runtime (no hardcoded
+     values in the code), ask the user: "I can see pricing is loaded
+     dynamically. What are your current plan names and prices?" Never
+     invent pricing values — wrong prices in a demo erode trust
+     immediately.
+
 3. **Read the user's project:**
    - `package.json` to detect the framework.
    - The main landing-page file (`app/page.{js,jsx,tsx}`, `pages/index.*`,
@@ -132,9 +172,11 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
      background:#f5f5f5; padding:20px;`. On embedded (iframe) usage,
      the neutral bg and padding give the card visual breathing room.
    - `.demo-card`: `max-width:640px; width:100%; border-radius:16px;
-     border:1px solid #e5e5e5; overflow:hidden; background:#fff;
-     box-shadow:0 1px 3px rgba(0,0,0,0.04);`. Contains both the
-     canvas and the step bar.
+     border:1px solid #d1d5db; overflow:hidden; background:#fff;
+     box-shadow:0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);`.
+     Contains both the canvas and the step bar. The border must be
+     clearly visible against white backgrounds — never use `#e5e5e5`
+     or lighter.
    - `.demo-canvas`: `aspect-ratio:4/3; overflow:hidden; position:relative;`.
      This is where the product UI lives (sidebar, nav, content). It
      fills the full width of the card.
@@ -145,8 +187,9 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
        Clicking them advances or rewinds the step, wrapping at ends.
      - The step **number** (`01` / `02` / `03`) in a large, light
        serif or sans-serif font (24–30px, muted color).
-     - The step **title** in a bold 18–22px font.
-     - A one-sentence **description** in 12–13px muted text.
+     - The step **title** in a bold 18–22px font, color `#0a0a0a`.
+     - A one-sentence **description** in 13–14px text, color `#374151`
+       (NOT muted gray — must be readable against white).
      - **Three dots** in the top-right of the step area. The active
        dot is filled dark; the others are light/muted.
    - Step 01 is active on first load.
@@ -269,8 +312,8 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
    .breadcrumb a{color:var(--muted);text-decoration:none}
    h1{font-size:28px;font-weight:700;letter-spacing:-.03em;
       margin-bottom:8px;line-height:1.2}
-   .desc{color:var(--muted);font-size:15px;line-height:1.6;
-         margin-bottom:28px}
+   .desc{color:var(--text);font-size:15px;line-height:1.6;
+         margin-bottom:28px;opacity:0.85}
    h2{font-size:20px;font-weight:600;letter-spacing:-.02em;
       margin:32px 0 12px;padding-top:20px;
       border-top:1px solid var(--border)}
@@ -425,6 +468,29 @@ paste a command — all confirmations happen inline via `AskUserQuestion`.
    Options: `Yes, open it` / `Skip`
    If the user picks `Yes, open it`, open the file in the browser so
    they can save it.
+
+## Updating an existing demo
+
+When the user says "update my demo", "refresh the demo", "demoday update",
+or similar:
+
+1. Find the existing demo file — check `public/demos/demoday.html` first,
+   then list all `.html` files in `public/demos/` and ask the user which
+   one to update if there are multiple.
+2. Read the existing demo file to understand its current structure, nav
+   items, step descriptions, and brand colors.
+3. Re-read the codebase (same as generation steps 1–2) to detect any
+   changes: new navigation sections, updated pricing, changed brand
+   colors, new features.
+4. Regenerate the demo file in-place, preserving the filename and iframe
+   embedding. Show the user a summary of what changed.
+5. Preview and confirm (same as generation steps 6–7).
+
+The user can also update the skill itself by running:
+```
+npx @demoday/skill@latest update
+```
+This reinstalls the latest skill files without resetting the config.
 
 ## Telemetry
 

@@ -18,8 +18,8 @@ const os = require("os");
 
 const argv = process.argv.slice(2);
 const cmd = argv[0] || "init";
-if (cmd !== "init") {
-  console.error("Usage: npx @demoday/skill@latest init");
+if (cmd !== "init" && cmd !== "update") {
+  console.error("Usage: npx @demoday/skill@latest <init|update>");
   process.exit(1);
 }
 
@@ -124,7 +124,8 @@ function writeConfigIfMissing() {
 }
 
 // ---- run ----
-console.log("demoday · installing skill");
+const isUpdate = cmd === "update";
+console.log(isUpdate ? "demoday · updating skill" : "demoday · installing skill");
 
 for (const target of SKILL_TARGETS) {
   mkdirp(path.dirname(target.dir));
