@@ -57,12 +57,21 @@ export const metadata = {
     title: TITLE,
     description: DESCRIPTION,
     locale: "en_US",
+    images: [
+      {
+        url: "/og.png",
+        width: 1678,
+        height: 1674,
+        alt: TITLE,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: TITLE,
     description: DESCRIPTION,
     creator: "@demoday",
+    images: ["/og.png"],
   },
   robots: {
     index: true,
