@@ -25,7 +25,7 @@ License: Open source (MIT).
 2. Output is plain HTML/CSS/JS — no runtime, no CDN, no tracking.
 3. Embedded with a single `<iframe>` — works on Webflow, Framer, WordPress,
    Ghost, MDX, Next.js, Astro, SvelteKit, and any site that accepts an embed.
-4. Free forever, open source, with a $20 one-time upgrade for your own brand.
+4. Completely free and open source.
 5. Runs locally in your coding agent — your source code never leaves your
    machine.
 

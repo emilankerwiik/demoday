@@ -23,18 +23,13 @@ questions — **no second paste**, no shell prompts:
    success/fail, version, OS. Never code, file paths, repo names, or
    your content.
 2. **Auto-update** the skill when new versions ship (default: yes).
-3. **Premium license key** — optional. Continue on the free tier or
-   paste a key to swap the "Made with Demoday" tag for your own brand
-   in the corner of generated iframes.
+3. **License key** field (optional for future use).
 
 Answers are saved to `~/.demoday/config.json` and never asked again.
 
 ## Pricing
 
-- **Free** — unlimited demos. Generated iframes include a small
-  red clothing-tag style "DEMODAY" label in the bottom-left corner.
-- **Premium · $20 one-time** — your brand in the corner instead of
-  ours. One key works across all your projects.
+Completely free and open source. No subscriptions, no per-seat, no limits.
 
 ## Uninstall
 

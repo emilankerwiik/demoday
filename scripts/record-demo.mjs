@@ -172,36 +172,55 @@ await page.evaluate(() => {
 });
 await sleep(300);
 
-await page.evaluate(() => {
+// Use the background image served from public/bg.jpg
+const bgUrl = `${baseUrl}/bg.jpg`;
+
+await page.evaluate((bgUrl) => {
   const card = document.querySelector(".how-card");
   if (!card) return;
 
+  // Reparent the card: pull it out, hide everything else, rebuild layout
+  card.remove();
+
+  // Hide all body children
+  for (const child of document.body.children) {
+    if (child.tagName !== "SCRIPT" && child.tagName !== "STYLE") {
+      child.style.display = "none";
+    }
+  }
+
+  // Add card back as a direct child
+  document.body.appendChild(card);
+
   const style = document.createElement("style");
   style.textContent = `
+    html {
+      background: transparent !important;
+    }
     body {
-      overflow: hidden !important;
       margin: 0 !important;
       padding: 0 !important;
-      background: #fff !important;
+      overflow: hidden !important;
+      background: url("${bgUrl}") center/cover no-repeat !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      min-height: 100vh !important;
     }
-    body * { visibility: hidden !important; }
-
     .how-card {
-      visibility: visible !important;
-      position: fixed !important;
-      top: 44% !important;
-      left: 50% !important;
-      transform: translate(-50%, -50%) !important;
-      z-index: 99999 !important;
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      transform: none !important;
       max-width: 580px !important;
       width: 76% !important;
+      z-index: 99999 !important;
+      margin-top: -2% !important;
     }
-    .how-card * { visibility: visible !important; }
-    .how-card iframe { visibility: visible !important; }
     .how-brands { display: none !important; }
   `;
   document.head.appendChild(style);
-});
+}, bgUrl);
 await sleep(600);
 
 const needsReencode = format === "mp4";

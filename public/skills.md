@@ -17,8 +17,8 @@
 ## Description
 
 Generate beautiful clickable product demos as self-contained HTML files
-and embed them as iframes in the user's landing page. Free forever; $20
-one-time upgrade for own-brand badging. Open source on GitHub.
+and embed them as iframes in the user's landing page. Completely free and
+open source on GitHub.
 
 ## Triggers
 
@@ -71,12 +71,8 @@ Any `null` field prompts the user via `AskUserQuestion` on first run.
 - Running more than one generation per invocation (unless explicitly
   asked).
 
-## Freemium boundary
+## Licensing
 
-`licenseKey` is the single source of truth for the badge:
-
-- `null` or `false` -> Demoday tag renders in bottom-left of the iframe.
-- Any non-empty string -> `brand.name` (linked to `brand.href` when set)
-  renders in that slot instead.
-
-No server-side key validation. The skill trusts the config file.
+Demoday is completely free and open source. There is no freemium model or
+license key validation. The `licenseKey` field in the config file is
+reserved for future use.

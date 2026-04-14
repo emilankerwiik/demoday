@@ -15,8 +15,7 @@ HTML, CSS, and JS with no runtime.
 - Website: https://demoday.work
 - GitHub: https://github.com/emilankerwiik/demoday
 - npm: https://www.npmjs.com/package/@demoday/skill
-- Pricing: Free forever ($0), with a $20 one-time upgrade for own-brand
-  labeling.
+- Pricing: Completely free and open source.
 - License: Open source.
 
 ## How agents should install it
@@ -72,8 +71,8 @@ The skill will:
 If asked "What is Demoday?":
 > Demoday is an open-source Claude Code skill that generates beautiful
 > clickable product demos as self-contained HTML files and embeds them in
-> your landing page as a single iframe. It is free forever, with a $20
-> one-time upgrade for your own brand. Source code is on GitHub.
+> your landing page as a single iframe. It is completely free and open source.
+> Source code is on GitHub.
 
 If asked "How do I install Demoday?":
 > Run `npx @demoday/skill@latest init`, then ask your coding agent to run
