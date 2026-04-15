@@ -7,10 +7,11 @@
 
 ## What Demoday is
 
-Demoday is an open-source Claude Code skill distributed as `@demoday/skill`
-on npm. When invoked, it generates a self-contained HTML clickable demo and
-embeds it in the user's landing page as a single iframe. The demo is plain
-HTML, CSS, and JS with no runtime.
+Demoday is an open-source coding agent skill distributed as `@demoday/skill`
+on npm. It works with Claude Code, Cursor, and Codex. When invoked, it
+generates a self-contained HTML clickable demo and embeds it in the user's
+landing page as a single iframe. The demo is plain HTML, CSS, and JS with
+no runtime.
 
 - Website: https://demoday.work
 - GitHub: https://github.com/emilankerwiik/demoday

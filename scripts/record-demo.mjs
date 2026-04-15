@@ -27,7 +27,7 @@ if (args.help) {
 
   Captures the demo card (iframe + step description) and clicks through
   all steps using the page navigation. Output is a 1:1 square video
-  optimized for posting on X (1080x1080, H.264).
+  optimized for posting on X (1200x1200, H.264).
 
   Usage:
     node scripts/record-demo.mjs [options]
@@ -72,7 +72,7 @@ const output = args.output
   : resolve("recordings", `${filename}${ext}`);
 
 const totalDuration = dwell * steps;
-const SIZE = 900;
+const SIZE = 1200;
 
 // Pre-flight checks
 if (format === "mp4") {
@@ -212,7 +212,7 @@ await page.evaluate((bgUrl) => {
       top: auto !important;
       left: auto !important;
       transform: none !important;
-      max-width: 580px !important;
+      max-width: 1000px !important;
       width: 76% !important;
       z-index: 99999 !important;
       margin-top: -2% !important;
@@ -223,25 +223,56 @@ await page.evaluate((bgUrl) => {
 }, bgUrl);
 await sleep(600);
 
+// Try screencast first, fall back to screenshot-based recording
+let useScreencast = true;
+let recorder;
+
 const needsReencode = format === "mp4";
 const rawPath = needsReencode ? output.replace(/\.mp4$/, ".raw.webm") : output;
 
-const screencastOptions = {
-  path: rawPath,
-  format: needsReencode ? "webm" : format,
-  fps,
-  quality,
-};
+try {
+  const screencastOptions = {
+    path: rawPath,
+    format: needsReencode ? "webm" : format,
+    fps,
+    quality,
+  };
 
-if (format === "gif") {
-  screencastOptions.colors = 128;
-  screencastOptions.loop = 0;
+  if (format === "gif") {
+    screencastOptions.colors = 128;
+    screencastOptions.loop = 0;
+  }
+
+  console.log("Recording started (screencast).");
+  recorder = await page.screencast(screencastOptions);
+} catch (err) {
+  console.warn(`screencast() failed (${err.message}), falling back to screenshot-based recording...`);
+  useScreencast = false;
 }
 
-console.log("Recording started.");
-const recorder = await page.screencast(screencastOptions);
+const framesDir = resolve("recordings", ".frames");
+if (!useScreencast) {
+  await mkdir(framesDir, { recursive: true });
+  console.log("Recording started (screenshot fallback).");
+}
 
-await sleep(dwell);
+let frameIndex = 0;
+
+async function captureFrames(durationMs) {
+  if (useScreencast) {
+    await sleep(durationMs);
+    return;
+  }
+  const interval = Math.round(1000 / fps);
+  const count = Math.round(durationMs / interval);
+  for (let i = 0; i < count; i++) {
+    const padded = String(frameIndex++).padStart(6, "0");
+    await page.screenshot({ path: resolve(framesDir, `frame-${padded}.png`) });
+    await sleep(interval);
+  }
+}
+
+await captureFrames(dwell);
 
 for (let step = 2; step <= steps; step++) {
   console.log(`  Step ${step}/${steps}`);
@@ -249,15 +280,21 @@ for (let step = 2; step <= steps; step++) {
     const btn = document.querySelector(".how-nav-next");
     if (btn) btn.click();
   });
-  await sleep(dwell);
+  await captureFrames(dwell);
 }
 
-await recorder.stop();
+if (useScreencast) {
+  try {
+    await recorder.stop();
+  } catch (err) {
+    console.error(`Warning: recorder.stop() failed (${err.message})`);
+  }
+}
 console.log("Recording stopped.");
 
 await browser.close();
 
-if (needsReencode) {
+if (useScreencast && needsReencode) {
   console.log("Re-encoding to H.264 for X...");
   try {
     execFileSync("ffmpeg", [
@@ -278,6 +315,33 @@ if (needsReencode) {
     console.error(`Raw WebM kept at: ${rawPath}`);
     process.exit(1);
   }
+} else if (!useScreencast) {
+  console.log("Stitching frames with ffmpeg...");
+  try {
+    execFileSync("ffmpeg", [
+      "-y",
+      "-framerate", String(fps),
+      "-i", resolve(framesDir, "frame-%06d.png"),
+      "-c:v", "libx264",
+      "-preset", "medium",
+      "-crf", String(quality),
+      "-pix_fmt", "yuv420p",
+      "-movflags", "+faststart",
+      "-an",
+      output,
+    ], { stdio: "pipe" });
+  } catch (err) {
+    console.error("Error: ffmpeg frame stitching failed.");
+    console.error(err.stderr?.toString() || err.message);
+    console.error(`Frames kept at: ${framesDir}`);
+    process.exit(1);
+  }
+  // Clean up frames
+  const { readdir } = await import("node:fs/promises");
+  const frames = await readdir(framesDir);
+  for (const f of frames) await unlink(resolve(framesDir, f));
+  const { rmdir } = await import("node:fs/promises");
+  await rmdir(framesDir).catch(() => {});
 }
 
 let info;

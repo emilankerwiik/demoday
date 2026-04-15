@@ -67,6 +67,47 @@ function detectFramework(cwd) {
   return "unknown";
 }
 
+function detectRepoType(cwd) {
+  const pkgPath = path.join(cwd, "package.json");
+  if (!fs.existsSync(pkgPath)) return "unknown";
+  try {
+    const pkg = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
+    const name = (pkg.name || "").toLowerCase();
+    const desc = (pkg.description || "").toLowerCase();
+    const keywords = (pkg.keywords || []).map((k) => k.toLowerCase());
+    const all = [name, desc, ...keywords].join(" ");
+
+    const marketingSignals = [
+      "landing",
+      "marketing",
+      "website",
+      "docs",
+      "blog",
+      "homepage",
+    ];
+    const hasMarketing = marketingSignals.some((s) => all.includes(s));
+
+    const deps = { ...(pkg.dependencies || {}), ...(pkg.devDependencies || {}) };
+    const docTools = [
+      "@docusaurus/core",
+      "docusaurus",
+      "vitepress",
+      "gatsby",
+      "hugo",
+    ];
+    const hasDocTool = docTools.some((d) => deps[d]);
+
+    // Check for application signals
+    const appDirs = ["src", "api", "server", "lib", "services"];
+    const hasAppCode = appDirs.some((d) =>
+      fs.existsSync(path.join(cwd, d))
+    );
+
+    if ((hasMarketing || hasDocTool) && !hasAppCode) return "marketing";
+  } catch (_) {}
+  return "app";
+}
+
 function addDevDep(cwd) {
   const pkgPath = path.join(cwd, "package.json");
   if (!fs.existsSync(pkgPath)) return false;
@@ -116,7 +157,7 @@ function writeConfigIfMissing() {
   const config = {
     version: 1,
     createdAt: new Date().toISOString(),
-    telemetry: null,
+    telemetry: false,
     autoUpdate: null,
   };
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2) + "\n");
@@ -143,6 +184,15 @@ else console.log("  · devDependency already present (or no package.json)");
 const framework = detectFramework(CWD);
 console.log("  · detected: " + framework);
 
+const repoType = detectRepoType(CWD);
+if (repoType === "marketing") {
+  console.log("");
+  console.log("  Warning: This looks like a marketing/docs site, not your main product repo.");
+  console.log("  Demoday works best when run from your application repository.");
+  console.log("  If your product code is in a separate repo, run init there instead.");
+  console.log("");
+}
+
 const wroteCfg = writeConfigIfMissing();
 console.log(
   wroteCfg
@@ -152,4 +202,5 @@ console.log(
 
 console.log("");
 console.log("Skill installed for Claude Code, Cursor, and Codex.");
+console.log("Demoday reads your code to generate demos. It never modifies your application files.");
 console.log("Reload your editor, then ask the agent to generate a demo.");

@@ -7,10 +7,10 @@
 
 ## Product summary
 
-Demoday is an open-source Claude Code skill that generates **clickable
+Demoday is an open-source coding agent skill that generates **clickable
 product demos** as self-contained HTML files and embeds them in a landing
-page as a single iframe. It is completely free and open source. The source
-code is available on GitHub.
+page as a single iframe. Works with Claude Code, Cursor, and Codex. It is
+completely free and open source. The source code is available on GitHub.
 
 Canonical URL: https://demoday.work
 GitHub: https://github.com/emilankerwiik/demoday

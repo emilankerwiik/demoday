@@ -4,7 +4,7 @@ description: Generate beautiful clickable product demos as self-contained HTML f
 trigger: When the user asks to create a clickable demo, embed a product walkthrough, generate a demoday demo, update an existing demo, or says "use demoday" or "demoday update".
 ---
 
-# Demoday — Claude Code Skill
+# Demoday — Coding Agent Skill
 
 Demoday turns part of the user's product into a self-contained HTML file
 (plain HTML/CSS/JS, no runtime) and embeds it as a single iframe on their
@@ -28,13 +28,12 @@ doing anything else:
 
 1. Read `~/.demoday/config.json`. If it does not exist, stop and tell the
    user to run `npx @demoday/skill@latest init`.
-2. If `telemetry` is `null`, use `AskUserQuestion` to ask:
-   > "Demoday can share anonymous usage data (skill name, duration,
-   > success/fail, version, OS) to help improve the skill. No code, file
-   > paths, repo names, or user content is ever sent. Share anonymous
-   > usage data?"
-   Options: `Share (recommended)` (default), `Don't share`. Save the
-   answer to `config.json`.
+2. Display this message to the user (not a question — just inform them):
+   > "Demoday reads your source code to understand your product and
+   > generate an accurate demo. It makes no changes to your application
+   > code. The only files it creates or edits are in `public/demos/` and
+   > your landing page. You will preview the demo before anything is
+   > embedded."
 3. If `autoUpdate` is `null`, use `AskUserQuestion` to ask:
    > "Keep the Demoday skill automatically updated when new versions
    > ship?"
@@ -70,6 +69,21 @@ Options: `This is correct — continue`, `Wrong repo — I'll switch`.
 If the user says wrong repo, stop and tell them to `cd` into their
 product repo and re-run. If they confirm, proceed normally.
 
+**Cross-repo handling:** If the repo is confirmed as a marketing/landing
+page site (not the product app), use `AskUserQuestion`:
+
+> "This looks like your landing page repo. To build an accurate demo,
+> I need to read your product's source code. Where is your main
+> application repository?"
+
+Options: `Enter path`, `This repo has everything`.
+
+If the user provides a path, read that repo's route files, components,
+and brand assets to inform demo generation. Write the demo HTML into the
+current (landing page) repo's `public/demos/` directory. If the path is
+not accessible, tell the user and ask them to provide a valid path or
+switch to the product repo.
+
 ## Generation flow
 
 1. **Study the product navigation.** Before writing any HTML, map the
@@ -95,21 +109,65 @@ product repo and re-run. If they confirm, proceed normally.
      shadcn `components.json`, or any `DESIGN.md`. Extract the primary
      brand color, secondary color, background, surface, border, text,
      and muted text values.
-   - **Logo** — look for SVG logos in layout/header components, navbar
-     files, or `public/` (`logo.svg`, `favicon.svg`, brand marks). If
-     the logo is an SVG, inline it in the demo. If it is a raster image
-     (`png`, `ico`), reference the path but do not base64-encode large
-     files — use a simple text fallback with the product name instead.
+   - **Logo** — ALWAYS search the repository for the actual logo file.
+     Never create, generate, or fabricate a logo. Search in this order:
+     1. Layout/header components: look for `<img>` or `<svg>` tags in
+        `app/layout.*`, `components/Header.*`, `components/Navbar.*`,
+        `components/Nav.*`, `components/Layout.*`, `src/layouts/*`.
+     2. Public directory: glob `public/` recursively for files matching
+        `logo*`, `brand*`, `mark*`, `icon*` with extensions `.svg`,
+        `.png`, `.ico`.
+     3. Assets directories: search `src/assets/`, `assets/`, `images/`,
+        `static/` for the same patterns.
+     4. Package metadata: check `package.json` for an `icon` or `logo`
+        field.
+     5. Favicon files: check `public/favicon.svg`, `public/favicon.ico`,
+        `app/favicon.ico`, `app/icon.svg`.
+     6. Full-repo glob: glob for `**/*.svg` and `**/*.png` and look
+        for files whose names suggest a logo or brand mark.
+     7. Web fallback: if the product has a known domain, fetch the
+        logo from `https://logo.clearbit.com/{domain}` or extract
+        it from the site's `<link rel="icon">` / `<link rel="apple-touch-icon">`
+        tags by fetching the homepage HTML. Google's favicon service
+        (`https://www.google.com/s2/favicons?domain={domain}&sz=128`)
+        also works as a last resort but produces lower quality.
+     If the logo is SVG, inline it directly in the demo HTML. If it is
+     a raster image (PNG, ICO) under 8 KB, base64-encode and inline it.
+     For larger rasters, reference the path and add a
+     `<!-- logo: path/to/logo.png -->` comment.
+     If no logo file is found after exhaustive search, use a plain text
+     fallback with the product name — but ALWAYS tell the user:
+     "I couldn't find a logo file in your repo. The demo uses your
+     product name as text. Add a logo SVG at `public/logo.svg` and
+     re-run to include it."
    - **Typography** — note the font stack from CSS or Tailwind config.
      Do not load external fonts (the demo must be self-contained), but
      use the same `font-family` declaration so system fonts match.
-   - **Dark mode by default** — always generate the demo dashboard
-     (the iframe content) with a dark color scheme, even if the user's
-     product has a light theme. Dark dashboards create strong visual
-     contrast against the light description card below and look better
-     in recordings and on social media. Use the template's dark defaults
-     (`--bg:#0f1117`, `--text:#e4e4e7`, etc.) and map only the brand
-     accent color from the user's product.
+   - **Theme detection** — detect whether the user's product uses a dark
+     or light color scheme by default, then match it in the generated
+     demo:
+     1. Check Tailwind config (`tailwind.config.*`) for `darkMode`
+        setting and inspect default classes on `<html>` or `<body>` in
+        layout files (e.g. `class="dark"`).
+     2. Check CSS custom properties in global stylesheets — if `--bg`
+        or `--background` values are dark colors (hex luminance < 0.2),
+        use dark mode.
+     3. Check `<html>` or `<body>` in layout files for classes like
+        `dark`, `theme-dark`, or attributes like `data-theme="dark"`.
+     4. If signals are ambiguous or mixed, use `AskUserQuestion`:
+        "Should the demo use a dark or light color scheme?"
+        Options: `Dark`, `Light`.
+
+     For **dark themes**, use the template defaults (`--bg:#0f1117`,
+     `--bg-sidebar:#0a0c10`, `--bg-card:#181b22`, `--border:#1e2029`,
+     `--text:#e4e4e7`, `--muted:#71717a`, `--faint:#52525b`).
+
+     For **light themes**, use:
+     `--bg:#ffffff`, `--bg-sidebar:#f8f9fa`, `--bg-card:#f1f3f5`,
+     `--border:#e5e7eb`, `--text:#0a0a0a`, `--muted:#6b7280`,
+     `--faint:#9ca3af`.
+
+     In both cases, map the brand accent color from the user's product.
    - Map the extracted values to CSS custom properties in the demo's
      `:root` block (e.g. `--brand`, `--bg`, `--text`, `--border`,
      `--muted`). Every UI element in the demo must use these variables
@@ -171,13 +229,13 @@ product repo and re-run. If they confirm, proceed normally.
      align-items:center; justify-content:center;
      background:#f5f5f5; padding:20px;`. On embedded (iframe) usage,
      the neutral bg and padding give the card visual breathing room.
-   - `.demo-card`: `max-width:640px; width:100%; border-radius:16px;
+   - `.demo-card`: `max-width:1280px; width:100%; border-radius:16px;
      border:1px solid #d1d5db; overflow:hidden; background:#fff;
      box-shadow:0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);`.
      Contains both the canvas and the step bar. The border must be
      clearly visible against white backgrounds — never use `#e5e5e5`
      or lighter.
-   - `.demo-canvas`: `aspect-ratio:4/3; overflow:hidden; position:relative;`.
+   - `.demo-canvas`: `aspect-ratio:16/10; overflow:hidden; position:relative;`.
      This is where the product UI lives (sidebar, nav, content). It
      fills the full width of the card.
    - `.demo-steps`: sits below the canvas inside the card. White
@@ -249,30 +307,37 @@ product repo and re-run. If they confirm, proceed normally.
    /* ---- layout ---- */
    .shell{display:flex;height:100vh}
    .sidebar{
-     width:220px;min-width:220px;flex-shrink:0;
+     width:48px;min-width:48px;flex-shrink:0;
      background:var(--bg-sidebar);border-right:1px solid var(--border);
-     display:flex;flex-direction:column;overflow-y:auto
+     display:flex;flex-direction:column;overflow:hidden;
+     transition:width .2s ease,min-width .2s ease
    }
+   .sidebar:hover{width:220px;min-width:220px;overflow-y:auto}
    .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
    /* ---- sidebar ---- */
    .sidebar-logo{
-     padding:20px 20px 16px;display:flex;align-items:center;
-     gap:10px;font-size:15px;font-weight:600;letter-spacing:-.01em
+     padding:12px;display:flex;align-items:center;
+     gap:10px;font-size:15px;font-weight:600;letter-spacing:-.01em;
+     white-space:nowrap;overflow:hidden
    }
+   .sidebar:hover .sidebar-logo{padding:20px 20px 16px}
    .logo-icon{
      width:22px;height:22px;border-radius:5px;
      display:flex;align-items:center;justify-content:center
    }
-   .sidebar-section{padding:4px 12px;margin-bottom:4px}
+   .sidebar-section{padding:4px 8px;margin-bottom:4px}
+   .sidebar:hover .sidebar-section{padding:4px 12px}
    .section-label{
      font-size:11px;text-transform:uppercase;letter-spacing:.08em;
-     color:var(--faint);padding:8px 8px 6px;font-weight:500
+     color:var(--faint);padding:8px 8px 6px;font-weight:500;
+     white-space:nowrap;overflow:hidden
    }
    .nav-item{
      display:flex;align-items:center;gap:9px;padding:7px 10px;
      border-radius:6px;color:var(--muted);font-size:13px;
-     cursor:pointer;transition:all .12s;user-select:none
+     cursor:pointer;transition:all .12s;user-select:none;
+     white-space:nowrap;overflow:hidden
    }
    .nav-item:hover{background:var(--bg-card);color:var(--text)}
    .nav-item.active{background:var(--brand-dim);color:var(--brand)}
@@ -389,33 +454,30 @@ product repo and re-run. If they confirm, proceed normally.
    .stat-value{font-size:22px;font-weight:600;
                letter-spacing:-.02em}
 
-   /* ---- demoday tag ---- */
-   .demoday-tag{
-     position:fixed;bottom:10px;left:12px;font-size:9px;
-     letter-spacing:.12em;text-transform:uppercase;
-     color:rgba(255,255,255,.22);font-family:var(--font);
-     pointer-events:none
-   }
    ```
 
-   For light-background demos, change `.demoday-tag` color to
-   `rgba(0,0,0,0.18)`.
-
    **Sidebar rules — common mistakes to avoid:**
-   - The default sidebar width is `220px`. NEVER set it below `180px`.
-   - For products with longer nav labels (e.g. "Advanced Configuration",
-     "Edge Functions"), increase `.sidebar { width }` to `240px` or more
-     until all labels fit on one line without wrapping.
-   - NEVER apply `overflow:hidden`, `text-overflow:ellipsis`, or
-     `white-space:nowrap` to nav items. Labels must be fully visible.
+   - The sidebar is **collapsed by default** (48px, icons only) and
+     expands to full width on hover via `.sidebar:hover`. Do not remove
+     the transition or the hover rule.
+   - Elements without icons (section labels, recent items, text-only
+     entries) must use `opacity:0` when collapsed and
+     `.sidebar:hover .element { opacity:1 }` to fade in on hover.
+     This prevents partial text from leaking out of the 48px column.
+   - The expanded sidebar width is `220px`. For products with longer
+     nav labels (e.g. "Advanced Configuration", "Edge Functions"),
+     increase `.sidebar:hover { width }` to `240px` or more until all
+     labels fit on one line without wrapping.
+   - Labels must be fully visible when the sidebar is expanded. The
+     `white-space:nowrap; overflow:hidden` on nav items ensures clean
+     collapse but text is fully readable on hover.
    - NEVER shrink font sizes below the template values. The `13px`
      nav-item size and `14px` body size are calibrated to match
      production apps rendered inside iframes.
    - The sidebar must use `flex-shrink:0` and `min-width` equal to
      its width so it never collapses when the card is narrow.
    - Always wrap nav items inside `.sidebar-section` containers with
-     proper padding (`4px 12px`) to prevent items from touching the
-     sidebar edges.
+     proper padding to prevent items from touching the sidebar edges.
    - Use `.nav-divider` (not raw `<hr>` or margin hacks) to separate
      nav groups.
 
@@ -447,7 +509,7 @@ product repo and re-run. If they confirm, proceed normally.
    When embedding, use:
    ```html
    <iframe src="/demos/<filename>.html" title="Product demo"
-           style="width:100%;height:600px;border:0;border-radius:12px;"
+           style="width:100%;height:900px;border:0;border-radius:12px;"
            loading="lazy"></iframe>
    ```
 
@@ -494,23 +556,9 @@ This reinstalls the latest skill files without resetting the config.
 
 ## Telemetry
 
-If `telemetry` is `true`, after generation POST a small JSON object to
-`https://demoday.dev/api/telemetry`:
-
-```json
-{
-  "event": "demo_generated",
-  "version": "<skill version>",
-  "os": "<platform>",
-  "duration_ms": <int>,
-  "flow_types": ["get_started", "how_it_works", "what_you_get"],
-  "success": true
-}
-```
-
-Never send: source code, file paths, repo names, product names, the
-generated HTML, or anything typed by the user. If the POST fails, silently
-skip — never block generation on a telemetry error.
+No telemetry is currently collected. The `telemetry` field in
+`~/.demoday/config.json` is reserved for future use and defaults to
+`false`. Do not ask the user about telemetry.
 
 ## What not to do
 

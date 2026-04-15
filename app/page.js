@@ -47,9 +47,8 @@ export default function Home() {
         <h1 className="display">
           Beautiful <em>clickable demos.</em>
         </h1>
-        <p className="lede lede-fixed">
-          <span>Delight your customers with experiences</span>
-          <span>created from your codebase in one click.</span>
+        <p className="lede">
+          Delight customers with what you do in seconds. One-click create from your codebase with Claude Code, Cursor, and Codex.
         </p>
         <div className="hero-cta">
           <CopyButton cmd="npx @demoday/skill@latest init" />
@@ -57,9 +56,25 @@ export default function Home() {
       </Reveal>
 
       {/* Demo */}
-      <Reveal as="section" id="demo" className="demo-section wrap" delayMs={80}>
+      <Reveal as="section" id="demo" className="demo-section wrap-wide" delayMs={80}>
         <HowItWorks />
       </Reveal>
+
+      {/* Video banner */}
+      <section className="video-banner">
+        <div className="video-banner-inner">
+          <div className="video-banner-fade video-banner-fade-top" />
+          <video
+            className="video-banner-media"
+            src="https://cdn.midjourney.com/video/7f63e735-7fad-4fbb-b2b6-a586579315a5/1.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <div className="video-banner-fade video-banner-fade-bottom" />
+        </div>
+      </section>
 
       {/* How it works — process */}
       <Process />
@@ -67,6 +82,22 @@ export default function Home() {
       <Reveal as="div" className="wrap" style={{ textAlign: "center", padding: "0 24px 64px" }}>
         <CopyButton cmd="npx @demoday/skill@latest init" />
       </Reveal>
+
+      {/* Video banner 2 */}
+      <section className="video-banner">
+        <div className="video-banner-inner">
+          <div className="video-banner-fade video-banner-fade-top" />
+          <video
+            className="video-banner-media"
+            src="https://cdn.midjourney.com/video/3fae97af-9e38-4200-bff3-1c2ac276f927/0.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+          />
+          <div className="video-banner-fade video-banner-fade-bottom" />
+        </div>
+      </section>
 
       {/* FAQ */}
       <section id="faq" className="section">
@@ -82,9 +113,7 @@ export default function Home() {
           </Reveal>
           <div className="faq-grid">
             <Reveal className="faq" delayMs={0}>
-              <div className="faq-img">
-                <img src="/faq/probe.png" alt="" loading="lazy" />
-              </div>
+
               <h4>What is a clickable demo?</h4>
               <p>
                 An interactive walkthrough visitors can click through right
@@ -93,9 +122,7 @@ export default function Home() {
               </p>
             </Reveal>
             <Reveal className="faq" delayMs={80}>
-              <div className="faq-img">
-                <img src="/faq/measure.png" alt="" loading="lazy" />
-              </div>
+
               <h4>Where can I use it?</h4>
               <p>
                 Anywhere you can paste a single <code>&lt;iframe&gt;</code>
@@ -104,9 +131,7 @@ export default function Home() {
               </p>
             </Reveal>
             <Reveal className="faq" delayMs={160}>
-              <div className="faq-img">
-                <img src="/faq/track.png" alt="" loading="lazy" />
-              </div>
+
               <h4>How do I update it?</h4>
               <p>
                 Re-run the skill. The demo is a file in your repo, so
@@ -115,9 +140,7 @@ export default function Home() {
               </p>
             </Reveal>
             <Reveal className="faq" delayMs={240}>
-              <div className="faq-img">
-                <img src="/faq/optimize.png" alt="" loading="lazy" />
-              </div>
+
               <h4>How do people solve this today?</h4>
               <p>
                 Today, visitors churn before they see the product.

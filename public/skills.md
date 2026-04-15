@@ -1,4 +1,4 @@
-# Demoday — Claude Code Skill Manifest
+# Demoday — Coding Agent Skill Manifest
 
 > Served at https://demoday.work/skills.md for agent frameworks and skill
 > registries that discover capabilities via crawlable manifests.
@@ -11,8 +11,7 @@
 - **GitHub**: https://github.com/emilankerwiik/demoday
 - **Install**: `npx @demoday/skill@latest init`
 - **License**: Open source
-- **Target agent**: Claude Code (other agents that can run npm scripts and
-  edit files also work)
+- **Target agents**: Claude Code, Cursor, and Codex
 
 ## Description
 

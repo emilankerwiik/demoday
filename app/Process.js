@@ -3,15 +3,15 @@ import Reveal from "./Reveal";
 const STEPS = [
   {
     n: "01",
-    title: "Paste into Claude Code",
-    desc: "Drop one command into your coding agent. It installs the skill and reads your codebase.",
+    title: "Paste into your agent",
+    desc: "Drop one command into Claude Code, Cursor, or Codex. It installs the skill and reads your codebase.",
     frame: (
       <div className="proc-frame proc-terminal" aria-hidden="true">
         <div className="proc-term-bar">
           <span className="proc-term-dot" style={{ background: "#ff5f57" }} />
           <span className="proc-term-dot" style={{ background: "#febc2e" }} />
           <span className="proc-term-dot" style={{ background: "#28c840" }} />
-          <span className="proc-term-title">claude-code</span>
+          <span className="proc-term-title">terminal</span>
         </div>
         <div className="proc-term-body">
           <div className="proc-term-line">

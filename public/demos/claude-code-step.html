@@ -5,92 +5,181 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Claude — mini demo</title>
 <style>
-:root{--bg:#2c2b28;--sidebar:#292825;--card:#35342f;--border:#3d3c37;--text:#e8e4db;--muted:#a09d93;--faint:#6b6860;--orange:#d97757;--orange-dim:rgba(217,119,87,.1);--font:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;--mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace}
+:root{
+  --bg:#2c2b28;
+  --bg-sidebar:#292825;
+  --bg-card:#35342f;
+  --border:#3d3c37;
+  --text:#e8e4db;
+  --muted:#a09d93;
+  --faint:#6b6860;
+  --brand:#d97757;
+  --brand-dim:rgba(217,119,87,.1);
+  --font:-apple-system,BlinkMacSystemFont,"Inter","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono","SF Mono",ui-monospace,Menlo,Consolas,monospace
+}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100vh;overflow:hidden;font-family:var(--font);font-size:10.5px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
-.app{display:flex;height:100vh}
-.side{width:100px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;padding:8px 6px}
-.chrome{display:flex;align-items:center;gap:5px;padding:4px 6px 10px}
-.chrome-dot{width:7px;height:7px;border-radius:50%}
-.chrome-dot:nth-child(1){background:#ff5f57}
-.chrome-dot:nth-child(2){background:#febc2e}
-.chrome-dot:nth-child(3){background:#28c840}
-.chrome-btns{display:flex;align-items:center;gap:6px;margin-left:8px;color:var(--faint)}
-.chrome-btns svg{width:12px;height:12px}
-.nav{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:6px;color:var(--muted);font-size:10px;cursor:pointer;transition:all .1s;user-select:none}
-.nav:hover{background:var(--card);color:var(--text)}
-.nav.active{background:var(--card);color:var(--text)}
-.nav svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
-.nav.active svg{opacity:1}
-.nav-sep{height:1px;background:var(--border);margin:8px 4px}
-.nav-label{font-size:8px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:10px 8px 4px;font-weight:500}
-.recent{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:5px;color:var(--muted);font-size:9px;cursor:pointer;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-.recent:hover{background:var(--card);color:var(--text)}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-.chat{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:16px}
-.msg{max-width:90%}
-.msg-user{align-self:flex-end;background:var(--card);border:1px solid var(--border);border-radius:12px 12px 4px 12px;padding:10px 14px;font-size:10.5px;line-height:1.55}
-.msg-ai{align-self:flex-start;display:flex;gap:8px}
-.msg-ai-avatar{width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,#d97757,#c4643f);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-.msg-ai-avatar svg{width:12px;height:12px}
-.msg-ai-body{font-size:10.5px;line-height:1.6;color:var(--text)}
-.msg-ai-body p{margin:0 0 6px}
+html,body{height:100%;overflow:hidden;font-family:var(--font);font-size:14px;color:var(--text);background:var(--bg);-webkit-font-smoothing:antialiased}
+
+/* layout */
+.shell{display:flex;height:100vh}
+.sidebar{
+  width:48px;min-width:48px;flex-shrink:0;
+  background:var(--bg-sidebar);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+  transition:width .2s ease,min-width .2s ease
+}
+.sidebar:hover{width:220px;min-width:220px;overflow-y:auto}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* sidebar */
+.sidebar-logo{
+  padding:12px;display:flex;align-items:center;
+  gap:10px;font-size:15px;font-weight:600;letter-spacing:-.01em;
+  white-space:nowrap;overflow:hidden
+}
+.sidebar:hover .sidebar-logo{padding:16px 16px 12px}
+.logo-icon{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#d97757,#c4643f);
+  display:flex;align-items:center;justify-content:center
+}
+.logo-icon svg{width:14px;height:14px}
+.sidebar-section{padding:4px 8px;margin-bottom:4px}
+.sidebar:hover .sidebar-section{padding:4px 12px}
+.section-label{
+  font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--faint);padding:8px 8px 6px;font-weight:500;
+  white-space:nowrap;overflow:hidden;
+  opacity:0;transition:opacity .15s ease
+}
+.sidebar:hover .section-label{opacity:1}
+.nav-item{
+  display:flex;align-items:center;gap:9px;padding:7px 10px;
+  border-radius:6px;color:var(--muted);font-size:13px;
+  cursor:pointer;transition:all .12s;user-select:none;
+  white-space:nowrap;overflow:hidden
+}
+.nav-item:hover{background:var(--bg-card);color:var(--text)}
+.nav-item.active{background:var(--brand-dim);color:var(--brand)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;opacity:.6}
+.nav-item.active svg{opacity:1}
+.nav-divider{height:1px;background:var(--border);margin:8px 12px}
+.recent-item{
+  display:flex;align-items:center;gap:8px;padding:5px 10px;
+  border-radius:5px;color:var(--muted);font-size:12px;
+  cursor:pointer;white-space:nowrap;overflow:hidden;
+  opacity:0;transition:opacity .15s ease
+}
+.sidebar:hover .recent-item{opacity:1}
+.recent-item:hover{background:var(--bg-card);color:var(--text)}
+
+/* chat area */
+.chat{flex:1;overflow-y:auto;padding:24px 32px;display:flex;flex-direction:column;gap:20px}
+.msg{max-width:80%}
+.msg-user{
+  align-self:flex-end;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:16px 16px 4px 16px;
+  padding:14px 18px;font-size:14px;line-height:1.55
+}
+.msg-ai{align-self:flex-start;display:flex;gap:10px}
+.msg-ai-avatar{
+  width:26px;height:26px;border-radius:50%;
+  background:linear-gradient(135deg,#d97757,#c4643f);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:2px
+}
+.msg-ai-avatar svg{width:14px;height:14px}
+.msg-ai-body{font-size:14px;line-height:1.6;color:var(--text)}
+.msg-ai-body p{margin:0 0 8px}
 .msg-ai-body p:last-child{margin:0}
-.msg-ai-body code{font-family:var(--mono);font-size:9px;background:var(--card);border:1px solid var(--border);border-radius:3px;padding:1px 4px;color:var(--orange)}
-.msg-ai-body .code-block{background:#1e1d1a;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-family:var(--mono);font-size:9px;line-height:1.6;margin:6px 0;overflow-x:auto;color:var(--text)}
-.msg-ai-body .code-block .kw{color:#c084fc}
-.msg-ai-body .code-block .str{color:#fbbf24}
-.msg-ai-body .code-block .fn{color:#7eb8da}
-.msg-ai-body .code-block .cmt{color:var(--faint)}
-.msg-ai-body ul{margin:4px 0;padding-left:16px}
-.msg-ai-body li{margin:2px 0;color:var(--muted)}
-.input-bar{padding:8px 16px 12px;display:flex;align-items:center;gap:8px}
-.input-field{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:10px;color:var(--text);font-family:var(--font);outline:none;resize:none}
-.input-field::placeholder{color:var(--faint)}
-.send-btn{width:28px;height:28px;border-radius:50%;background:var(--orange);border:0;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
-.send-btn svg{width:14px;height:14px}
-.artifact{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:6px 0;cursor:pointer}
-.artifact-label{font-size:8px;text-transform:uppercase;letter-spacing:.05em;color:var(--orange);font-weight:600;margin-bottom:3px}
-.artifact-title{font-size:10px;font-weight:500}
-.artifact-meta{font-size:8px;color:var(--faint);margin-top:2px}
-.thinking{display:inline-flex;align-items:center;gap:6px;font-size:9px;color:var(--faint);font-style:italic;padding:4px 0}
-.thinking-dots span{display:inline-block;width:4px;height:4px;border-radius:50%;background:var(--orange);animation:blink 1.4s infinite;opacity:.3}
+.msg-ai-body code{
+  font-family:var(--mono);font-size:12px;background:var(--bg-card);
+  border:1px solid var(--border);border-radius:4px;
+  padding:2px 6px;color:var(--brand)
+}
+.code-block{
+  background:#1e1d1a;border:1px solid var(--border);border-radius:8px;
+  padding:14px 16px;font-family:var(--mono);font-size:12.5px;
+  line-height:1.7;margin:8px 0;overflow-x:auto;color:var(--text)
+}
+.code-block .kw{color:#c084fc}
+.code-block .str{color:#fbbf24}
+.code-block .fn{color:#7eb8da}
+.code-block .cmt{color:var(--faint)}
+.msg-ai-body ul{margin:6px 0;padding-left:20px}
+.msg-ai-body li{margin:3px 0;color:var(--muted);font-size:13px}
+.artifact{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:8px;padding:12px 16px;margin:8px 0;cursor:pointer
+}
+.artifact-label{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--brand);font-weight:600;margin-bottom:4px}
+.artifact-title{font-size:14px;font-weight:500}
+.artifact-meta{font-size:11px;color:var(--faint);margin-top:3px}
+.thinking{display:inline-flex;align-items:center;gap:8px;font-size:12px;color:var(--faint);font-style:italic;padding:4px 0}
+.thinking-dots span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--brand);animation:blink 1.4s infinite;opacity:.3}
 .thinking-dots span:nth-child(2){animation-delay:.2s}
 .thinking-dots span:nth-child(3){animation-delay:.4s}
 @keyframes blink{50%{opacity:1}}
+
+/* input bar */
+.input-bar{padding:12px 24px 16px;display:flex;align-items:center;gap:10px}
+.input-field{
+  flex:1;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:12px 18px;font-size:14px;
+  color:var(--text);font-family:var(--font);outline:none;resize:none
+}
+.input-field::placeholder{color:var(--faint)}
+.send-btn{
+  width:36px;height:36px;border-radius:50%;background:var(--brand);
+  border:0;color:#fff;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;flex-shrink:0
+}
+.send-btn svg{width:16px;height:16px}
+
 </style>
 </head>
 <body>
-<div class="app">
-  <aside class="side">
-    <div class="chrome">
-      <span class="chrome-dot"></span><span class="chrome-dot"></span><span class="chrome-dot"></span>
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2.5" fill="#fff"/><line x1="12" y1="4" x2="12" y2="7" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12" y2="20" stroke="#fff" stroke-width="1.5"/><line x1="6.3" y1="6.3" x2="8.4" y2="8.4" stroke="#fff" stroke-width="1.5"/><line x1="4" y1="12" x2="7" y2="12" stroke="#fff" stroke-width="1.5"/></svg>
+      </div>
+      <span>Claude</span>
     </div>
-    <div class="nav active" data-v="chat">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      New chat
+    <div class="sidebar-section">
+      <div class="nav-item active" data-v="chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New chat
+      </div>
+      <div class="nav-item" data-v="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search
+      </div>
     </div>
-    <div class="nav" data-v="search">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      Search
+    <div class="nav-divider"></div>
+    <div class="sidebar-section">
+      <div class="nav-item" data-v="chats">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Chats
+      </div>
+      <div class="nav-item" data-v="projects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+        Projects
+      </div>
+      <div class="nav-item" data-v="artifacts">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6"/></svg>
+        Artifacts
+      </div>
     </div>
-    <div class="nav-sep"></div>
-    <div class="nav" data-v="chats">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-      Chats
+    <div class="nav-divider"></div>
+    <div class="sidebar-section">
+      <div class="section-label">Recents</div>
+      <div class="recent-item">API error handling</div>
+      <div class="recent-item">Landing page copy</div>
+      <div class="recent-item">Database schema</div>
     </div>
-    <div class="nav" data-v="projects">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
-      Projects
-    </div>
-    <div class="nav" data-v="artifacts">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h6"/></svg>
-      Artifacts
-    </div>
-    <div class="nav-label">Recents</div>
-    <div class="recent">API error handling</div>
-    <div class="recent">Landing page copy</div>
-    <div class="recent">Database schema</div>
   </aside>
   <div class="main">
     <div class="chat" id="chat"></div>
@@ -101,37 +190,39 @@ html,body{height:100vh;overflow:hidden;font-family:var(--font);font-size:10.5px;
   </div>
 </div>
 <script>
+var avatar='<div class="msg-ai-avatar"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2.5" fill="#fff"/><line x1="12" y1="4" x2="12" y2="7" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12" y2="20" stroke="#fff" stroke-width="1.5"/><line x1="6.3" y1="6.3" x2="8.4" y2="8.4" stroke="#fff" stroke-width="1.5"/><line x1="4" y1="12" x2="7" y2="12" stroke="#fff" stroke-width="1.5"/></svg></div>';
+
 var conversations={
 chat:{
-  step1:'<div class="msg msg-user">Build me a React dashboard component with a sidebar, metric cards, and a data table. Use Tailwind CSS.</div><div class="msg msg-ai"><div class="msg-ai-avatar"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2.5" fill="#fff"/><line x1="12" y1="4" x2="12" y2="7" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12" y2="20" stroke="#fff" stroke-width="1.5"/><line x1="6.3" y1="6.3" x2="8.4" y2="8.4" stroke="#fff" stroke-width="1.5"/><line x1="4" y1="12" x2="7" y2="12" stroke="#fff" stroke-width="1.5"/></svg></div><div class="msg-ai-body"><div class="thinking">Thinking<span class="thinking-dots"><span></span><span></span><span></span></span></div></div></div>',
-  step2:'<div class="msg msg-user">Build me a React dashboard component with a sidebar, metric cards, and a data table. Use Tailwind CSS.</div><div class="msg msg-ai"><div class="msg-ai-avatar"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2.5" fill="#fff"/><line x1="12" y1="4" x2="12" y2="7" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12" y2="20" stroke="#fff" stroke-width="1.5"/><line x1="6.3" y1="6.3" x2="8.4" y2="8.4" stroke="#fff" stroke-width="1.5"/><line x1="4" y1="12" x2="7" y2="12" stroke="#fff" stroke-width="1.5"/></svg></div><div class="msg-ai-body"><p>Here is a dashboard component with the structure you described:</p><div class="code-block"><span class="kw">export default</span> <span class="kw">function</span> <span class="fn">Dashboard</span>() {\n  <span class="kw">return</span> (\n    &lt;<span class="fn">div</span> className=<span class="str">"flex h-screen"</span>&gt;\n      &lt;<span class="fn">Sidebar</span> /&gt;\n      &lt;<span class="fn">main</span> className=<span class="str">"flex-1 p-6"</span>&gt;\n        &lt;<span class="fn">MetricCards</span> /&gt;\n        &lt;<span class="fn">DataTable</span> data={users} /&gt;\n      &lt;/<span class="fn">main</span>&gt;\n    &lt;/<span class="fn">div</span>&gt;\n  )\n}</div><p>The sidebar uses a vertical nav with icons. Each metric card shows a label, value, and trend indicator.</p></div></div>',
-  step3:'<div class="msg msg-user">Build me a React dashboard component with a sidebar, metric cards, and a data table. Use Tailwind CSS.</div><div class="msg msg-ai"><div class="msg-ai-avatar"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="2.5" fill="#fff"/><line x1="12" y1="4" x2="12" y2="7" stroke="#fff" stroke-width="1.5"/><line x1="12" y1="17" x2="12" y2="20" stroke="#fff" stroke-width="1.5"/><line x1="6.3" y1="6.3" x2="8.4" y2="8.4" stroke="#fff" stroke-width="1.5"/><line x1="4" y1="12" x2="7" y2="12" stroke="#fff" stroke-width="1.5"/></svg></div><div class="msg-ai-body"><p>Here is the full dashboard with sidebar, metrics, and table:</p><div class="artifact"><div class="artifact-label">Artifact</div><div class="artifact-title">Dashboard.tsx</div><div class="artifact-meta">React component &middot; 124 lines</div></div><p>The component includes:</p><ul><li>Collapsible sidebar with navigation icons</li><li>4 metric cards showing revenue, users, orders, and conversion rate</li><li>Sortable data table with pagination</li><li>Responsive layout using Tailwind <code>flex</code> and <code>grid</code></li></ul><p>You can drop this directly into your <code>app/dashboard/page.tsx</code>.</p></div></div>'
+  step1:'<div class="msg msg-user">Build me a React dashboard component with a sidebar, metric cards, and a data table. Use Tailwind CSS.</div><div class="msg msg-ai">'+avatar+'<div class="msg-ai-body"><div class="thinking">Thinking<span class="thinking-dots"><span></span><span></span><span></span></span></div></div></div>',
+  step2:'<div class="msg msg-user">Build me a React dashboard component with a sidebar, metric cards, and a data table. Use Tailwind CSS.</div><div class="msg msg-ai">'+avatar+'<div class="msg-ai-body"><p>Here is a dashboard component with the structure you described:</p><div class="code-block"><span class="kw">export default</span> <span class="kw">function</span> <span class="fn">Dashboard</span>() {<br/>  <span class="kw">return</span> (<br/>    &lt;<span class="fn">div</span> className=<span class="str">"flex h-screen"</span>&gt;<br/>      &lt;<span class="fn">Sidebar</span> /&gt;<br/>      &lt;<span class="fn">main</span> className=<span class="str">"flex-1 p-6"</span>&gt;<br/>        &lt;<span class="fn">MetricCards</span> /&gt;<br/>        &lt;<span class="fn">DataTable</span> data={users} /&gt;<br/>      &lt;/<span class="fn">main</span>&gt;<br/>    &lt;/<span class="fn">div</span>&gt;<br/>  )<br/>}</div><p>The sidebar uses a vertical nav with icons. Each metric card shows a label, value, and trend indicator.</p></div></div>',
+  step3:'<div class="msg msg-user">Build me a React dashboard component with a sidebar, metric cards, and a data table. Use Tailwind CSS.</div><div class="msg msg-ai">'+avatar+'<div class="msg-ai-body"><p>Here is the full dashboard with sidebar, metrics, and table:</p><div class="artifact"><div class="artifact-label">Artifact</div><div class="artifact-title">Dashboard.tsx</div><div class="artifact-meta">React component &middot; 124 lines</div></div><p>The component includes:</p><ul><li>Collapsible sidebar with navigation icons</li><li>4 metric cards showing revenue, users, orders, and conversion rate</li><li>Sortable data table with pagination</li><li>Responsive layout using Tailwind <code>flex</code> and <code>grid</code></li></ul><p>You can drop this directly into your <code>app/dashboard/page.tsx</code>.</p></div></div>'
 },
 search:{
-  step1:'<div style="padding:20px;text-align:center;color:var(--faint)"><p style="font-size:14px;margin-bottom:4px">Search your conversations</p><p style="font-size:9px">Find messages, artifacts, and projects</p></div>',
-  step2:'<div style="padding:20px;text-align:center;color:var(--faint)"><p style="font-size:14px;margin-bottom:4px">Search your conversations</p><p style="font-size:9px">Find messages, artifacts, and projects</p></div>',
-  step3:'<div style="padding:20px;text-align:center;color:var(--faint)"><p style="font-size:14px;margin-bottom:4px">Search your conversations</p><p style="font-size:9px">Find messages, artifacts, and projects</p></div>'
+  step1:'<div style="padding:32px;text-align:center;color:var(--faint)"><p style="font-size:18px;margin-bottom:6px">Search your conversations</p><p style="font-size:13px">Find messages, artifacts, and projects</p></div>',
+  step2:'<div style="padding:32px;text-align:center;color:var(--faint)"><p style="font-size:18px;margin-bottom:6px">Search your conversations</p><p style="font-size:13px">Find messages, artifacts, and projects</p></div>',
+  step3:'<div style="padding:32px;text-align:center;color:var(--faint)"><p style="font-size:18px;margin-bottom:6px">Search your conversations</p><p style="font-size:13px">Find messages, artifacts, and projects</p></div>'
 },
 chats:{
-  step1:'<div style="padding:12px"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Recent chats</div><div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;cursor:pointer"><b>API error handling</b><br/><span style="color:var(--faint);font-size:9px">Added try-catch to all routes &middot; 2h ago</span></div><div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;cursor:pointer"><b>Landing page copy</b><br/><span style="color:var(--faint);font-size:9px">Rewrote hero section &middot; Yesterday</span></div><div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;cursor:pointer"><b>Database schema</b><br/><span style="color:var(--faint);font-size:9px">Designed users and payments tables &middot; 2 days ago</span></div><div style="padding:8px 10px;font-size:10px;cursor:pointer"><b>Auth flow</b><br/><span style="color:var(--faint);font-size:9px">NextAuth setup with Google provider &middot; 3 days ago</span></div></div>',
-  step2:'<div style="padding:12px"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Recent chats</div><div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;cursor:pointer"><b>API error handling</b><br/><span style="color:var(--faint);font-size:9px">Added try-catch to all routes &middot; 2h ago</span></div><div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;cursor:pointer"><b>Landing page copy</b><br/><span style="color:var(--faint);font-size:9px">Rewrote hero section &middot; Yesterday</span></div><div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;cursor:pointer"><b>Database schema</b><br/><span style="color:var(--faint);font-size:9px">Designed users and payments tables &middot; 2 days ago</span></div><div style="padding:8px 10px;font-size:10px;cursor:pointer"><b>Auth flow</b><br/><span style="color:var(--faint);font-size:9px">NextAuth setup with Google provider &middot; 3 days ago</span></div></div>',
-  step3:'<div style="padding:12px"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Recent chats</div><div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;cursor:pointer"><b>API error handling</b><br/><span style="color:var(--faint);font-size:9px">Added try-catch to all routes &middot; 2h ago</span></div><div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;cursor:pointer"><b>Landing page copy</b><br/><span style="color:var(--faint);font-size:9px">Rewrote hero section &middot; Yesterday</span></div><div style="padding:8px 10px;border-bottom:1px solid var(--border);font-size:10px;cursor:pointer"><b>Database schema</b><br/><span style="color:var(--faint);font-size:9px">Designed users and payments tables &middot; 2 days ago</span></div><div style="padding:8px 10px;font-size:10px;cursor:pointer"><b>Auth flow</b><br/><span style="color:var(--faint);font-size:9px">NextAuth setup with Google provider &middot; 3 days ago</span></div></div>'
+  step1:'<div style="padding:20px"><div style="font-size:16px;font-weight:600;margin-bottom:14px">Recent chats</div><div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer"><b>API error handling</b><br/><span style="color:var(--faint);font-size:12px">Added try-catch to all routes &middot; 2h ago</span></div><div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer"><b>Landing page copy</b><br/><span style="color:var(--faint);font-size:12px">Rewrote hero section &middot; Yesterday</span></div><div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer"><b>Database schema</b><br/><span style="color:var(--faint);font-size:12px">Designed users and payments tables &middot; 2 days ago</span></div><div style="padding:10px 14px;font-size:14px;cursor:pointer"><b>Auth flow</b><br/><span style="color:var(--faint);font-size:12px">NextAuth setup with Google provider &middot; 3 days ago</span></div></div>',
+  step2:'<div style="padding:20px"><div style="font-size:16px;font-weight:600;margin-bottom:14px">Recent chats</div><div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer"><b>API error handling</b><br/><span style="color:var(--faint);font-size:12px">Added try-catch to all routes &middot; 2h ago</span></div><div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer"><b>Landing page copy</b><br/><span style="color:var(--faint);font-size:12px">Rewrote hero section &middot; Yesterday</span></div><div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer"><b>Database schema</b><br/><span style="color:var(--faint);font-size:12px">Designed users and payments tables &middot; 2 days ago</span></div><div style="padding:10px 14px;font-size:14px;cursor:pointer"><b>Auth flow</b><br/><span style="color:var(--faint);font-size:12px">NextAuth setup with Google provider &middot; 3 days ago</span></div></div>',
+  step3:'<div style="padding:20px"><div style="font-size:16px;font-weight:600;margin-bottom:14px">Recent chats</div><div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer"><b>API error handling</b><br/><span style="color:var(--faint);font-size:12px">Added try-catch to all routes &middot; 2h ago</span></div><div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer"><b>Landing page copy</b><br/><span style="color:var(--faint);font-size:12px">Rewrote hero section &middot; Yesterday</span></div><div style="padding:10px 14px;border-bottom:1px solid var(--border);font-size:14px;cursor:pointer"><b>Database schema</b><br/><span style="color:var(--faint);font-size:12px">Designed users and payments tables &middot; 2 days ago</span></div><div style="padding:10px 14px;font-size:14px;cursor:pointer"><b>Auth flow</b><br/><span style="color:var(--faint);font-size:12px">NextAuth setup with Google provider &middot; 3 days ago</span></div></div>'
 },
 projects:{
-  step1:'<div style="padding:12px"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Projects</div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;cursor:pointer"><div style="font-size:10px;font-weight:600">acme-app</div><div style="font-size:8px;color:var(--faint);margin-top:2px">Next.js SaaS &middot; 12 chats &middot; Updated 1h ago</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;cursor:pointer"><div style="font-size:10px;font-weight:600">docs-site</div><div style="font-size:8px;color:var(--faint);margin-top:2px">Mintlify docs &middot; 5 chats &middot; Updated yesterday</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;cursor:pointer"><div style="font-size:10px;font-weight:600">landing-page</div><div style="font-size:8px;color:var(--faint);margin-top:2px">Marketing site &middot; 8 chats &middot; Updated 3 days ago</div></div></div>',
-  step2:'<div style="padding:12px"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Projects</div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;cursor:pointer"><div style="font-size:10px;font-weight:600">acme-app</div><div style="font-size:8px;color:var(--faint);margin-top:2px">Next.js SaaS &middot; 12 chats &middot; Updated 1h ago</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;cursor:pointer"><div style="font-size:10px;font-weight:600">docs-site</div><div style="font-size:8px;color:var(--faint);margin-top:2px">Mintlify docs &middot; 5 chats &middot; Updated yesterday</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;cursor:pointer"><div style="font-size:10px;font-weight:600">landing-page</div><div style="font-size:8px;color:var(--faint);margin-top:2px">Marketing site &middot; 8 chats &middot; Updated 3 days ago</div></div></div>',
-  step3:'<div style="padding:12px"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Projects</div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;cursor:pointer"><div style="font-size:10px;font-weight:600">acme-app</div><div style="font-size:8px;color:var(--faint);margin-top:2px">Next.js SaaS &middot; 12 chats &middot; Updated 1h ago</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;margin-bottom:6px;cursor:pointer"><div style="font-size:10px;font-weight:600">docs-site</div><div style="font-size:8px;color:var(--faint);margin-top:2px">Mintlify docs &middot; 5 chats &middot; Updated yesterday</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:6px;padding:10px 12px;cursor:pointer"><div style="font-size:10px;font-weight:600">landing-page</div><div style="font-size:8px;color:var(--faint);margin-top:2px">Marketing site &middot; 8 chats &middot; Updated 3 days ago</div></div></div>'
+  step1:'<div style="padding:20px"><div style="font-size:16px;font-weight:600;margin-bottom:14px">Projects</div><div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;cursor:pointer"><div style="font-size:14px;font-weight:600">acme-app</div><div style="font-size:12px;color:var(--faint);margin-top:3px">Next.js SaaS &middot; 12 chats &middot; Updated 1h ago</div></div><div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;cursor:pointer"><div style="font-size:14px;font-weight:600">docs-site</div><div style="font-size:12px;color:var(--faint);margin-top:3px">Mintlify docs &middot; 5 chats &middot; Updated yesterday</div></div><div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer"><div style="font-size:14px;font-weight:600">landing-page</div><div style="font-size:12px;color:var(--faint);margin-top:3px">Marketing site &middot; 8 chats &middot; Updated 3 days ago</div></div></div>',
+  step2:'<div style="padding:20px"><div style="font-size:16px;font-weight:600;margin-bottom:14px">Projects</div><div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;cursor:pointer"><div style="font-size:14px;font-weight:600">acme-app</div><div style="font-size:12px;color:var(--faint);margin-top:3px">Next.js SaaS &middot; 12 chats &middot; Updated 1h ago</div></div><div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;cursor:pointer"><div style="font-size:14px;font-weight:600">docs-site</div><div style="font-size:12px;color:var(--faint);margin-top:3px">Mintlify docs &middot; 5 chats &middot; Updated yesterday</div></div><div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer"><div style="font-size:14px;font-weight:600">landing-page</div><div style="font-size:12px;color:var(--faint);margin-top:3px">Marketing site &middot; 8 chats &middot; Updated 3 days ago</div></div></div>',
+  step3:'<div style="padding:20px"><div style="font-size:16px;font-weight:600;margin-bottom:14px">Projects</div><div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;cursor:pointer"><div style="font-size:14px;font-weight:600">acme-app</div><div style="font-size:12px;color:var(--faint);margin-top:3px">Next.js SaaS &middot; 12 chats &middot; Updated 1h ago</div></div><div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:8px;cursor:pointer"><div style="font-size:14px;font-weight:600">docs-site</div><div style="font-size:12px;color:var(--faint);margin-top:3px">Mintlify docs &middot; 5 chats &middot; Updated yesterday</div></div><div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer"><div style="font-size:14px;font-weight:600">landing-page</div><div style="font-size:12px;color:var(--faint);margin-top:3px">Marketing site &middot; 8 chats &middot; Updated 3 days ago</div></div></div>'
 },
 artifacts:{
-  step1:'<div style="padding:12px"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Artifacts</div><div class="artifact"><div class="artifact-label">React</div><div class="artifact-title">Dashboard.tsx</div><div class="artifact-meta">124 lines &middot; Created 2h ago</div></div><div class="artifact"><div class="artifact-label">SQL</div><div class="artifact-title">schema.sql</div><div class="artifact-meta">48 lines &middot; Created yesterday</div></div><div class="artifact"><div class="artifact-label">Markdown</div><div class="artifact-title">API docs</div><div class="artifact-meta">86 lines &middot; Created 2 days ago</div></div></div>',
-  step2:'<div style="padding:12px"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Artifacts</div><div class="artifact"><div class="artifact-label">React</div><div class="artifact-title">Dashboard.tsx</div><div class="artifact-meta">124 lines &middot; Created 2h ago</div></div><div class="artifact"><div class="artifact-label">SQL</div><div class="artifact-title">schema.sql</div><div class="artifact-meta">48 lines &middot; Created yesterday</div></div><div class="artifact"><div class="artifact-label">Markdown</div><div class="artifact-title">API docs</div><div class="artifact-meta">86 lines &middot; Created 2 days ago</div></div></div>',
-  step3:'<div style="padding:12px"><div style="font-size:12px;font-weight:600;margin-bottom:10px">Artifacts</div><div class="artifact"><div class="artifact-label">React</div><div class="artifact-title">Dashboard.tsx</div><div class="artifact-meta">124 lines &middot; Created 2h ago</div></div><div class="artifact"><div class="artifact-label">SQL</div><div class="artifact-title">schema.sql</div><div class="artifact-meta">48 lines &middot; Created yesterday</div></div><div class="artifact"><div class="artifact-label">Markdown</div><div class="artifact-title">API docs</div><div class="artifact-meta">86 lines &middot; Created 2 days ago</div></div></div>'
+  step1:'<div style="padding:20px"><div style="font-size:16px;font-weight:600;margin-bottom:14px">Artifacts</div><div class="artifact"><div class="artifact-label">React</div><div class="artifact-title">Dashboard.tsx</div><div class="artifact-meta">124 lines &middot; Created 2h ago</div></div><div class="artifact"><div class="artifact-label">SQL</div><div class="artifact-title">schema.sql</div><div class="artifact-meta">48 lines &middot; Created yesterday</div></div><div class="artifact"><div class="artifact-label">Markdown</div><div class="artifact-title">API docs</div><div class="artifact-meta">86 lines &middot; Created 2 days ago</div></div></div>',
+  step2:'<div style="padding:20px"><div style="font-size:16px;font-weight:600;margin-bottom:14px">Artifacts</div><div class="artifact"><div class="artifact-label">React</div><div class="artifact-title">Dashboard.tsx</div><div class="artifact-meta">124 lines &middot; Created 2h ago</div></div><div class="artifact"><div class="artifact-label">SQL</div><div class="artifact-title">schema.sql</div><div class="artifact-meta">48 lines &middot; Created yesterday</div></div><div class="artifact"><div class="artifact-label">Markdown</div><div class="artifact-title">API docs</div><div class="artifact-meta">86 lines &middot; Created 2 days ago</div></div></div>',
+  step3:'<div style="padding:20px"><div style="font-size:16px;font-weight:600;margin-bottom:14px">Artifacts</div><div class="artifact"><div class="artifact-label">React</div><div class="artifact-title">Dashboard.tsx</div><div class="artifact-meta">124 lines &middot; Created 2h ago</div></div><div class="artifact"><div class="artifact-label">SQL</div><div class="artifact-title">schema.sql</div><div class="artifact-meta">48 lines &middot; Created yesterday</div></div><div class="artifact"><div class="artifact-label">Markdown</div><div class="artifact-title">API docs</div><div class="artifact-meta">86 lines &middot; Created 2 days ago</div></div></div>'
 }
 };
 var current="chat";
 var currentStep=1;
 var chatEl=document.getElementById("chat");
-var navItems=document.querySelectorAll(".nav");
+var navItems=document.querySelectorAll(".nav-item");
 function render(){
   var c=conversations[current];
   chatEl.innerHTML=c?c["step"+currentStep]||c.step1:"";

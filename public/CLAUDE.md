@@ -7,9 +7,10 @@
 
 ## TL;DR
 
-Demoday is an open-source Claude Code skill (`@demoday/skill`) that
+Demoday is an open-source coding agent skill (`@demoday/skill`) that
 generates a clickable product demo as a single self-contained HTML file
-and embeds it in the user's landing page as one `<iframe>`.
+and embeds it in the user's landing page as one `<iframe>`. Works with
+Claude Code, Cursor, and Codex.
 
 - Install: `npx @demoday/skill@latest init`
 - Invoke: ask the coding agent to "run the Demoday skill".
