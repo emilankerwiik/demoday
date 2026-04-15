@@ -15,6 +15,7 @@ yarn-error.log*
 recordings/*.mp4
 recordings/*.gif
 recordings/*.webm
+recordings/debug.png
 
 # Ignore new demos — only keep the five main ones + demoday
 public/demos/*
